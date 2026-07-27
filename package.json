@@ -1,0 +1,24 @@
+{
+  "name": "contoh-saja",
+  "version": "1.0.0",
+  "description": "> Web Aplikasi Simulasi Reality-Based Training (RBT) untuk Program Pendidikan Pengembangan Spesialisasi (Prolat) Polri",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fiekryadiperdana14-star/E-PIKPOR.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/fiekryadiperdana14-star/E-PIKPOR/issues"
+  },
+  "homepage": "https://github.com/fiekryadiperdana14-star/E-PIKPOR#readme",
+  "dependencies": {
+    "mysql2": "^3.23.2"
+  }
+}
