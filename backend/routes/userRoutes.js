@@ -34,7 +34,17 @@ router.get('/', adminAuth, async (req, res) => {
             FROM users u
             LEFT JOIN subnit s ON u.subnit_id = s.id
             LEFT JOIN regu r ON u.regu_id = r.id
-            ORDER BY FIELD(u.role, 'admin','kanit','kasubnit','bamin','danregu','anggota'), s.id, r.id
+            ORDER BY 
+                CASE u.role 
+                    WHEN 'admin' THEN 1
+                    WHEN 'kanit' THEN 2 
+                    WHEN 'kasubnit' THEN 3 
+                    WHEN 'bamin' THEN 4 
+                    WHEN 'danregu' THEN 5 
+                    WHEN 'anggota' THEN 6 
+                    ELSE 7 
+                END, 
+                s.id, r.id
         `);
         res.json(users);
     } catch (error) {
@@ -59,7 +69,7 @@ router.post('/', adminAuth, async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
         const [result] = await db.query(
             `INSERT INTO users (username, password, role, nama_lengkap, pangkat, nrp, no_hp, subnit_id, regu_id) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
             [username, hashedPassword, role, nama_lengkap, pangkat || null, nrp || null, no_hp || null,
              subnit_id || null, regu_id || null]
         );

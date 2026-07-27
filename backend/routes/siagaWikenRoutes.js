@@ -75,7 +75,14 @@ router.get('/active', verifyToken, async (req, res) => {
                 LEFT JOIN subnit s ON u.subnit_id = s.id
                 LEFT JOIN regu r ON u.regu_id = r.id
                 WHERE swp.siaga_wiken_id = ?
-                ORDER BY FIELD(swp.shift, 'Pagi','Sore','Malam'), u.nama_lengkap
+                ORDER BY 
+                    CASE swp.shift 
+                        WHEN 'Pagi' THEN 1 
+                        WHEN 'Sore' THEN 2 
+                        WHEN 'Malam' THEN 3 
+                        ELSE 4 
+                    END, 
+                    u.nama_lengkap
             `, [event.id]);
             event.personel = personel;
         }
@@ -93,7 +100,7 @@ router.post('/', adminAuth, async (req, res) => {
 
         const [result] = await db.query(
             `INSERT INTO siaga_wiken (tanggal_mulai, tanggal_selesai, tipe, nama_event, catatan, min_personel_per_zona, created_by, status)
-             VALUES (?, ?, ?, ?, ?, ?, ?, 'upcoming')`,
+             VALUES (?, ?, ?, ?, ?, ?, ?, 'upcoming') RETURNING id`,
             [tanggal_mulai, tanggal_selesai, tipe, nama_event, catatan || null, min_personel_per_zona || 2, req.user.id]
         );
 

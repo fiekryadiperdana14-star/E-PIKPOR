@@ -1,55 +1,61 @@
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 async function initializeDB() {
-  const connection = await mysql.createConnection({
+  const poolConfig = process.env.DATABASE_URL ? {
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+  } : {
     host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || ''
-  });
+    port: process.env.DB_PORT || 5432,
+    user: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASSWORD || '',
+    database: process.env.DB_NAME || 'postgres',
+    ssl: process.env.DB_SSL_MODE === 'REQUIRED' ? { rejectUnauthorized: false } : undefined
+  };
+
+  const pool = new Pool(poolConfig);
 
   try {
-    // Drop and recreate database
-    await connection.query(`DROP DATABASE IF EXISTS e_pikpor_db`);
-    await connection.query(`CREATE DATABASE e_pikpor_db`);
-    await connection.query(`USE e_pikpor_db`);
-    console.log("✅ Database 'e_pikpor_db' created.");
+    await pool.query(`DROP TABLE IF EXISTS notifications CASCADE`);
+    await pool.query(`DROP TABLE IF EXISTS sop_documents CASCADE`);
+    await pool.query(`DROP TABLE IF EXISTS handovers CASCADE`);
+    await pool.query(`DROP TABLE IF EXISTS report_edit_history CASCADE`);
+    await pool.query(`DROP TABLE IF EXISTS reports CASCADE`);
+    await pool.query(`DROP TABLE IF EXISTS siaga_wiken_personel CASCADE`);
+    await pool.query(`DROP TABLE IF EXISTS siaga_wiken CASCADE`);
+    await pool.query(`DROP TABLE IF EXISTS duty_schedules CASCADE`);
+    await pool.query(`DROP TABLE IF EXISTS holidays CASCADE`);
+    await pool.query(`DROP TABLE IF EXISTS users CASCADE`);
+    await pool.query(`DROP TABLE IF EXISTS regu CASCADE`);
+    await pool.query(`DROP TABLE IF EXISTS subnit CASCADE`);
 
-    // ============================================================
-    // TABLE: subnit
-    // ============================================================
-    await connection.query(`
+    console.log("✅ Existing tables dropped.");
+
+    await pool.query(`
       CREATE TABLE subnit (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         nama VARCHAR(50) NOT NULL,
         kode VARCHAR(10) NOT NULL UNIQUE,
         deskripsi VARCHAR(255),
         warna VARCHAR(7) DEFAULT '#3b82f6'
       )
     `);
-    console.log("✅ Table 'subnit' created.");
 
-    // ============================================================
-    // TABLE: regu
-    // ============================================================
-    await connection.query(`
+    await pool.query(`
       CREATE TABLE regu (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         nama VARCHAR(50) NOT NULL,
         subnit_id INT NOT NULL,
         kode VARCHAR(20) NOT NULL UNIQUE,
         FOREIGN KEY (subnit_id) REFERENCES subnit(id)
       )
     `);
-    console.log("✅ Table 'regu' created.");
 
-    // ============================================================
-    // TABLE: users
-    // ============================================================
-    await connection.query(`
+    await pool.query(`
       CREATE TABLE users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         username VARCHAR(50) NOT NULL UNIQUE,
         password VARCHAR(255) NOT NULL,
         nama_lengkap VARCHAR(150) NOT NULL,
@@ -65,36 +71,28 @@ async function initializeDB() {
         FOREIGN KEY (regu_id) REFERENCES regu(id)
       )
     `);
-    console.log("✅ Table 'users' created.");
 
-    // ============================================================
-    // TABLE: holidays (Hari Libur Nasional)
-    // ============================================================
-    await connection.query(`
+    await pool.query(`
       CREATE TABLE holidays (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         tanggal DATE NOT NULL,
         nama VARCHAR(255) NOT NULL,
-        jenis ENUM('libur_nasional','cuti_bersama','libur_khusus') DEFAULT 'libur_nasional',
+        jenis VARCHAR(50) DEFAULT 'libur_nasional' CHECK (jenis IN ('libur_nasional','cuti_bersama','libur_khusus')),
         tahun INT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `);
-    console.log("✅ Table 'holidays' created.");
 
-    // ============================================================
-    // TABLE: duty_schedules (Jadwal Piket)
-    // ============================================================
-    await connection.query(`
+    await pool.query(`
       CREATE TABLE duty_schedules (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         tanggal DATE NOT NULL,
-        shift ENUM('Pagi','Sore','Malam') NOT NULL,
+        shift VARCHAR(20) NOT NULL CHECK (shift IN ('Pagi','Sore','Malam')),
         user_id INT NOT NULL,
         subnit_id INT NOT NULL,
         regu_id INT DEFAULT NULL,
-        tipe ENUM('reguler','wiken','libur_nasional','khusus') DEFAULT 'reguler',
-        status ENUM('dijadwalkan','hadir','tidak_hadir','izin') DEFAULT 'dijadwalkan',
+        tipe VARCHAR(30) DEFAULT 'reguler' CHECK (tipe IN ('reguler','wiken','libur_nasional','khusus')),
+        status VARCHAR(30) DEFAULT 'dijadwalkan' CHECK (status IN ('dijadwalkan','hadir','tidak_hadir','izin')),
         catatan TEXT DEFAULT NULL,
         created_by INT DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -104,19 +102,15 @@ async function initializeDB() {
         FOREIGN KEY (created_by) REFERENCES users(id)
       )
     `);
-    console.log("✅ Table 'duty_schedules' created.");
 
-    // ============================================================
-    // TABLE: siaga_wiken (Event Siaga Wiken)
-    // ============================================================
-    await connection.query(`
+    await pool.query(`
       CREATE TABLE siaga_wiken (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         tanggal_mulai DATE NOT NULL,
         tanggal_selesai DATE NOT NULL,
-        tipe ENUM('weekend','libur_nasional','cuti_bersama','khusus') NOT NULL,
+        tipe VARCHAR(30) NOT NULL CHECK (tipe IN ('weekend','libur_nasional','cuti_bersama','khusus')),
         nama_event VARCHAR(255) NOT NULL,
-        status ENUM('upcoming','active','completed') DEFAULT 'upcoming',
+        status VARCHAR(30) DEFAULT 'upcoming' CHECK (status IN ('upcoming','active','completed')),
         catatan TEXT DEFAULT NULL,
         min_personel_per_zona INT DEFAULT 2,
         created_by INT DEFAULT NULL,
@@ -124,57 +118,45 @@ async function initializeDB() {
         FOREIGN KEY (created_by) REFERENCES users(id)
       )
     `);
-    console.log("✅ Table 'siaga_wiken' created.");
 
-    // ============================================================
-    // TABLE: siaga_wiken_personel (Personel yang ditugaskan)
-    // ============================================================
-    await connection.query(`
+    await pool.query(`
       CREATE TABLE siaga_wiken_personel (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         siaga_wiken_id INT NOT NULL,
         user_id INT NOT NULL,
-        shift ENUM('Pagi','Sore','Malam') NOT NULL,
-        status_checkin ENUM('belum','hadir','tidak_hadir') DEFAULT 'belum',
-        waktu_checkin DATETIME DEFAULT NULL,
+        shift VARCHAR(20) NOT NULL CHECK (shift IN ('Pagi','Sore','Malam')),
+        status_checkin VARCHAR(30) DEFAULT 'belum' CHECK (status_checkin IN ('belum','hadir','tidak_hadir')),
+        waktu_checkin TIMESTAMP DEFAULT NULL,
         catatan TEXT DEFAULT NULL,
         FOREIGN KEY (siaga_wiken_id) REFERENCES siaga_wiken(id) ON DELETE CASCADE,
         FOREIGN KEY (user_id) REFERENCES users(id)
       )
     `);
-    console.log("✅ Table 'siaga_wiken_personel' created.");
 
-    // ============================================================
-    // TABLE: reports (Laporan Piket - Enhanced for Gakkum)
-    // ============================================================
-    await connection.query(`
+    await pool.query(`
       CREATE TABLE reports (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         judul VARCHAR(255) NOT NULL,
         lokasi VARCHAR(255) NOT NULL,
-        zona ENUM('Barat','Timur','Tengah') NOT NULL DEFAULT 'Tengah',
-        shift ENUM('Pagi','Sore','Malam') NOT NULL DEFAULT 'Pagi',
-        waktu_kejadian DATETIME NOT NULL,
+        zona VARCHAR(20) NOT NULL DEFAULT 'Tengah' CHECK (zona IN ('Barat','Timur','Tengah')),
+        shift VARCHAR(20) NOT NULL DEFAULT 'Pagi' CHECK (shift IN ('Pagi','Sore','Malam')),
+        waktu_kejadian TIMESTAMP NOT NULL,
         deskripsi TEXT NOT NULL,
-        kategori_gakkum ENUM('tilang','penderekan','razia','pengamanan','patroli','laka_lantas','lainnya') DEFAULT 'lainnya',
+        kategori_gakkum VARCHAR(50) DEFAULT 'lainnya' CHECK (kategori_gakkum IN ('tilang','penderekan','razia','pengamanan','patroli','laka_lantas','lainnya')),
         tindakan TEXT DEFAULT NULL,
         pasal_pelanggaran VARCHAR(255) DEFAULT NULL,
         foto TEXT DEFAULT NULL,
         pelapor_id INT NOT NULL,
-        status ENUM('pending','dilimpahkan','selesai') DEFAULT 'pending',
+        status VARCHAR(30) DEFAULT 'pending' CHECK (status IN ('pending','dilimpahkan','selesai')),
         is_wiken BOOLEAN DEFAULT FALSE,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (pelapor_id) REFERENCES users(id)
       )
     `);
-    console.log("✅ Table 'reports' created.");
 
-    // ============================================================
-    // TABLE: report_edit_history
-    // ============================================================
-    await connection.query(`
+    await pool.query(`
       CREATE TABLE report_edit_history (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         report_id INT NOT NULL,
         user_id INT NOT NULL,
         editor_nama VARCHAR(100),
@@ -185,80 +167,60 @@ async function initializeDB() {
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
     `);
-    console.log("✅ Table 'report_edit_history' created.");
 
-    // ============================================================
-    // TABLE: handovers (Pelimpahan/Estafet)
-    // ============================================================
-    await connection.query(`
+    await pool.query(`
       CREATE TABLE handovers (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         report_id INT NOT NULL,
         regu_pengirim_id INT NOT NULL,
         regu_penerima_id INT NOT NULL,
         waktu_pelimpahan TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         catatan TEXT,
-        status_terima ENUM('menunggu','diterima','ditolak') DEFAULT 'menunggu',
+        status_terima VARCHAR(30) DEFAULT 'menunggu' CHECK (status_terima IN ('menunggu','diterima','ditolak')),
         FOREIGN KEY (report_id) REFERENCES reports(id),
         FOREIGN KEY (regu_pengirim_id) REFERENCES users(id),
         FOREIGN KEY (regu_penerima_id) REFERENCES users(id)
       )
     `);
-    console.log("✅ Table 'handovers' created.");
 
-    // ============================================================
-    // TABLE: sop_documents (SOP Digital)
-    // ============================================================
-    await connection.query(`
+    await pool.query(`
       CREATE TABLE sop_documents (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         judul VARCHAR(255) NOT NULL,
-        kategori ENUM('piket_reguler','siaga_wiken','pelimpahan','gakkum','umum') NOT NULL DEFAULT 'umum',
+        kategori VARCHAR(50) NOT NULL DEFAULT 'umum' CHECK (kategori IN ('piket_reguler','siaga_wiken','pelimpahan','gakkum','umum')),
         konten TEXT NOT NULL,
         urutan INT DEFAULT 0,
         is_active BOOLEAN DEFAULT TRUE,
         created_by INT DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (created_by) REFERENCES users(id)
       )
     `);
-    console.log("✅ Table 'sop_documents' created.");
 
-    // ============================================================
-    // TABLE: notifications
-    // ============================================================
-    await connection.query(`
+    await pool.query(`
       CREATE TABLE notifications (
-        id INT AUTO_INCREMENT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         user_id INT NOT NULL,
         judul VARCHAR(255) NOT NULL,
         pesan TEXT NOT NULL,
-        tipe ENUM('info','warning','danger','success') DEFAULT 'info',
+        tipe VARCHAR(30) DEFAULT 'info' CHECK (tipe IN ('info','warning','danger','success')),
         is_read BOOLEAN DEFAULT FALSE,
         link VARCHAR(255) DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
       )
     `);
-    console.log("✅ Table 'notifications' created.");
 
-    console.log("\n📦 All tables created successfully!\n");
+    console.log("✅ All tables created.");
 
-    // ============================================================
-    // SEED: Subnit
-    // ============================================================
-    await connection.query(`INSERT INTO subnit (nama, kode, deskripsi, warna) VALUES
+    await pool.query(`INSERT INTO subnit (nama, kode, deskripsi, warna) VALUES
       ('Subnit Timur', 'TIMUR', 'Pemantauan wilayah Bandung bagian Timur', '#10b981'),
       ('Subnit Tengah', 'TENGAH', 'Pemantauan wilayah Bandung bagian Tengah', '#3b82f6'),
       ('Subnit Barat', 'BARAT', 'Pemantauan wilayah Bandung bagian Barat', '#f97316')
     `);
-    console.log("✅ Seed: 3 Subnit inserted.");
 
-    // ============================================================
-    // SEED: Regu (3 per subnit = 9 total)
-    // ============================================================
-    await connection.query(`INSERT INTO regu (nama, subnit_id, kode) VALUES
+    await pool.query(`INSERT INTO regu (nama, subnit_id, kode) VALUES
       ('Regu 1', 1, 'TIMUR-R1'),
       ('Regu 2', 1, 'TIMUR-R2'),
       ('Regu 3', 1, 'TIMUR-R3'),
@@ -269,99 +231,39 @@ async function initializeDB() {
       ('Regu 2', 3, 'BARAT-R2'),
       ('Regu 3', 3, 'BARAT-R3')
     `);
-    console.log("✅ Seed: 9 Regu inserted (3 per subnit).");
 
-    // ============================================================
-    // SEED: Users (Personel dari Struktur Organisasi)
-    // ============================================================
     const defaultPass = await bcrypt.hash('epikpor2026', 10);
     const adminPass = await bcrypt.hash('admin123', 10);
 
-    // Admin System
-    await connection.query(`INSERT INTO users (username, password, nama_lengkap, pangkat, nrp, role) VALUES
-      ('admin', ?, 'Administrator Sistem', '-', '-', 'admin')
-    `, [adminPass]);
+    const userQuery = `INSERT INTO users (username, password, nama_lengkap, pangkat, nrp, role, subnit_id, regu_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`;
+    await pool.query(userQuery, ['admin', adminPass, 'Administrator Sistem', '-', '-', 'admin', null, null]);
+    await pool.query(userQuery, ['fiekry.adi', defaultPass, 'FIEKRY ADI PERDANA, S.I.Kom.', 'AKP', '-', 'kanit', null, null]);
+    await pool.query(userQuery, ['agret.devia', defaultPass, 'AGRET DEVIA PRATIWI PUTRI', 'BRIPTU', '-', 'bamin', null, null]);
+    await pool.query(userQuery, ['mutiara.maulina', defaultPass, 'MUTIARA MAULINA DEWI', 'BRIPDA', '-', 'bamin', null, null]);
+    await pool.query(userQuery, ['sucipto.ari', defaultPass, 'SUCIPTO ARI WARDANI, S.A.P., M.A.P.', 'IPDA', '-', 'kasubnit', 1, null]);
+    await pool.query(userQuery, ['sari.wulandari', defaultPass, 'SARI WULANDARI A., S.H., CPHR.', 'IPDA', '-', 'kasubnit', 3, null]);
+    await pool.query(userQuery, ['watchid.khomarudin', defaultPass, 'WATCHID KHOMARUDIN', 'AIPDA', '-', 'danregu', 1, 1]);
+    await pool.query(userQuery, ['dani.timur', defaultPass, 'DANI', 'AIPDA', '-', 'anggota', 1, 1]);
+    await pool.query(userQuery, ['ganepa.cahya', defaultPass, 'GANEPA CAHYA FIRDAUS, S.H.', 'BRIPKA', '-', 'danregu', 1, 2]);
+    await pool.query(userQuery, ['bambang.timur', defaultPass, 'BAMBANG', 'AIPDA', '-', 'anggota', 1, 2]);
+    await pool.query(userQuery, ['ibnu.narowi', defaultPass, 'IBNU NAROWI, S.H.', 'AIPTU', '-', 'danregu', 1, 3]);
+    await pool.query(userQuery, ['siegit.dwi', defaultPass, 'SIEGIT DWI HARYANTO, S.H.', 'AIPDA', '-', 'danregu', 2, 4]);
+    await pool.query(userQuery, ['franciskus.goktua', defaultPass, 'FRANCISKUS GOKTUA S', 'BRIPKA', '-', 'anggota', 2, 4]);
+    await pool.query(userQuery, ['adi.tengah', defaultPass, 'ADI', 'AIPTU', '-', 'danregu', 2, 5]);
+    await pool.query(userQuery, ['yanuar.tengah', defaultPass, 'YANUAR', 'BRIPDA', '-', 'anggota', 2, 5]);
+    await pool.query(userQuery, ['ruhinda.tengah', defaultPass, 'RUHINDA', 'AIPTU', '-', 'danregu', 2, 6]);
+    await pool.query(userQuery, ['raja.putra', defaultPass, 'RAJA PUTRA PERDANA', 'BRIPDA', '-', 'anggota', 2, 6]);
+    await pool.query(userQuery, ['toha.barat', defaultPass, 'TOHA', 'AIPTU', '-', 'danregu', 3, 7]);
+    await pool.query(userQuery, ['alvin.barat', defaultPass, 'ALVIN', 'BRIPTU', '-', 'anggota', 3, 7]);
+    await pool.query(userQuery, ['nandi.barat', defaultPass, 'NANDI', 'AIPTU', '-', 'danregu', 3, 8]);
+    await pool.query(userQuery, ['adam.barat', defaultPass, 'ADAM', 'BRIPTU', '-', 'anggota', 3, 8]);
+    await pool.query(userQuery, ['indra.barat', defaultPass, 'INDRA', 'AIPDA', '-', 'danregu', 3, 9]);
+    await pool.query(userQuery, ['arizal.barat', defaultPass, 'ARIZAL', 'BRIPDA', '-', 'anggota', 3, 9]);
 
-    // Kanit Gakkum
-    await connection.query(`INSERT INTO users (username, password, nama_lengkap, pangkat, nrp, role) VALUES
-      ('fiekry.adi', ?, 'FIEKRY ADI PERDANA, S.I.Kom.', 'AKP', '-', 'kanit')
-    `, [defaultPass]);
-
-    // Bamin Gakkum (no subnit - staff)
-    await connection.query(`INSERT INTO users (username, password, nama_lengkap, pangkat, nrp, role) VALUES
-      ('agret.devia', ?, 'AGRET DEVIA PRATIWI PUTRI', 'BRIPTU', '-', 'bamin'),
-      ('mutiara.maulina', ?, 'MUTIARA MAULINA DEWI', 'BRIPDA', '-', 'bamin')
-    `, [defaultPass, defaultPass]);
-
-    // Kasubnit I (Subnit Timur: id=1) — manages Timur
-    await connection.query(`INSERT INTO users (username, password, nama_lengkap, pangkat, nrp, role, subnit_id) VALUES
-      ('sucipto.ari', ?, 'SUCIPTO ARI WARDANI, S.A.P., M.A.P.', 'IPDA', '-', 'kasubnit', 1)
-    `, [defaultPass]);
-
-    // Kasubnit II (Subnit Barat: id=3) — manages Barat
-    await connection.query(`INSERT INTO users (username, password, nama_lengkap, pangkat, nrp, role, subnit_id) VALUES
-      ('sari.wulandari', ?, 'SARI WULANDARI A., S.H., CPHR.', 'IPDA', '-', 'kasubnit', 3)
-    `, [defaultPass]);
-
-    // ---- SUBNIT TIMUR (subnit_id=1) ----
-    // Regu 1 Timur (regu_id=1)
-    await connection.query(`INSERT INTO users (username, password, nama_lengkap, pangkat, nrp, role, subnit_id, regu_id) VALUES
-      ('watchid.khomarudin', ?, 'WATCHID KHOMARUDIN', 'AIPDA', '-', 'danregu', 1, 1),
-      ('dani.timur', ?, 'DANI', 'AIPDA', '-', 'anggota', 1, 1)
-    `, [defaultPass, defaultPass]);
-    // Regu 2 Timur (regu_id=2)
-    await connection.query(`INSERT INTO users (username, password, nama_lengkap, pangkat, nrp, role, subnit_id, regu_id) VALUES
-      ('ganepa.cahya', ?, 'GANEPA CAHYA FIRDAUS, S.H.', 'BRIPKA', '-', 'danregu', 1, 2),
-      ('bambang.timur', ?, 'BAMBANG', 'AIPDA', '-', 'anggota', 1, 2)
-    `, [defaultPass, defaultPass]);
-    // Regu 3 Timur (regu_id=3)
-    await connection.query(`INSERT INTO users (username, password, nama_lengkap, pangkat, nrp, role, subnit_id, regu_id) VALUES
-      ('ibnu.narowi', ?, 'IBNU NAROWI, S.H.', 'AIPTU', '-', 'danregu', 1, 3)
-    `, [defaultPass]);
-
-    // ---- SUBNIT TENGAH (subnit_id=2) ----
-    // Regu 1 Tengah (regu_id=4)
-    await connection.query(`INSERT INTO users (username, password, nama_lengkap, pangkat, nrp, role, subnit_id, regu_id) VALUES
-      ('siegit.dwi', ?, 'SIEGIT DWI HARYANTO, S.H.', 'AIPDA', '-', 'danregu', 2, 4),
-      ('franciskus.goktua', ?, 'FRANCISKUS GOKTUA S', 'BRIPKA', '-', 'anggota', 2, 4)
-    `, [defaultPass, defaultPass]);
-    // Regu 2 Tengah (regu_id=5)
-    await connection.query(`INSERT INTO users (username, password, nama_lengkap, pangkat, nrp, role, subnit_id, regu_id) VALUES
-      ('adi.tengah', ?, 'ADI', 'AIPTU', '-', 'danregu', 2, 5),
-      ('yanuar.tengah', ?, 'YANUAR', 'BRIPDA', '-', 'anggota', 2, 5)
-    `, [defaultPass, defaultPass]);
-    // Regu 3 Tengah (regu_id=6)
-    await connection.query(`INSERT INTO users (username, password, nama_lengkap, pangkat, nrp, role, subnit_id, regu_id) VALUES
-      ('ruhinda.tengah', ?, 'RUHINDA', 'AIPTU', '-', 'danregu', 2, 6),
-      ('raja.putra', ?, 'RAJA PUTRA PERDANA', 'BRIPDA', '-', 'anggota', 2, 6)
-    `, [defaultPass, defaultPass]);
-
-    // ---- SUBNIT BARAT (subnit_id=3) ----
-    // Regu 1 Barat (regu_id=7)
-    await connection.query(`INSERT INTO users (username, password, nama_lengkap, pangkat, nrp, role, subnit_id, regu_id) VALUES
-      ('toha.barat', ?, 'TOHA', 'AIPTU', '-', 'danregu', 3, 7),
-      ('alvin.barat', ?, 'ALVIN', 'BRIPTU', '-', 'anggota', 3, 7)
-    `, [defaultPass, defaultPass]);
-    // Regu 2 Barat (regu_id=8)
-    await connection.query(`INSERT INTO users (username, password, nama_lengkap, pangkat, nrp, role, subnit_id, regu_id) VALUES
-      ('nandi.barat', ?, 'NANDI', 'AIPTU', '-', 'danregu', 3, 8),
-      ('adam.barat', ?, 'ADAM', 'BRIPTU', '-', 'anggota', 3, 8)
-    `, [defaultPass, defaultPass]);
-    // Regu 3 Barat (regu_id=9)
-    await connection.query(`INSERT INTO users (username, password, nama_lengkap, pangkat, nrp, role, subnit_id, regu_id) VALUES
-      ('indra.barat', ?, 'INDRA', 'AIPDA', '-', 'danregu', 3, 9),
-      ('arizal.barat', ?, 'ARIZAL', 'BRIPDA', '-', 'anggota', 3, 9)
-    `, [defaultPass, defaultPass]);
-
-    console.log("✅ Seed: All personnel inserted (24 users).");
-
-    // ============================================================
-    // SEED: Hari Libur Nasional Indonesia 2026
-    // ============================================================
-    await connection.query(`INSERT INTO holidays (tanggal, nama, jenis, tahun) VALUES
+    await pool.query(`INSERT INTO holidays (tanggal, nama, jenis, tahun) VALUES
       ('2026-01-01', 'Tahun Baru Masehi', 'libur_nasional', 2026),
       ('2026-01-29', 'Tahun Baru Imlek 2577', 'libur_nasional', 2026),
-      ('2026-03-22', 'Isra Mi''raj Nabi Muhammad SAW', 'libur_nasional', 2026),
+      ('2026-03-22', 'Isra Miraj Nabi Muhammad SAW', 'libur_nasional', 2026),
       ('2026-03-29', 'Hari Suci Nyepi (Tahun Baru Saka 1948)', 'libur_nasional', 2026),
       ('2026-04-03', 'Wafat Isa Al-Masih', 'libur_nasional', 2026),
       ('2026-05-01', 'Hari Buruh Internasional', 'libur_nasional', 2026),
@@ -372,49 +274,15 @@ async function initializeDB() {
       ('2026-07-07', 'Tahun Baru Islam 1448 Hijriyah', 'libur_nasional', 2026),
       ('2026-08-17', 'Hari Kemerdekaan RI', 'libur_nasional', 2026),
       ('2026-09-15', 'Maulid Nabi Muhammad SAW', 'libur_nasional', 2026),
-      ('2026-12-25', 'Hari Raya Natal', 'libur_nasional', 2026),
-      ('2026-01-30', 'Cuti Bersama Tahun Baru Imlek', 'cuti_bersama', 2026),
-      ('2026-03-30', 'Cuti Bersama Nyepi', 'cuti_bersama', 2026),
-      ('2026-04-04', 'Cuti Bersama Wafat Isa Al-Masih', 'cuti_bersama', 2026),
-      ('2026-05-15', 'Cuti Bersama Kenaikan Isa Al-Masih', 'cuti_bersama', 2026),
-      ('2026-06-18', 'Cuti Bersama Idul Adha', 'cuti_bersama', 2026),
-      ('2026-06-19', 'Cuti Bersama Idul Adha', 'cuti_bersama', 2026),
-      ('2026-12-24', 'Cuti Bersama Natal', 'cuti_bersama', 2026),
-      ('2026-12-26', 'Cuti Bersama Natal', 'cuti_bersama', 2026)
+      ('2026-12-25', 'Hari Raya Natal', 'libur_nasional', 2026)
     `);
-    console.log("✅ Seed: Hari Libur Nasional Indonesia 2026 inserted (22 entries).");
 
-    // ============================================================
-    // SEED: SOP Documents
-    // ============================================================
-    await connection.query(`INSERT INTO sop_documents (judul, kategori, konten, urutan, created_by) VALUES
-      ('SOP Piket Reguler Harian', 'piket_reguler', '## SOP Piket Reguler Harian\\n\\n### A. Persiapan Piket\\n1. Personel piket hadir 15 menit sebelum pergantian shift\\n2. Melakukan pengecekan kelengkapan:\\n   - Surat perintah piket\\n   - Buku mutasi\\n   - Alat komunikasi (HT/HP)\\n   - Kendaraan dinas\\n   - Kelengkapan tilang\\n3. Melaporkan kesiapan kepada Danregu\\n\\n### B. Pelaksanaan Piket\\n1. Melaksanakan patroli sesuai zona yang ditentukan\\n2. Melakukan pengawasan dan penindakan pelanggaran lalu lintas\\n3. Membuat laporan setiap kejadian/kegiatan\\n4. Berkoordinasi dengan regu lain jika diperlukan\\n5. Menjaga komunikasi dengan Danregu/Kasubnit\\n\\n### C. Akhir Piket\\n1. Membuat resume kegiatan selama shift\\n2. Melimpahkan tugas yang belum selesai ke shift berikutnya\\n3. Menyerahkan kelengkapan piket\\n4. Melaporkan hasil piket kepada Danregu', 1, 2),
-
-      ('SOP Siaga Wiken & Hari Libur Nasional', 'siaga_wiken', '## SOP Siaga Wiken & Hari Libur Nasional\\n\\n### A. Persiapan Siaga\\n1. Kanit/Kasubnit menentukan personel siaga minimal 3 hari sebelum weekend/libur\\n2. Personel wajib melakukan checkin digital melalui E-PIKPOR\\n3. Penguatan personel di setiap zona minimal 2 anggota per shift\\n4. Koordinasi dengan Kaur Bin Ops terkait situasi khusus\\n\\n### B. Pelaksanaan Siaga\\n1. Personel standby sesuai jadwal yang telah ditentukan\\n2. Intensifkan patroli di titik-titik rawan\\n3. Siaga di lokasi keramaian (mall, tempat wisata, jalur utama)\\n4. Laporan berkala setiap 2 jam kepada Danregu\\n5. Dokumentasi kegiatan dengan foto\\n\\n### C. Penanganan Kejadian\\n1. Segera laporkan kejadian melalui E-PIKPOR\\n2. Koordinasi dengan unit terkait jika diperlukan\\n3. Tindak lanjut sesuai prosedur\\n4. Estafet laporan ke shift berikutnya jika belum selesai\\n\\n### D. Selesai Siaga\\n1. Resume kegiatan selama siaga wiken\\n2. Evaluasi pelaksanaan siaga\\n3. Laporan akhir kepada Kanit Gakkum', 2, 2),
-
-      ('SOP Pelimpahan Tugas Antar-Regu', 'pelimpahan', '## SOP Pelimpahan Tugas Antar-Regu (Estafet)\\n\\n### A. Syarat Pelimpahan\\n1. Tugas/kejadian yang belum terselesaikan dalam satu shift\\n2. Memerlukan tindak lanjut oleh regu shift berikutnya\\n3. Danregu pengirim wajib memberikan catatan lengkap\\n\\n### B. Prosedur Pelimpahan\\n1. Danregu membuka fitur Estafet di E-PIKPOR\\n2. Pilih laporan yang akan dilimpahkan\\n3. Pilih regu/shift penerima\\n4. Isi catatan pelimpahan (kronologi, progress, hal yang perlu ditindaklanjuti)\\n5. Kirim pelimpahan\\n\\n### C. Penerimaan Pelimpahan\\n1. Danregu penerima menerima notifikasi\\n2. Review detail laporan dan catatan pelimpahan\\n3. Terima atau Tolak pelimpahan\\n4. Jika diterima, lanjutkan penanganan\\n5. Update status laporan setelah selesai\\n\\n### D. Pelaporan\\n1. Catat hasil tindak lanjut di laporan\\n2. Update status menjadi SELESAI jika tuntas\\n3. Limpahkan kembali jika masih perlu tindak lanjut', 3, 2),
-
-      ('SOP Penindakan Gakkum Lalu Lintas', 'gakkum', '## SOP Penindakan Gakkum Lalu Lintas\\n\\n### A. Tilang\\n1. Identifikasi pelanggaran lalu lintas\\n2. Hentikan kendaraan pelanggar\\n3. Periksa kelengkapan surat kendaraan dan SIM\\n4. Catat jenis pelanggaran dan pasal yang dilanggar\\n5. Terbitkan surat tilang\\n6. Input data ke E-PIKPOR dengan kategori TILANG\\n\\n### B. Penderekan\\n1. Identifikasi kendaraan yang parkir melanggar\\n2. Dokumentasi foto sebelum penderekan\\n3. Koordinasi dengan unit derek\\n4. Catat data kendaraan\\n5. Input ke E-PIKPOR dengan kategori PENDEREKAN\\n\\n### C. Razia\\n1. Persiapkan lokasi dan personel sesuai Surat Perintah\\n2. Koordinasi dengan unit terkait\\n3. Laksanakan razia sesuai prosedur\\n4. Dokumentasi seluruh kegiatan\\n5. Rekap hasil razia\\n6. Input ke E-PIKPOR dengan kategori RAZIA\\n\\n### D. Laka Lantas\\n1. Amankan TKP\\n2. Bantu korban jika ada\\n3. Dokumentasi dan olah TKP\\n4. Buat laporan kejadian\\n5. Input ke E-PIKPOR dengan kategori LAKA LANTAS', 4, 2)
-    `);
-    console.log("✅ Seed: 4 SOP Documents inserted.");
-
-    // ============================================================
-    // Done
-    // ============================================================
-    console.log("\n===========================================");
-    console.log("  ✅ Database E-PIKPOR Initialized!");
-    console.log("  📊 Tables: 12");
-    console.log("  👥 Users: 24 personel");
-    console.log("  📅 Holidays: 22 entries (2026)");
-    console.log("  📑 SOP: 4 documents");
-    console.log("===========================================");
-    console.log("\n🔑 Login Admin: admin / admin123");
-    console.log("🔑 Login Lainnya: [username] / epikpor2026\n");
+    console.log("✅ Database initialized for PostgreSQL!");
 
   } catch (error) {
     console.error("❌ Error initializing database:", error);
   } finally {
-    await connection.end();
+    await pool.end();
   }
 }
 

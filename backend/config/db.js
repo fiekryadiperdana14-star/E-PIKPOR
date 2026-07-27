@@ -1,15 +1,44 @@
-const mysql = require('mysql2');
+const { Pool } = require('pg');
 
-const connection = mysql.createPool({
+const poolConfig = process.env.DATABASE_URL ? {
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false }
+} : {
   host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 3306,
-  user: process.env.DB_USER || 'root',
+  port: process.env.DB_PORT || 5432,
+  user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || '',
   database: process.env.DB_NAME || 'e_pikpor_db',
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
   ssl: process.env.DB_SSL_MODE === 'REQUIRED' ? { rejectUnauthorized: false } : undefined
-});
+};
 
-module.exports = connection.promise();
+const pool = new Pool(poolConfig);
+
+const queryWrapper = async (sql, params) => {
+  let pgSql = sql;
+  
+  // Replace MySQL '?' placeholders with PostgreSQL '$1, $2'
+  if (params && params.length > 0) {
+    let i = 1;
+    pgSql = pgSql.replace(/\?/g, () => `$${i++}`);
+  }
+
+  const result = await pool.query(pgSql, params);
+  
+  // Mimic mysql2 response format
+  if (['INSERT', 'UPDATE', 'DELETE'].includes(result.command)) {
+    const resultHeader = {
+      affectedRows: result.rowCount,
+      insertId: result.rows.length > 0 ? result.rows[0].id : null
+    };
+    return [resultHeader, result.fields];
+  }
+  
+  return [result.rows, result.fields];
+};
+
+module.exports = {
+  query: queryWrapper,
+  pool,
+  end: () => pool.end()
+};

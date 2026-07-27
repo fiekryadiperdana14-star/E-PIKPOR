@@ -91,7 +91,7 @@ router.post('/', upload.array('foto', 5), async (req, res) => {
         const [result] = await db.query(
             `INSERT INTO reports (judul, lokasi, zona, shift, waktu_kejadian, deskripsi, 
              kategori_gakkum, tindakan, pasal_pelanggaran, foto, pelapor_id, status, is_wiken) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
             [judul, lokasi, zona, shift, waktu_kejadian, deskripsi, 
              kategori_gakkum || 'lainnya', tindakan || null, pasal_pelanggaran || null,
              fotoData, pelapor_id, 'pending', isWiken]

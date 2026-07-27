@@ -82,7 +82,7 @@ router.post('/', adminAuth, async (req, res) => {
     try {
         const { judul, kategori, konten, urutan } = req.body;
         const [result] = await db.query(
-            'INSERT INTO sop_documents (judul, kategori, konten, urutan, created_by) VALUES (?, ?, ?, ?, ?)',
+            'INSERT INTO sop_documents (judul, kategori, konten, urutan, created_by) VALUES (?, ?, ?, ?, ?) RETURNING id',
             [judul, kategori, konten, urutan || 0, req.user.id]
         );
         res.status(201).json({ message: 'SOP berhasil ditambahkan.', id: result.insertId });

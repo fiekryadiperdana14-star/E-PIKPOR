@@ -52,7 +52,7 @@ app.get('/api/stats', async (req, res) => {
         const [totalHandovers] = await db.query('SELECT COUNT(*) as count FROM handovers');
         const [pendingHandovers] = await db.query("SELECT COUNT(*) as count FROM handovers WHERE status_terima = 'menunggu'");
         const [totalPersonel] = await db.query("SELECT COUNT(*) as count FROM users WHERE is_active = TRUE AND role != 'admin'");
-        const [todayReports] = await db.query("SELECT COUNT(*) as count FROM reports WHERE DATE(created_at) = CURDATE()");
+        const [todayReports] = await db.query("SELECT COUNT(*) as count FROM reports WHERE created_at::DATE = CURRENT_DATE");
 
         // Check if today is weekend or holiday
         const today = new Date();
@@ -71,7 +71,7 @@ app.get('/api/stats', async (req, res) => {
         }
 
         // Today's schedule count
-        const [todaySchedule] = await db.query("SELECT COUNT(*) as count FROM duty_schedules WHERE tanggal = CURDATE()");
+        const [todaySchedule] = await db.query("SELECT COUNT(*) as count FROM duty_schedules WHERE tanggal = CURRENT_DATE");
 
         // Active siaga wiken
         const [activeSiaga] = await db.query("SELECT COUNT(*) as count FROM siaga_wiken WHERE status = 'active'");
@@ -80,7 +80,7 @@ app.get('/api/stats', async (req, res) => {
         const [zonaStats] = await db.query(`
             SELECT s.kode as zona, s.nama, COUNT(DISTINCT ds.user_id) as personel_aktif
             FROM subnit s
-            LEFT JOIN duty_schedules ds ON ds.subnit_id = s.id AND ds.tanggal = CURDATE()
+            LEFT JOIN duty_schedules ds ON ds.subnit_id = s.id AND ds.tanggal = CURRENT_DATE
             GROUP BY s.id, s.kode, s.nama
         `);
 
@@ -118,7 +118,14 @@ app.get('/api/org-chart', async (req, res) => {
             LEFT JOIN regu r ON u.regu_id = r.id
             WHERE u.role != 'admin'
             ORDER BY 
-                FIELD(u.role, 'kanit','kasubnit','bamin','danregu','anggota'),
+                CASE u.role 
+                    WHEN 'kanit' THEN 1 
+                    WHEN 'kasubnit' THEN 2 
+                    WHEN 'bamin' THEN 3 
+                    WHEN 'danregu' THEN 4 
+                    WHEN 'anggota' THEN 5 
+                    ELSE 6 
+                END,
                 s.id, r.id
         `);
         res.json(users);

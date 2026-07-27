@@ -54,7 +54,7 @@ router.get('/', verifyToken, async (req, res) => {
         const conditions = [];
 
         if (bulan && tahun) {
-            conditions.push('MONTH(ds.tanggal) = ? AND YEAR(ds.tanggal) = ?');
+            conditions.push('EXTRACT(MONTH FROM ds.tanggal) = ? AND EXTRACT(YEAR FROM ds.tanggal) = ?');
             params.push(parseInt(bulan), parseInt(tahun));
         }
         if (subnit_id) {
@@ -64,7 +64,13 @@ router.get('/', verifyToken, async (req, res) => {
         if (conditions.length > 0) {
             query += ' WHERE ' + conditions.join(' AND ');
         }
-        query += ' ORDER BY ds.tanggal ASC, FIELD(ds.shift, "Pagi","Sore","Malam")';
+        query += ` ORDER BY ds.tanggal ASC, 
+            CASE ds.shift 
+                WHEN 'Pagi' THEN 1 
+                WHEN 'Sore' THEN 2 
+                WHEN 'Malam' THEN 3 
+                ELSE 4 
+            END`;
 
         const [schedules] = await db.query(query, params);
         res.json(schedules);
@@ -84,8 +90,15 @@ router.get('/today', verifyToken, async (req, res) => {
             JOIN users u ON ds.user_id = u.id
             JOIN subnit s ON ds.subnit_id = s.id
             LEFT JOIN regu r ON ds.regu_id = r.id
-            WHERE ds.tanggal = CURDATE()
-            ORDER BY s.id, FIELD(ds.shift, 'Pagi','Sore','Malam'), u.nama_lengkap
+            WHERE ds.tanggal = CURRENT_DATE
+            ORDER BY s.id, 
+                CASE ds.shift 
+                    WHEN 'Pagi' THEN 1 
+                    WHEN 'Sore' THEN 2 
+                    WHEN 'Malam' THEN 3 
+                    ELSE 4 
+                END, 
+                u.nama_lengkap
         `);
         res.json(schedules);
     } catch (error) {
@@ -109,7 +122,7 @@ router.post('/', adminAuth, async (req, res) => {
 
         const [result] = await db.query(
             `INSERT INTO duty_schedules (tanggal, shift, user_id, subnit_id, regu_id, tipe, catatan, created_by) 
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
             [tanggal, shift, user_id, subnit_id, regu_id || null, tipe || 'reguler', catatan || null, req.user.id]
         );
 

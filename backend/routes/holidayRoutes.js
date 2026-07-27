@@ -84,7 +84,7 @@ router.post('/', adminAuth, async (req, res) => {
         }
 
         const [result] = await db.query(
-            'INSERT INTO holidays (tanggal, nama, jenis, tahun) VALUES (?, ?, ?, ?)',
+            'INSERT INTO holidays (tanggal, nama, jenis, tahun) VALUES (?, ?, ?, ?) RETURNING id',
             [tanggal, nama, jenis || 'libur_nasional', tahun]
         );
         res.status(201).json({ message: 'Hari libur berhasil ditambahkan.', id: result.insertId });
