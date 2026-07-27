@@ -1,0 +1,140 @@
+<div class="container-fluid px-0">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 animate-fade-in-up">
+        <div>
+            <h2 class="page-title mb-1"><i class="bi bi-journal-check"></i> SOP Digital</h2>
+            <small class="text-muted">Standar Operasional Prosedur Unit Gakkum</small>
+        </div>
+        <button class="btn btn-primary btn-sm" ng-click="openCreateSOP()" 
+                ng-if="user.role === 'admin' || user.role === 'kanit'">
+            <i class="bi bi-plus-lg me-1"></i>Tambah SOP
+        </button>
+    </div>
+
+    <!-- Filter -->
+    <div class="glass-card-static animate-fade-in-up mb-4" style="padding: 1rem 1.25rem;">
+        <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-sm" ng-class="filterKategori === '' ? 'btn-primary' : 'btn-outline-secondary'" ng-click="filterKategori = ''; loadSOPs()">Semua</button>
+            <button class="btn btn-sm" ng-class="filterKategori === 'piket_reguler' ? 'btn-primary' : 'btn-outline-secondary'" ng-click="filterKategori = 'piket_reguler'; loadSOPs()">Piket Reguler</button>
+            <button class="btn btn-sm" ng-class="filterKategori === 'siaga_wiken' ? 'btn-primary' : 'btn-outline-secondary'" ng-click="filterKategori = 'siaga_wiken'; loadSOPs()">Siaga Wiken</button>
+            <button class="btn btn-sm" ng-class="filterKategori === 'pelimpahan' ? 'btn-primary' : 'btn-outline-secondary'" ng-click="filterKategori = 'pelimpahan'; loadSOPs()">Pelimpahan</button>
+            <button class="btn btn-sm" ng-class="filterKategori === 'gakkum' ? 'btn-primary' : 'btn-outline-secondary'" ng-click="filterKategori = 'gakkum'; loadSOPs()">Gakkum</button>
+        </div>
+    </div>
+
+    <!-- SOP Cards -->
+    <div class="row g-3">
+        <div class="col-md-6 animate-fade-in-up" ng-repeat="sop in sops">
+            <div class="sop-card" ng-click="viewSOP(sop)">
+                <div class="sop-card-header">
+                    <div class="sop-icon" ng-class="{
+                        'sop-icon-piket': sop.kategori==='piket_reguler',
+                        'sop-icon-siaga': sop.kategori==='siaga_wiken',
+                        'sop-icon-estafet': sop.kategori==='pelimpahan',
+                        'sop-icon-gakkum': sop.kategori==='gakkum',
+                        'sop-icon-umum': sop.kategori==='umum'
+                    }">
+                        <i class="bi" ng-class="{
+                            'bi-clipboard-check': sop.kategori==='piket_reguler',
+                            'bi-shield-exclamation': sop.kategori==='siaga_wiken',
+                            'bi-arrow-left-right': sop.kategori==='pelimpahan',
+                            'bi-badge-cc': sop.kategori==='gakkum',
+                            'bi-journal': sop.kategori==='umum'
+                        }"></i>
+                    </div>
+                    <div class="sop-info">
+                        <h6 class="mb-1">{{ sop.judul }}</h6>
+                        <span class="badge-status badge-dilimpahkan" style="font-size:0.65rem;">{{ sop.kategori | uppercase }}</span>
+                    </div>
+                </div>
+                <div class="sop-card-footer">
+                    <small class="text-muted">
+                        <i class="bi bi-person me-1"></i>{{ sop.created_by_nama || 'System' }}
+                    </small>
+                    <small class="text-muted">
+                        <i class="bi bi-calendar me-1"></i>{{ sop.updated_at | date:'dd MMM yyyy' }}
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="empty-state animate-fade-in-up" ng-if="sops.length === 0">
+        <i class="bi bi-journal-x"></i>
+        <p>Belum ada SOP tersedia.</p>
+    </div>
+</div>
+
+<!-- View SOP Modal -->
+<div class="modal fade" id="sopViewModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content glass-modal">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-journal-check text-primary me-2"></i>{{ selectedSOP.judul }}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3 d-flex gap-2">
+                    <span class="badge-status badge-dilimpahkan">{{ selectedSOP.kategori | uppercase }}</span>
+                    <small class="text-muted">Diperbarui: {{ selectedSOP.updated_at | date:'dd MMM yyyy HH:mm' }}</small>
+                </div>
+                <div class="sop-content" ng-bind-html="renderSOP(selectedSOP.konten)"></div>
+            </div>
+            <div class="modal-footer border-top-0">
+                <button type="button" class="btn btn-outline-warning btn-sm" ng-click="editSOP(selectedSOP)" 
+                        ng-if="user.role === 'admin' || user.role === 'kanit'">
+                    <i class="bi bi-pencil me-1"></i>Edit
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create/Edit SOP Modal -->
+<div class="modal fade" id="sopFormModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content glass-modal">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi me-2" ng-class="isEditingSOP ? 'bi-pencil-square text-warning' : 'bi-plus-circle text-primary'"></i>
+                    {{ isEditingSOP ? 'Edit SOP' : 'Tambah SOP Baru' }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form ng-submit="saveSOP()" id="formSOP">
+                    <div class="mb-3">
+                        <label class="form-label">Judul SOP</label>
+                        <input type="text" class="form-control" ng-model="sopForm.judul" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Kategori</label>
+                            <select class="form-select" ng-model="sopForm.kategori" required>
+                                <option value="piket_reguler">Piket Reguler</option>
+                                <option value="siaga_wiken">Siaga Wiken</option>
+                                <option value="pelimpahan">Pelimpahan</option>
+                                <option value="gakkum">Gakkum</option>
+                                <option value="umum">Umum</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Urutan</label>
+                            <input type="number" class="form-control" ng-model="sopForm.urutan" min="0">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Konten SOP</label>
+                        <textarea class="form-control" rows="12" ng-model="sopForm.konten" required 
+                                  placeholder="Tulis konten SOP..."></textarea>
+                        <small class="text-muted">Gunakan format teks biasa. Pisahkan bagian dengan baris kosong.</small>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

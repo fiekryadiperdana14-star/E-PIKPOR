@@ -1,0 +1,195 @@
+<div class="container-fluid px-0">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 animate-fade-in-up">
+        <div>
+            <h2 class="page-title mb-1"><i class="bi bi-calendar3"></i> Jadwal Piket</h2>
+            <small class="text-muted">Penjadwalan rotasi piket Unit Gakkum</small>
+        </div>
+        <div class="d-flex gap-2" ng-if="user.role === 'admin' || user.role === 'kanit' || user.role === 'kasubnit'">
+            <button class="btn btn-outline-secondary btn-sm" ng-click="generateSchedule()">
+                <i class="bi bi-magic me-1"></i>Auto Generate
+            </button>
+            <button class="btn btn-primary btn-sm" ng-click="openAddSchedule()">
+                <i class="bi bi-plus-lg me-1"></i>Tambah Jadwal
+            </button>
+        </div>
+    </div>
+
+    <!-- Month Navigator -->
+    <div class="glass-card-static animate-fade-in-up mb-4" style="padding: 1rem 1.25rem;">
+        <div class="d-flex justify-content-between align-items-center">
+            <button class="btn btn-outline-secondary btn-sm" ng-click="prevMonth()"><i class="bi bi-chevron-left"></i></button>
+            <h5 class="mb-0 fw-bold">{{ monthNames[selectedMonth-1] }} {{ selectedYear }}</h5>
+            <button class="btn btn-outline-secondary btn-sm" ng-click="nextMonth()"><i class="bi bi-chevron-right"></i></button>
+        </div>
+    </div>
+
+    <!-- Calendar Grid -->
+    <div class="glass-card-static animate-fade-in-up mb-4">
+        <div class="calendar-grid">
+            <div class="cal-header" ng-repeat="d in dayNames">{{ d }}</div>
+            <div class="cal-day" ng-repeat="day in calendarDays" 
+                 ng-class="{
+                    'cal-today': day.isToday, 
+                    'cal-weekend': day.isWeekend, 
+                    'cal-holiday': day.isHoliday,
+                    'cal-empty': !day.date,
+                    'cal-has-schedule': day.scheduleCount > 0
+                 }"
+                 ng-click="day.date && selectDate(day)">
+                <span class="cal-date" ng-if="day.date">{{ day.day }}</span>
+                <div class="cal-badges" ng-if="day.date">
+                    <span class="cal-badge cal-badge-siaga" ng-if="day.isWeekend || day.isHoliday" title="Siaga Wiken">SW</span>
+                    <span class="cal-badge cal-badge-count" ng-if="day.scheduleCount > 0">{{ day.scheduleCount }}</span>
+                </div>
+                <small class="cal-holiday-name" ng-if="day.holidayName">{{ day.holidayName | limitTo:12 }}</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Selected Date Detail -->
+    <div class="glass-card-static animate-fade-in-up" ng-if="selectedDateSchedules.length > 0">
+        <div class="section-title"><i class="bi bi-calendar-day"></i> Jadwal — {{ selectedDateStr }}</div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Shift</th>
+                        <th>Personel</th>
+                        <th>Subnit</th>
+                        <th>Regu</th>
+                        <th>Tipe</th>
+                        <th>Status</th>
+                        <th ng-if="user.role === 'admin' || user.role === 'kanit'">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="s in selectedDateSchedules">
+                        <td data-label="Shift">
+                            <span class="badge" ng-class="{'bg-warning text-dark': s.shift==='Pagi', 'bg-info': s.shift==='Sore', 'bg-dark': s.shift==='Malam'}">
+                                <i class="bi" ng-class="{'bi-sunrise': s.shift==='Pagi', 'bi-sun': s.shift==='Sore', 'bi-moon-stars': s.shift==='Malam'}"></i>
+                                {{ s.shift }}
+                            </span>
+                        </td>
+                        <td data-label="Personel"><strong>{{ s.pangkat }}</strong> {{ s.nama_lengkap }}</td>
+                        <td data-label="Subnit"><span class="badge bg-dark bg-opacity-50">{{ s.subnit_nama }}</span></td>
+                        <td data-label="Regu">{{ s.regu_nama || '-' }}</td>
+                        <td data-label="Tipe">
+                            <span class="badge-status" ng-class="{
+                                'badge-pending': s.tipe==='reguler',
+                                'badge-dilimpahkan': s.tipe==='wiken',
+                                'badge-selesai': s.tipe==='libur_nasional'
+                            }">{{ s.tipe | uppercase }}</span>
+                        </td>
+                        <td data-label="Status">
+                            <span class="badge-status" ng-class="{
+                                'badge-pending': s.status==='dijadwalkan',
+                                'badge-selesai': s.status==='hadir',
+                                'badge-ditolak': s.status==='tidak_hadir'
+                            }">{{ s.status | uppercase }}</span>
+                        </td>
+                        <td ng-if="user.role === 'admin' || user.role === 'kanit'">
+                            <button class="btn btn-sm btn-outline-danger" ng-click="deleteSchedule(s.id)">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="glass-card-static animate-fade-in-up" ng-if="selectedDateStr && selectedDateSchedules.length === 0">
+        <div class="empty-state" style="padding: 2rem;">
+            <i class="bi bi-calendar-x" style="font-size:2.5rem;"></i>
+            <p>Belum ada jadwal piket untuk tanggal {{ selectedDateStr }}.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Add Schedule Modal -->
+<div class="modal fade" id="addScheduleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-modal">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-calendar-plus text-primary me-2"></i>Tambah Jadwal Piket</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form ng-submit="saveSchedule()" id="formSchedule">
+                    <div class="mb-3">
+                        <label class="form-label">Tanggal</label>
+                        <input type="date" class="form-control" id="schedTanggal" ng-model="schedForm.tanggal" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Shift</label>
+                        <select class="form-select" ng-model="schedForm.shift" required>
+                            <option value="">— Pilih Shift —</option>
+                            <option value="Pagi">Pagi (06:00-14:00)</option>
+                            <option value="Sore">Sore (14:00-22:00)</option>
+                            <option value="Malam">Malam (22:00-06:00)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Personel</label>
+                        <select class="form-select" ng-model="schedForm.user_id" required>
+                            <option value="">— Pilih Personel —</option>
+                            <option ng-repeat="p in allPersonel" value="{{p.id}}">{{ p.pangkat }} {{ p.nama_lengkap }} ({{ p.subnit_nama || '-' }})</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Subnit</label>
+                        <select class="form-select" ng-model="schedForm.subnit_id" required>
+                            <option value="">— Pilih Subnit —</option>
+                            <option ng-repeat="s in subnitList" value="{{s.id}}">{{ s.nama }}</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tipe</label>
+                        <select class="form-select" ng-model="schedForm.tipe">
+                            <option value="reguler">Reguler</option>
+                            <option value="wiken">Wiken</option>
+                            <option value="libur_nasional">Libur Nasional</option>
+                            <option value="khusus">Khusus</option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Generate Schedule Modal -->
+<div class="modal fade" id="generateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-modal">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-magic text-primary me-2"></i>Generate Jadwal Otomatis</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted small">Sistem akan otomatis membuat jadwal piket berdasarkan rotasi regu yang tersedia.</p>
+                <form ng-submit="submitGenerate()" id="formGenerate">
+                    <div class="mb-3">
+                        <label class="form-label">Tanggal Mulai</label>
+                        <input type="date" class="form-control" ng-model="genForm.tanggal_mulai" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tanggal Selesai</label>
+                        <input type="date" class="form-control" ng-model="genForm.tanggal_selesai" required>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary" ng-disabled="isGenerating">
+                            <span ng-if="isGenerating" class="spinner-border spinner-border-sm me-1"></span>
+                            {{ isGenerating ? 'Generating...' : 'Generate Jadwal' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

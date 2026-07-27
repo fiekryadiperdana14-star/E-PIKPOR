@@ -1,0 +1,219 @@
+<div class="container-fluid px-0">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 animate-fade-in-up">
+        <div>
+            <h2 class="page-title mb-1"><i class="bi bi-people"></i> Manajemen Akun</h2>
+            <small class="text-muted">Kelola personel Unit Gakkum</small>
+        </div>
+        <button class="btn btn-primary btn-sm" ng-click="openCreateModal()" id="btnTambahAkun">
+            <i class="bi bi-person-plus me-1"></i>Tambah Akun
+        </button>
+    </div>
+
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-2 animate-fade-in-up">
+            <div class="stat-card stat-blue" style="padding:1rem;text-align:center;">
+                <div class="stat-value" style="font-size:1.5rem;">{{ userStats.total }}</div>
+                <div class="stat-label">Total</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-2 animate-fade-in-up">
+            <div class="stat-card stat-purple" style="padding:1rem;text-align:center;">
+                <div class="stat-value" style="font-size:1.5rem;">{{ userStats.kanit + userStats.kasubnit }}</div>
+                <div class="stat-label">Pimpinan</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-2 animate-fade-in-up">
+            <div class="stat-card stat-yellow" style="padding:1rem;text-align:center;">
+                <div class="stat-value" style="font-size:1.5rem;">{{ userStats.danregu }}</div>
+                <div class="stat-label">Danregu</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-2 animate-fade-in-up">
+            <div class="stat-card stat-green" style="padding:1rem;text-align:center;">
+                <div class="stat-value" style="font-size:1.5rem;">{{ userStats.anggota }}</div>
+                <div class="stat-label">Anggota</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="glass-card-static mb-4 animate-fade-in-up" style="padding: 1rem 1.25rem;">
+        <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control" placeholder="Cari personel..." ng-model="searchQuery" id="searchPersonel">
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <div class="glass-card-static animate-fade-in-up">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" id="tabelUsers">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Personel</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Subnit / Regu</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="u in allUsers | filter:searchQuery | startFrom:(currentPage-1)*pageSize | limitTo:pageSize track by u.id">
+                        <td data-label="No">{{ (currentPage-1)*pageSize + $index + 1 }}</td>
+                        <td data-label="Personel">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="user-avatar" ng-class="{
+                                    'avatar-admin': u.role === 'admin',
+                                    'avatar-danregu': u.role === 'kanit' || u.role === 'kasubnit' || u.role === 'danregu',
+                                    'avatar-anggota': u.role === 'anggota' || u.role === 'bamin'
+                                }">
+                                    <i class="bi" ng-class="{
+                                        'bi-shield-fill': u.role === 'admin',
+                                        'bi-star-fill': u.role === 'kanit' || u.role === 'kasubnit',
+                                        'bi-person-badge-fill': u.role === 'danregu',
+                                        'bi-person-fill': u.role === 'anggota' || u.role === 'bamin'
+                                    }"></i>
+                                </div>
+                                <div>
+                                    <strong>{{ u.pangkat }} {{ u.nama_lengkap }}</strong>
+                                    <small class="d-block text-muted" ng-if="u.nrp">NRP: {{ u.nrp }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td data-label="Username"><code style="color:var(--primary-light);">{{ u.username }}</code></td>
+                        <td data-label="Role">
+                            <span class="badge-status" ng-class="{
+                                'badge-role-admin': u.role === 'admin',
+                                'badge-role-danregu': u.role === 'kanit' || u.role === 'kasubnit' || u.role === 'danregu',
+                                'badge-role-anggota': u.role === 'anggota' || u.role === 'bamin'
+                            }">{{ u.role | uppercase }}</span>
+                        </td>
+                        <td data-label="Subnit">
+                            <span ng-if="u.subnit_nama" class="badge bg-dark bg-opacity-50 me-1">{{ u.subnit_nama }}</span>
+                            <span ng-if="u.regu_nama" class="badge bg-dark bg-opacity-50">{{ u.regu_nama }}</span>
+                            <span ng-if="!u.subnit_nama && !u.regu_nama" class="text-muted">—</span>
+                        </td>
+                        <td data-label="Status">
+                            <span class="badge" ng-class="u.is_active ? 'bg-success bg-opacity-25 text-success' : 'bg-danger bg-opacity-25 text-danger'">
+                                {{ u.is_active ? 'Aktif' : 'Nonaktif' }}
+                            </span>
+                        </td>
+                        <td data-label="Aksi">
+                            <div class="d-flex gap-1">
+                                <button class="btn btn-sm btn-outline-info" ng-click="openEditModal(u)"><i class="bi bi-pencil"></i></button>
+                                <button class="btn btn-sm btn-outline-danger" ng-click="deleteUser(u)" ng-if="u.id !== currentUser.id"><i class="bi bi-trash3"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="d-flex justify-content-between align-items-center mt-3" ng-if="(allUsers | filter:searchQuery).length > pageSize">
+            <small class="text-muted">Hal. {{ currentPage }}</small>
+            <div class="btn-group">
+                <button class="btn btn-sm btn-outline-secondary" ng-disabled="currentPage == 1" ng-click="currentPage = currentPage - 1"><i class="bi bi-chevron-left"></i></button>
+                <button class="btn btn-sm btn-outline-secondary" ng-disabled="currentPage >= (allUsers | filter:searchQuery).length/pageSize" ng-click="currentPage = currentPage + 1"><i class="bi bi-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- User Modal -->
+<div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content glass-modal">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi me-2" ng-class="isEditing ? 'bi-pencil-square text-warning' : 'bi-person-plus text-primary'"></i>
+                    {{ isEditing ? 'Edit Akun' : 'Tambah Akun Baru' }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form ng-submit="saveUser()" id="formUser">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nama Lengkap</label>
+                            <input type="text" class="form-control" ng-model="formData.nama_lengkap" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control" ng-model="formData.username" required>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Password {{ isEditing ? '(kosongkan jika tidak diubah)' : '' }}</label>
+                            <input type="password" class="form-control" ng-model="formData.password" ng-required="!isEditing">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Role</label>
+                            <select class="form-select" ng-model="formData.role" required>
+                                <option value="">— Pilih Role —</option>
+                                <option value="admin">Admin</option>
+                                <option value="kanit">Kanit</option>
+                                <option value="kasubnit">Kasubnit</option>
+                                <option value="bamin">Bamin</option>
+                                <option value="danregu">Danregu</option>
+                                <option value="anggota">Anggota</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Pangkat</label>
+                            <select class="form-select" ng-model="formData.pangkat">
+                                <option value="">— Pilih —</option>
+                                <option value="AKBP">AKBP</option>
+                                <option value="KOMPOL">KOMPOL</option>
+                                <option value="AKP">AKP</option>
+                                <option value="IPTU">IPTU</option>
+                                <option value="IPDA">IPDA</option>
+                                <option value="AIPTU">AIPTU</option>
+                                <option value="AIPDA">AIPDA</option>
+                                <option value="BRIPKA">BRIPKA</option>
+                                <option value="BRIGADIR">BRIGADIR</option>
+                                <option value="BRIPTU">BRIPTU</option>
+                                <option value="BRIPDA">BRIPDA</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">NRP</label>
+                            <input type="text" class="form-control" ng-model="formData.nrp" placeholder="Opsional">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">No. HP</label>
+                            <input type="text" class="form-control" ng-model="formData.no_hp" placeholder="Opsional">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Subnit</label>
+                            <select class="form-select" ng-model="formData.subnit_id">
+                                <option value="">— Tidak ada —</option>
+                                <option ng-repeat="s in subnitList" value="{{s.id}}">{{ s.nama }}</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Regu</label>
+                            <select class="form-select" ng-model="formData.regu_id">
+                                <option value="">— Tidak ada —</option>
+                                <option ng-repeat="r in getFilteredRegu()" value="{{r.id}}">{{ r.nama }} ({{ r.subnit_nama }})</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary" ng-disabled="isSaving">
+                            <span ng-if="isSaving" class="spinner-border spinner-border-sm me-1"></span>
+                            {{ isEditing ? 'Simpan Perubahan' : 'Buat Akun' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

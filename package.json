@@ -1,0 +1,24 @@
+{
+  "name": "e-pikpor",
+  "version": "1.0.0",
+  "description": "E-PIKPOR - Sistem Pelimpahan Data Tugas Lapangan Antar-Regu Piket Polrestabes Bandung",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
+    "init-db": "node backend/init_db.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "multer": "^2.1.1",
+    "mysql2": "^3.22.4"
+  }
+}

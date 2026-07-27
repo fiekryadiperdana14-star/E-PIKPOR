@@ -1,0 +1,375 @@
+<div class="container-fluid px-0">
+    <!-- Siaga Wiken Banner -->
+    <div class="siaga-wiken-banner animate-fade-in-up" ng-if="stats.isSiagaWiken">
+        <div class="siaga-content">
+            <div class="siaga-icon"><i class="bi bi-shield-exclamation"></i></div>
+            <div class="siaga-text">
+                <strong>🚨 SIAGA WIKEN AKTIF</strong>
+                <span ng-if="stats.isHoliday"> — {{ stats.holidayName }}</span>
+                <span ng-if="stats.isWeekend && !stats.isHoliday"> — Akhir Pekan</span>
+            </div>
+            <a href="#!/siaga-wiken" class="btn btn-sm btn-outline-light">Lihat Detail</a>
+        </div>
+    </div>
+
+    <!-- Header Row -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 animate-fade-in-up">
+        <div>
+            <h2 class="page-title mb-1"><i class="bi bi-speedometer2"></i> Command Center</h2>
+            <small class="text-muted">Dashboard Piket Unit Gakkum Satlantas Polrestabes Bandung</small>
+        </div>
+        <a href="#!/buat-laporan" class="btn btn-primary" id="btnBuatLaporan">
+            <i class="bi bi-plus-lg me-1"></i> Buat Laporan
+        </a>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3 animate-fade-in-up">
+            <div class="stat-card stat-blue">
+                <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+                <div class="stat-value">{{ stats.totalPersonel || 0 }}</div>
+                <div class="stat-label">Total Personel</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3 animate-fade-in-up">
+            <div class="stat-card stat-green">
+                <div class="stat-icon"><i class="bi bi-calendar-check"></i></div>
+                <div class="stat-value">{{ stats.todaySchedule || 0 }}</div>
+                <div class="stat-label">Piket Hari Ini</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3 animate-fade-in-up">
+            <div class="stat-card stat-purple">
+                <div class="stat-icon"><i class="bi bi-file-earmark-text"></i></div>
+                <div class="stat-value">{{ stats.totalReports || 0 }}</div>
+                <div class="stat-label">Total Laporan</div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3 animate-fade-in-up">
+            <div class="stat-card stat-yellow">
+                <div class="stat-icon"><i class="bi bi-hourglass-split"></i></div>
+                <div class="stat-value">{{ stats.pendingReports || 0 }}</div>
+                <div class="stat-label">Menunggu</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Zona Status Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4 animate-fade-in-up" ng-repeat="z in stats.zonaStats">
+            <div class="zona-status-card">
+                <div class="zona-header" ng-class="{'zona-h-timur': z.zona==='TIMUR', 'zona-h-tengah': z.zona==='TENGAH', 'zona-h-barat': z.zona==='BARAT'}">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    <span>{{ z.nama }}</span>
+                </div>
+                <div class="zona-body">
+                    <div class="zona-stat">
+                        <span class="zona-stat-val">{{ z.personel_aktif }}</span>
+                        <span class="zona-stat-lbl">Personel Aktif</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Schedule Preview -->
+    <div class="glass-card-static animate-fade-in-up mb-4" ng-if="todaySchedule.length > 0">
+        <div class="section-title"><i class="bi bi-calendar-day"></i> Jadwal Piket Hari Ini</div>
+        <div class="row g-2">
+            <div class="col-md-4" ng-repeat="shift in ['Pagi','Sore','Malam']">
+                <div class="shift-block">
+                    <div class="shift-block-header">
+                        <i class="bi" ng-class="{'bi-sunrise': shift==='Pagi', 'bi-sun': shift==='Sore', 'bi-moon-stars': shift==='Malam'}"></i>
+                        <span>Shift {{ shift }}</span>
+                    </div>
+                    <div class="shift-block-body">
+                        <div class="shift-person" ng-repeat="s in todaySchedule | filter:{shift: shift}">
+                            <span class="shift-person-badge" ng-class="{'spb-timur': s.subnit_kode==='TIMUR', 'spb-tengah': s.subnit_kode==='TENGAH', 'spb-barat': s.subnit_kode==='BARAT'}">
+                                {{ s.subnit_kode | limitTo:1 }}
+                            </span>
+                            <span class="shift-person-name">{{ s.pangkat }} {{ s.nama_lengkap | limitTo:25 }}</span>
+                        </div>
+                        <div ng-if="(todaySchedule | filter:{shift: shift}).length === 0" class="text-muted small text-center py-2">
+                            <i class="bi bi-dash-circle me-1"></i>Belum ada jadwal
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reports Table -->
+    <div class="glass-card-static animate-fade-in-up">
+        <div class="section-title"><i class="bi bi-list-ul"></i> Daftar Laporan Terkini</div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0" id="tabelLaporan">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Waktu</th>
+                        <th>Judul & Lokasi</th>
+                        <th>Kategori</th>
+                        <th>Foto</th>
+                        <th>Pelapor</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="r in reports | startFrom:(currentPage-1)*pageSize | limitTo:pageSize track by r.id">
+                        <td data-label="No">{{ (currentPage-1)*pageSize + $index + 1 }}</td>
+                        <td data-label="Waktu" style="white-space:nowrap;">
+                            <small class="text-light">{{ r.waktu_kejadian | date:'dd MMM yyyy' }}</small><br>
+                            <small class="text-light">{{ r.waktu_kejadian | date:'HH:mm' }} WIB</small>
+                        </td>
+                        <td data-label="Judul">
+                            <strong>{{ r.judul }}</strong><br>
+                            <small class="text-muted"><i class="bi bi-geo-alt-fill"></i> {{ r.lokasi }}</small><br>
+                            <span class="badge bg-secondary bg-opacity-25 text-light mt-1 me-1"><i class="bi bi-compass"></i> {{ r.zona }}</span>
+                            <span class="badge bg-secondary bg-opacity-25 text-light mt-1"><i class="bi bi-clock-history"></i> {{ r.shift }}</span>
+                            <span class="badge bg-warning bg-opacity-15 text-warning mt-1 ms-1" ng-if="r.is_wiken"><i class="bi bi-shield-exclamation"></i> Wiken</span>
+                        </td>
+                        <td data-label="Kategori">
+                            <span class="badge-kategori" ng-class="'badge-kat-' + r.kategori_gakkum">
+                                {{ r.kategori_gakkum | uppercase }}
+                            </span>
+                        </td>
+                        <td data-label="Foto">
+                            <div ng-if="r.foto && r.foto.startsWith('[')" class="photo-thumb-group" ng-click="openPhoto(r.foto)" style="cursor: pointer;">
+                                <div class="photo-thumb d-flex align-items-center justify-content-center bg-dark" style="border: 2px solid var(--primary);">
+                                    <i class="bi bi-images text-light"></i>
+                                </div>
+                                <small class="d-block text-center mt-1 text-primary" style="font-size:0.7rem;">Lihat</small>
+                            </div>
+                            <img ng-if="r.foto && !r.foto.startsWith('[')" ng-src="/uploads/{{r.foto}}" class="photo-thumb" alt="Bukti foto" ng-click="openPhoto(r.foto)">
+                            <span ng-if="!r.foto" class="text-muted" style="font-size:0.75rem;">—</span>
+                        </td>
+                        <td data-label="Pelapor">
+                            <span class="badge bg-dark bg-opacity-50">{{ r.pelapor_pangkat }} {{ r.pelapor }}</span>
+                            <br ng-if="r.subnit_nama">
+                            <small class="text-muted" ng-if="r.subnit_nama">{{ r.subnit_nama }}</small>
+                        </td>
+                        <td data-label="Status">
+                            <span class="badge-status" 
+                                ng-class="{
+                                    'badge-pending': r.status === 'pending',
+                                    'badge-dilimpahkan': r.status === 'dilimpahkan',
+                                    'badge-selesai': r.status === 'selesai'
+                                }">
+                                {{ r.status | uppercase }}
+                            </span>
+                        </td>
+                        <td data-label="Aksi">
+                            <div class="d-flex flex-column gap-2">
+                                <button class="btn btn-sm btn-outline-secondary" ng-click="viewReportDetails(r)">
+                                    <i class="bi bi-eye"></i> Detail
+                                </button>
+                                <button class="btn btn-sm btn-outline-info" ng-click="openHandoverModal(r)">
+                                    <i class="bi bi-send"></i> Limpahkan
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" ng-if="user.role === 'admin' || user.role === 'kanit'" ng-click="deleteReport(r.id)">
+                                    <i class="bi bi-trash"></i> Hapus
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="d-flex justify-content-between align-items-center mt-3" ng-if="reports.length > pageSize">
+            <small class="text-muted">{{ (currentPage-1)*pageSize + 1 }} - {{ (currentPage*pageSize) > reports.length ? reports.length : (currentPage*pageSize) }} dari {{ reports.length }}</small>
+            <div class="btn-group">
+                <button class="btn btn-sm btn-outline-secondary" ng-disabled="currentPage == 1" ng-click="currentPage = currentPage - 1"><i class="bi bi-chevron-left"></i></button>
+                <button class="btn btn-sm btn-outline-secondary" ng-disabled="currentPage >= reports.length/pageSize" ng-click="currentPage = currentPage + 1"><i class="bi bi-chevron-right"></i></button>
+            </div>
+        </div>
+        
+        <div class="empty-state" ng-if="reports.length === 0">
+            <i class="bi bi-inbox"></i>
+            <p>Belum ada data laporan piket.<br>Tekan <strong>"Buat Laporan"</strong> untuk memulai.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Handover Modal -->
+<div class="modal fade" id="handoverModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-modal">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-send-check text-primary me-2"></i>Limpahkan Laporan</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3 p-3 rounded" style="background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.15);">
+                    <small class="text-muted d-block">Laporan yang akan dilimpahkan:</small>
+                    <strong class="text-primary">{{ selectedReport.judul }}</strong>
+                </div>
+                <form ng-submit="submitHandover()" id="formHandover">
+                    <div class="mb-3">
+                        <label class="form-label">Regu Penerima</label>
+                        <select class="form-select" id="selectReguPenerima" ng-model="handoverData.regu_penerima_id" required>
+                            <option value="">— Pilih Regu Tujuan —</option>
+                            <option ng-repeat="u in users" value="{{u.id}}">{{ u.pangkat }} {{ u.nama_lengkap }} ({{ u.subnit_nama || '-' }} / {{ u.regu_nama || '-' }})</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Catatan Pelimpahan</label>
+                        <textarea class="form-control" id="catatanPelimpahan" rows="3" ng-model="handoverData.catatan" placeholder="Tambahkan catatan / perkembangan untuk regu penerima..."></textarea>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary" id="btnKirimEstafet"><i class="bi bi-send me-1"></i>Kirim Estafet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Photo Modal -->
+<div class="modal fade" id="photoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content glass-modal p-2">
+            <div class="modal-header border-0 pb-0">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center pt-0">
+                <div class="d-flex align-items-center justify-content-center">
+                    <button class="btn btn-dark rounded-circle me-3" ng-click="prevPhoto()" ng-disabled="activePhotoIndex === 0" ng-if="carouselPhotos.length > 1">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <img ng-src="/uploads/{{carouselPhotos[activePhotoIndex]}}" class="img-fluid rounded shadow-lg" style="max-height: 70vh; object-fit: contain;" alt="Foto Bukti">
+                    <button class="btn btn-dark rounded-circle ms-3" ng-click="nextPhoto()" ng-disabled="activePhotoIndex === carouselPhotos.length - 1" ng-if="carouselPhotos.length > 1">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="mt-3" ng-if="carouselPhotos.length > 1">
+                    <span class="badge bg-primary rounded-pill px-3 py-2">Foto {{ activePhotoIndex + 1 }} dari {{ carouselPhotos.length }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Report Details & Edit Modal -->
+<div class="modal fade" id="reportDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content glass-modal">
+            <div class="modal-header border-bottom-0">
+                <h5 class="modal-title"><i class="bi bi-file-text me-2"></i>{{ isEditingReport ? 'Edit Laporan' : 'Detail Laporan' }}</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body pt-0">
+                <!-- View Mode -->
+                <div ng-if="!isEditingReport">
+                    <div class="mb-3">
+                        <h6 class="text-primary mb-1">{{ selectedReportDetail.judul }}</h6>
+                        <small class="text-muted d-block"><i class="bi bi-geo-alt"></i> {{ selectedReportDetail.lokasi }}</small>
+                        <small class="text-muted d-block"><i class="bi bi-calendar"></i> {{ selectedReportDetail.waktu_kejadian | date:'medium' }}</small>
+                    </div>
+                    <div class="mb-3 p-3 rounded" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05);">
+                        <p class="mb-0" style="white-space: pre-wrap; font-size: 0.9rem; color: #e2e8f0;">{{ selectedReportDetail.deskripsi }}</p>
+                    </div>
+                    <div class="d-flex gap-2 mb-3 flex-wrap">
+                        <span class="badge bg-secondary bg-opacity-25"><i class="bi bi-compass"></i> {{ selectedReportDetail.zona }}</span>
+                        <span class="badge bg-secondary bg-opacity-25"><i class="bi bi-clock-history"></i> {{ selectedReportDetail.shift }}</span>
+                        <span class="badge-kategori" ng-class="'badge-kat-' + selectedReportDetail.kategori_gakkum" ng-if="selectedReportDetail.kategori_gakkum">
+                            {{ selectedReportDetail.kategori_gakkum | uppercase }}
+                        </span>
+                    </div>
+                    <div ng-if="selectedReportDetail.tindakan" class="mb-3">
+                        <small class="text-muted d-block mb-1"><i class="bi bi-check2-square"></i> Tindakan:</small>
+                        <p class="mb-0" style="font-size: 0.85rem;">{{ selectedReportDetail.tindakan }}</p>
+                    </div>
+                    <div ng-if="selectedReportDetail.pasal_pelanggaran" class="mb-3">
+                        <small class="text-muted d-block mb-1"><i class="bi bi-book"></i> Pasal:</small>
+                        <p class="mb-0" style="font-size: 0.85rem;">{{ selectedReportDetail.pasal_pelanggaran }}</p>
+                    </div>
+                </div>
+
+                <!-- Edit Mode -->
+                <form ng-if="isEditingReport" ng-submit="submitEditReport()">
+                    <div class="mb-3">
+                        <label class="form-label">Judul Laporan</label>
+                        <input type="text" class="form-control" ng-model="editReportData.judul" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Lokasi</label>
+                        <input type="text" class="form-control" ng-model="editReportData.lokasi" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Zona</label>
+                            <select class="form-select" ng-model="editReportData.zona" required>
+                                <option value="Barat">Barat</option>
+                                <option value="Timur">Timur</option>
+                                <option value="Tengah">Tengah</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Shift</label>
+                            <select class="form-select" ng-model="editReportData.shift" required>
+                                <option value="Pagi">Pagi</option>
+                                <option value="Sore">Sore</option>
+                                <option value="Malam">Malam</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Kategori Gakkum</label>
+                        <select class="form-select" ng-model="editReportData.kategori_gakkum">
+                            <option value="tilang">Tilang</option>
+                            <option value="penderekan">Penderekan</option>
+                            <option value="razia">Razia</option>
+                            <option value="pengamanan">Pengamanan</option>
+                            <option value="patroli">Patroli</option>
+                            <option value="laka_lantas">Laka Lantas</option>
+                            <option value="lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Detail Laporan</label>
+                        <textarea class="form-control" rows="4" ng-model="editReportData.deskripsi" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tindakan</label>
+                        <textarea class="form-control" rows="2" ng-model="editReportData.tindakan"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Pasal Pelanggaran</label>
+                        <input type="text" class="form-control" ng-model="editReportData.pasal_pelanggaran">
+                    </div>
+                    <div class="d-flex justify-content-end gap-2 mb-4">
+                        <button type="button" class="btn btn-outline-secondary" ng-click="toggleEditReport()">Batal</button>
+                        <button type="submit" class="btn btn-primary" ng-disabled="isSavingEdit">
+                            {{ isSavingEdit ? 'Menyimpan...' : 'Simpan Perubahan' }}
+                        </button>
+                    </div>
+                </form>
+
+                <hr style="border-color: rgba(255,255,255,0.1);">
+                <h6 class="mb-3"><i class="bi bi-clock-history me-1"></i>Riwayat Pembaruan</h6>
+                <div class="history-list" style="max-height: 200px; overflow-y: auto;">
+                    <div ng-if="reportHistory.length === 0" class="text-muted small">Belum ada riwayat.</div>
+                    <div ng-repeat="h in reportHistory" class="mb-2 pb-2" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <div class="d-flex w-100 justify-content-between">
+                            <small class="text-primary"><strong>{{ h.editor_nama }}</strong></small>
+                            <small class="text-muted" style="font-size:0.75rem;">{{ h.waktu_edit | date:'medium' }}</small>
+                        </div>
+                        <small class="d-block text-light">{{ h.editor_pangkat || '-' }} / NRP: {{ h.editor_nrp || '-' }}</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top-0 d-flex justify-content-between">
+                <button ng-if="!isEditingReport" type="button" class="btn btn-warning" ng-click="toggleEditReport()">
+                    <i class="bi bi-pencil-square"></i> Edit
+                </button>
+                <div ng-if="isEditingReport"></div>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>

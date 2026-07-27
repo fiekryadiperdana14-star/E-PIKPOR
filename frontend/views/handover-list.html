@@ -1,0 +1,67 @@
+<div class="container-fluid px-0">
+    <h2 class="page-title mb-4 animate-fade-in-up"><i class="bi bi-arrow-left-right"></i> Pelimpahan Masuk (Estafet)</h2>
+    
+    <div class="glass-card-static animate-fade-in-up">
+        <div class="section-title"><i class="bi bi-inbox-fill"></i> Menunggu Konfirmasi Regu Anda</div>
+        
+        <div class="row g-3">
+            <div class="col-md-6 col-lg-4" ng-repeat="h in handovers | startFrom:(currentPage-1)*pageSize | limitTo:pageSize track by h.id">
+                <div class="handover-card animate-fade-in-up">
+                    <!-- Header -->
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="fw-bold mb-0" style="color: var(--primary-light); font-size: 0.95rem;">{{ h.judul }}</h6>
+                        <span class="badge-status" 
+                            ng-class="{
+                                'badge-menunggu': h.status_terima === 'menunggu', 
+                                'badge-diterima': h.status_terima === 'diterima', 
+                                'badge-ditolak': h.status_terima === 'ditolak'
+                            }">
+                            {{ h.status_terima | uppercase }}
+                        </span>
+                    </div>
+
+                    <!-- Info -->
+                    <div class="mb-2" style="font-size:0.8rem; color: var(--text-muted);">
+                        <div><i class="bi bi-clock me-1"></i>{{ h.waktu_kejadian | date:'dd MMM yyyy, HH:mm' }} WIB</div>
+                        <div><i class="bi bi-geo-alt me-1"></i>{{ h.lokasi }}</div>
+                    </div>
+
+                    <!-- Notes -->
+                    <div class="handover-notes">
+                        <small class="d-block" style="color: var(--text-muted); font-size: 0.7rem;">Dari: <strong style="color: var(--warning-light);">{{ h.pengirim }}</strong></small>
+                        <small class="d-block mt-1" style="color: var(--text-muted); font-size: 0.7rem;">Catatan Estafet:</small>
+                        <p class="mb-0" style="font-size: 0.85rem; font-style: italic; color: var(--text-secondary);">"{{ h.catatan || 'Tidak ada catatan tambahan.' }}"</p>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="mt-auto pt-2 d-flex gap-2" ng-if="h.status_terima === 'menunggu'">
+                        <button class="btn btn-outline-danger btn-sm flex-fill" ng-click="updateStatus(h, 'ditolak')">
+                            <i class="bi bi-x-lg me-1"></i>Tolak
+                        </button>
+                        <button class="btn btn-primary btn-sm flex-fill" ng-click="updateStatus(h, 'diterima')">
+                            <i class="bi bi-check-lg me-1"></i>Terima
+                        </button>
+                    </div>
+
+                    <div class="mt-auto pt-2 text-center" ng-if="h.status_terima !== 'menunggu'">
+                        <small class="text-muted"><i class="bi bi-check-circle me-1"></i>Telah diproses</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="empty-state" ng-if="handovers.length === 0">
+            <i class="bi bi-inbox"></i>
+            <p>Belum ada laporan yang dilimpahkan ke regu Anda.<br>Laporan yang dilimpahkan oleh regu lain akan muncul di sini.</p>
+        </div>
+
+        <!-- Pagination Controls for Handovers -->
+        <div class="d-flex justify-content-between align-items-center mt-4" ng-if="handovers.length > pageSize">
+            <small class="text-muted">Menampilkan {{ (currentPage-1)*pageSize + 1 }} - {{ (currentPage*pageSize) > handovers.length ? handovers.length : (currentPage*pageSize) }} dari {{ handovers.length }}</small>
+            <div class="btn-group">
+                <button class="btn btn-sm btn-outline-secondary" ng-disabled="currentPage == 1" ng-click="currentPage = currentPage - 1"><i class="bi bi-chevron-left"></i></button>
+                <button class="btn btn-sm btn-outline-secondary" ng-disabled="currentPage >= handovers.length/pageSize" ng-click="currentPage = currentPage + 1"><i class="bi bi-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+</div>

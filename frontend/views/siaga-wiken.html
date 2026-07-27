@@ -1,0 +1,191 @@
+<div class="container-fluid px-0">
+    <!-- Siaga Status -->
+    <div class="siaga-wiken-banner animate-fade-in-up" ng-if="isCurrentlySiaga">
+        <div class="siaga-content">
+            <div class="siaga-icon"><i class="bi bi-shield-exclamation"></i></div>
+            <div class="siaga-text">
+                <strong>🚨 SIAGA WIKEN SEDANG AKTIF</strong>
+                <span ng-if="activeEvent"> — {{ activeEvent.nama_event }}</span>
+            </div>
+            <button class="btn btn-sm btn-warning" ng-click="checkin()" ng-if="canCheckin">
+                <i class="bi bi-check2-circle me-1"></i>CHECKIN
+            </button>
+        </div>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 animate-fade-in-up">
+        <div>
+            <h2 class="page-title mb-1"><i class="bi bi-shield-exclamation"></i> Siaga Wiken</h2>
+            <small class="text-muted">Penguatan Pasukan Akhir Pekan & Libur Nasional</small>
+        </div>
+        <button class="btn btn-primary btn-sm" ng-click="openCreateEvent()" 
+                ng-if="user.role === 'admin' || user.role === 'kanit' || user.role === 'kasubnit'">
+            <i class="bi bi-plus-lg me-1"></i>Buat Event
+        </button>
+    </div>
+
+    <!-- Active Events -->
+    <div class="row g-3 mb-4" ng-if="activeEvents.length > 0">
+        <div class="col-12 animate-fade-in-up" ng-repeat="event in activeEvents">
+            <div class="siaga-event-card active-event">
+                <div class="event-header">
+                    <div>
+                        <h5 class="mb-1"><i class="bi bi-shield-fill-exclamation me-2"></i>{{ event.nama_event }}</h5>
+                        <small class="text-muted">
+                            {{ event.tanggal_mulai | date:'dd MMM yyyy' }} — {{ event.tanggal_selesai | date:'dd MMM yyyy' }}
+                            <span class="badge bg-danger ms-2">AKTIF</span>
+                        </small>
+                    </div>
+                    <div class="event-stats">
+                        <div class="event-stat">
+                            <span class="event-stat-val text-success">{{ event.hadir_count }}</span>
+                            <span class="event-stat-lbl">Hadir</span>
+                        </div>
+                        <div class="event-stat">
+                            <span class="event-stat-val">{{ event.total_personel }}</span>
+                            <span class="event-stat-lbl">Total</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personnel List -->
+                <div class="event-personel" ng-if="event.personel && event.personel.length > 0">
+                    <div class="row g-2">
+                        <div class="col-md-4" ng-repeat="shift in ['Pagi','Sore','Malam']">
+                            <div class="shift-block">
+                                <div class="shift-block-header">
+                                    <i class="bi" ng-class="{'bi-sunrise': shift==='Pagi', 'bi-sun': shift==='Sore', 'bi-moon-stars': shift==='Malam'}"></i>
+                                    <span>Shift {{ shift }}</span>
+                                </div>
+                                <div class="shift-block-body">
+                                    <div class="checkin-person" ng-repeat="p in event.personel | filter:{shift: shift}">
+                                        <span class="checkin-status" ng-class="{
+                                            'cs-hadir': p.status_checkin==='hadir',
+                                            'cs-belum': p.status_checkin==='belum'
+                                        }">
+                                            <i class="bi" ng-class="{'bi-check-circle-fill': p.status_checkin==='hadir', 'bi-circle': p.status_checkin==='belum'}"></i>
+                                        </span>
+                                        <div>
+                                            <span class="checkin-name">{{ p.pangkat }} {{ p.nama_lengkap }}</span>
+                                            <small class="d-block text-muted">{{ p.subnit_nama || '-' }}</small>
+                                        </div>
+                                    </div>
+                                    <div ng-if="(event.personel | filter:{shift: shift}).length === 0" class="text-muted small text-center py-2">
+                                        Belum ada personel
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- All Events List -->
+    <div class="glass-card-static animate-fade-in-up">
+        <div class="section-title"><i class="bi bi-list-ul"></i> Riwayat Event Siaga Wiken</div>
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Event</th>
+                        <th>Periode</th>
+                        <th>Tipe</th>
+                        <th>Personel</th>
+                        <th>Status</th>
+                        <th ng-if="user.role === 'admin' || user.role === 'kanit'">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="e in allEvents track by e.id">
+                        <td data-label="No">{{ $index + 1 }}</td>
+                        <td data-label="Event"><strong>{{ e.nama_event }}</strong></td>
+                        <td data-label="Periode" style="white-space:nowrap;">
+                            {{ e.tanggal_mulai | date:'dd MMM' }} — {{ e.tanggal_selesai | date:'dd MMM yyyy' }}
+                        </td>
+                        <td data-label="Tipe">
+                            <span class="badge-status" ng-class="{
+                                'badge-dilimpahkan': e.tipe==='weekend',
+                                'badge-selesai': e.tipe==='libur_nasional',
+                                'badge-pending': e.tipe==='cuti_bersama'
+                            }">{{ e.tipe | uppercase }}</span>
+                        </td>
+                        <td data-label="Personel">
+                            <span class="text-success">{{ e.hadir_count }}</span> / {{ e.total_personel }}
+                        </td>
+                        <td data-label="Status">
+                            <span class="badge-status" ng-class="{
+                                'badge-pending': e.status==='upcoming',
+                                'badge-dilimpahkan': e.status==='active',
+                                'badge-selesai': e.status==='completed'
+                            }">{{ e.status | uppercase }}</span>
+                        </td>
+                        <td ng-if="user.role === 'admin' || user.role === 'kanit'">
+                            <div class="d-flex gap-1">
+                                <button class="btn btn-sm btn-outline-info" ng-click="manageEvent(e)" title="Kelola">
+                                    <i class="bi bi-gear"></i>
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" ng-click="deleteEvent(e.id)" title="Hapus">
+                                    <i class="bi bi-trash3"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="empty-state" ng-if="allEvents.length === 0">
+            <i class="bi bi-shield-x"></i>
+            <p>Belum ada event Siaga Wiken.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Create Event Modal -->
+<div class="modal fade" id="createEventModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-modal">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-shield-plus text-primary me-2"></i>Buat Event Siaga Wiken</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form ng-submit="submitEvent()" id="formEvent">
+                    <div class="mb-3">
+                        <label class="form-label">Nama Event</label>
+                        <input type="text" class="form-control" ng-model="eventForm.nama_event" placeholder="Contoh: Siaga Wiken 5-6 Juli 2026" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label">Tanggal Mulai</label>
+                            <input type="date" class="form-control" ng-model="eventForm.tanggal_mulai" required>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label">Tanggal Selesai</label>
+                            <input type="date" class="form-control" ng-model="eventForm.tanggal_selesai" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Tipe</label>
+                        <select class="form-select" ng-model="eventForm.tipe" required>
+                            <option value="weekend">Weekend</option>
+                            <option value="libur_nasional">Libur Nasional</option>
+                            <option value="cuti_bersama">Cuti Bersama</option>
+                            <option value="khusus">Khusus</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Catatan</label>
+                        <textarea class="form-control" rows="2" ng-model="eventForm.catatan"></textarea>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Buat Event</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

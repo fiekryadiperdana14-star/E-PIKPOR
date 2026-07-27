@@ -1,0 +1,105 @@
+<div class="container-fluid px-0">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 animate-fade-in-up">
+        <div>
+            <h2 class="page-title mb-1"><i class="bi bi-diagram-3"></i> Struktur Organisasi</h2>
+            <small class="text-muted">Unit Gakkum Satlantas Polrestabes Bandung</small>
+        </div>
+    </div>
+
+    <!-- Top Leadership -->
+    <div class="org-section animate-fade-in-up">
+        <div class="org-level org-level-top">
+            <!-- Kasat Lantas -->
+            <div class="org-card org-card-top">
+                <div class="org-card-badge">KASAT LANTAS</div>
+                <div class="org-card-name">AH. HUDI ARIF, S.A.P., S.I.K., M.A.</div>
+                <div class="org-card-rank">AJUN KOMISARIS BESAR POLISI</div>
+            </div>
+        </div>
+        <div class="org-connector"></div>
+
+        <div class="org-level">
+            <div class="org-card org-card-secondary">
+                <div class="org-card-badge">WAKASAT LANTAS</div>
+                <div class="org-card-name">RINI WIDIYANTI, S.H., M.H.</div>
+                <div class="org-card-rank">KOMISARIS POLISI</div>
+            </div>
+        </div>
+        <div class="org-connector"></div>
+
+        <div class="org-level">
+            <div class="org-card org-card-secondary">
+                <div class="org-card-badge">KAUR BIN OPS</div>
+                <div class="org-card-name">DEDEN JUANDI, S.H., M.M.</div>
+                <div class="org-card-rank">AJUN KOMISARIS POLISI</div>
+            </div>
+        </div>
+        <div class="org-connector"></div>
+
+        <!-- Kanit Gakkum + Bamin -->
+        <div class="org-level org-level-kanit">
+            <div class="org-side-card" ng-if="orgBamin.length > 0">
+                <div class="org-card org-card-bamin">
+                    <div class="org-card-badge">BAMIN GAKKUM</div>
+                    <div ng-repeat="b in orgBamin">
+                        <div class="org-card-name" style="font-size:0.75rem;">{{ b.pangkat }} {{ b.nama_lengkap }}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="org-card org-card-kanit">
+                <div class="org-card-badge">KANIT GAKKUM</div>
+                <div class="org-card-name" ng-if="orgKanit">{{ orgKanit.nama_lengkap }}</div>
+                <div class="org-card-rank" ng-if="orgKanit">{{ orgKanit.pangkat }}</div>
+            </div>
+        </div>
+        <div class="org-connector"></div>
+
+        <!-- Kasubnit Level -->
+        <div class="org-level org-level-kasubnit">
+            <div class="org-card org-card-kasubnit" ng-repeat="ks in orgKasubnit">
+                <div class="org-card-badge">KASUBNIT {{ $index + 1 }}</div>
+                <div class="org-card-name">{{ ks.nama_lengkap }}</div>
+                <div class="org-card-rank">{{ ks.pangkat }}</div>
+                <small class="text-muted d-block mt-1">{{ ks.subnit_nama }}</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subnit Sections -->
+    <div class="row g-4 mt-2">
+        <div class="col-md-4 animate-fade-in-up" ng-repeat="subnit in orgSubnits">
+            <div class="subnit-org-card" ng-class="{
+                'subnit-org-timur': subnit.kode==='TIMUR',
+                'subnit-org-tengah': subnit.kode==='TENGAH',
+                'subnit-org-barat': subnit.kode==='BARAT'
+            }">
+                <div class="subnit-org-header">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    <span>{{ subnit.nama }}</span>
+                </div>
+                <div class="subnit-org-body">
+                    <div class="regu-section" ng-repeat="regu in subnit.regus">
+                        <div class="regu-header">
+                            <i class="bi bi-people-fill me-1"></i>{{ regu.nama }}
+                        </div>
+                        <div class="regu-members">
+                            <div class="member-row" ng-repeat="m in regu.members">
+                                <span class="member-role-badge" ng-class="{
+                                    'mrb-danregu': m.role==='danregu',
+                                    'mrb-anggota': m.role==='anggota'
+                                }">
+                                    <i class="bi" ng-class="{'bi-star-fill': m.role==='danregu', 'bi-person-fill': m.role==='anggota'}"></i>
+                                </span>
+                                <div>
+                                    <span class="member-name">{{ m.pangkat }} {{ m.nama_lengkap }}</span>
+                                    <small class="d-block text-muted" ng-if="m.role==='danregu'">Danregu</small>
+                                </div>
+                            </div>
+                            <div ng-if="regu.members.length === 0" class="text-muted small text-center py-2">-</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

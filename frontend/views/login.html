@@ -1,0 +1,48 @@
+<div class="login-wrapper">
+    <div class="login-bg"></div>
+    <div class="login-orb login-orb-1"></div>
+    <div class="login-orb login-orb-2"></div>
+    <div class="login-orb login-orb-3"></div>
+
+    <div class="login-box">
+        <div class="glass-card p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="login-logo">
+                    <i class="bi bi-shield-lock"></i>
+                </div>
+                <h1 class="login-title mt-3">E-PIKPOR</h1>
+                <p class="login-subtitle">Siaga Wiken — Unit Gakkum<br>Satlantas Polrestabes Bandung</p>
+            </div>
+
+            <form ng-submit="doLogin()" id="loginForm">
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="text" class="form-control" id="loginUsername" ng-model="credentials.username" placeholder="Masukkan username" required autofocus>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-key"></i></span>
+                        <input type="{{ showPassword ? 'text' : 'password' }}" class="form-control" id="loginPassword" ng-model="credentials.password" placeholder="Masukkan password" required>
+                        <button class="btn btn-outline-secondary" style="border-color: var(--border-color); color: var(--text-muted);" type="button" ng-click="showPassword = !showPassword" tabindex="-1">
+                            <i class="bi" ng-class="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2" id="loginBtn" ng-disabled="isLoading">
+                    <span ng-if="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                    <i class="bi bi-box-arrow-in-right me-1" ng-if="!isLoading"></i>
+                    <span ng-if="!isLoading">Masuk</span>
+                    <span ng-if="isLoading">Memproses...</span>
+                </button>
+            </form>
+
+            <div class="text-center mt-4">
+                <small class="text-muted" style="font-size:0.7rem;">© 2026 E-PIKPOR • Polrestabes Bandung</small>
+            </div>
+        </div>
+    </div>
+</div>

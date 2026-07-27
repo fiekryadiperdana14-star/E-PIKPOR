@@ -1,0 +1,113 @@
+<div class="container-fluid px-0">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 animate-fade-in-up">
+        <div>
+            <h2 class="page-title mb-1"><i class="bi bi-calendar-heart"></i> Kalender Libur Nasional</h2>
+            <small class="text-muted">Hari Libur Nasional & Cuti Bersama Indonesia</small>
+        </div>
+        <button class="btn btn-primary btn-sm" ng-click="openAddHoliday()">
+            <i class="bi bi-plus-lg me-1"></i>Tambah Libur
+        </button>
+    </div>
+
+    <!-- Year Filter -->
+    <div class="glass-card-static animate-fade-in-up mb-4" style="padding: 1rem 1.25rem;">
+        <div class="d-flex justify-content-between align-items-center">
+            <button class="btn btn-outline-secondary btn-sm" ng-click="filterYear = filterYear - 1; loadHolidays()"><i class="bi bi-chevron-left"></i></button>
+            <h5 class="mb-0 fw-bold"><i class="bi bi-calendar3 me-2"></i>Tahun {{ filterYear }}</h5>
+            <button class="btn btn-outline-secondary btn-sm" ng-click="filterYear = filterYear + 1; loadHolidays()"><i class="bi bi-chevron-right"></i></button>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-4 animate-fade-in-up">
+            <div class="stat-card stat-red" style="text-align:center;">
+                <div class="stat-value" style="color: #f87171;">{{ holidayStats.libur_nasional }}</div>
+                <div class="stat-label">Libur Nasional</div>
+            </div>
+        </div>
+        <div class="col-4 animate-fade-in-up">
+            <div class="stat-card stat-yellow" style="text-align:center;">
+                <div class="stat-value">{{ holidayStats.cuti_bersama }}</div>
+                <div class="stat-label">Cuti Bersama</div>
+            </div>
+        </div>
+        <div class="col-4 animate-fade-in-up">
+            <div class="stat-card stat-blue" style="text-align:center;">
+                <div class="stat-value">{{ holidayStats.total }}</div>
+                <div class="stat-label">Total</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Holidays by Month -->
+    <div class="glass-card-static animate-fade-in-up" ng-repeat="month in holidaysByMonth" ng-if="month.holidays.length > 0">
+        <div class="section-title"><i class="bi bi-calendar-month"></i> {{ month.name }}</div>
+        <div class="holiday-list">
+            <div class="holiday-item" ng-repeat="h in month.holidays">
+                <div class="holiday-date" ng-class="{
+                    'hd-libur': h.jenis === 'libur_nasional',
+                    'hd-cuti': h.jenis === 'cuti_bersama',
+                    'hd-khusus': h.jenis === 'libur_khusus'
+                }">
+                    <span class="holiday-day">{{ h.tanggal | date:'dd' }}</span>
+                    <span class="holiday-dow">{{ getDayName(h.tanggal) }}</span>
+                </div>
+                <div class="holiday-info">
+                    <strong>{{ h.nama }}</strong>
+                    <span class="badge-status ms-2" ng-class="{
+                        'badge-ditolak': h.jenis === 'libur_nasional',
+                        'badge-pending': h.jenis === 'cuti_bersama',
+                        'badge-dilimpahkan': h.jenis === 'libur_khusus'
+                    }" style="font-size:0.6rem;">{{ h.jenis | uppercase }}</span>
+                </div>
+                <div class="holiday-actions">
+                    <button class="btn btn-sm btn-outline-danger" ng-click="deleteHoliday(h.id)" title="Hapus">
+                        <i class="bi bi-trash3"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="empty-state animate-fade-in-up" ng-if="holidays.length === 0">
+        <i class="bi bi-calendar-x"></i>
+        <p>Belum ada data hari libur untuk tahun {{ filterYear }}.</p>
+    </div>
+</div>
+
+<!-- Add Holiday Modal -->
+<div class="modal fade" id="addHolidayModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-modal">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-calendar-plus text-primary me-2"></i>Tambah Hari Libur</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form ng-submit="saveHoliday()" id="formHoliday">
+                    <div class="mb-3">
+                        <label class="form-label">Tanggal</label>
+                        <input type="date" class="form-control" ng-model="holidayForm.tanggal" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nama Hari Libur</label>
+                        <input type="text" class="form-control" ng-model="holidayForm.nama" placeholder="Contoh: Hari Raya Idul Fitri" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Jenis</label>
+                        <select class="form-select" ng-model="holidayForm.jenis" required>
+                            <option value="libur_nasional">Libur Nasional</option>
+                            <option value="cuti_bersama">Cuti Bersama</option>
+                            <option value="libur_khusus">Libur Khusus</option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
