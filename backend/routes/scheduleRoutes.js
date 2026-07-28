@@ -137,40 +137,72 @@ router.post('/generate', adminAuth, async (req, res) => {
     try {
         const { tanggal_mulai, tanggal_selesai } = req.body;
 
-        // Get all active regu members grouped by subnit
+        // Get all active personnel with subnit_id or leaders
         const [personel] = await db.query(`
-            SELECT u.id, u.subnit_id, u.regu_id, u.role 
+            SELECT u.id, u.nama_lengkap, u.pangkat, u.role, u.subnit_id, u.regu_id 
             FROM users u 
-            WHERE u.is_active = TRUE AND u.role IN ('danregu','anggota') AND u.subnit_id IS NOT NULL
-            ORDER BY u.subnit_id, u.regu_id
+            WHERE u.is_active = TRUE AND (u.subnit_id IS NOT NULL OR u.role IN ('kanit', 'kasubnit'))
+            ORDER BY u.subnit_id, u.regu_id, u.id
         `);
 
-        // Get subnit list
-        const [subnits] = await db.query('SELECT * FROM subnit');
+        // Get subnits
+        const [subnits] = await db.query('SELECT * FROM subnit ORDER BY id');
 
         // Get holidays in range
         const [holidays] = await db.query(
             'SELECT tanggal FROM holidays WHERE tanggal BETWEEN ? AND ?',
             [tanggal_mulai, tanggal_selesai]
         );
-        const holidaySet = new Set(holidays.map(h => h.tanggal.toISOString().split('T')[0]));
+        const holidaySet = new Set(holidays.map(h => {
+            const d = new Date(h.tanggal);
+            return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+        }));
 
         const shifts = ['Pagi', 'Sore', 'Malam'];
         let inserted = 0;
 
-        // Group personel by subnit
+        // Group members by subnit
+        // - Subnit Tengah led by Kanit Gakkum
+        // - Subnit Timur & Barat led by Kasubnit
         const bySubnit = {};
+        subnits.forEach(s => { bySubnit[s.id] = []; });
+
+        const kasubnits = personel.filter(p => p.role === 'kasubnit');
+        let kasubnitIdx = 0;
+
         personel.forEach(p => {
-            if (!bySubnit[p.subnit_id]) bySubnit[p.subnit_id] = [];
-            bySubnit[p.subnit_id].push(p);
+            if (p.subnit_id && bySubnit[p.subnit_id]) {
+                bySubnit[p.subnit_id].push(p);
+            } else if (p.role === 'kanit') {
+                // Kanit Gakkum leads Subnit Tengah (subnit id 2 or matching Tengah)
+                const tengah = subnits.find(s => s.nama.toLowerCase().includes('tengah')) || subnits[1] || subnits[0];
+                if (tengah && bySubnit[tengah.id]) {
+                    p.subnit_id = tengah.id;
+                    bySubnit[tengah.id].unshift(p);
+                }
+            } else if (p.role === 'kasubnit') {
+                // Kasubnit leads Subnit Timur / Barat
+                const notTengah = subnits.filter(s => !s.nama.toLowerCase().includes('tengah'));
+                if (notTengah.length > 0) {
+                    const targetSubnit = notTengah[kasubnitIdx % notTengah.length];
+                    kasubnitIdx++;
+                    p.subnit_id = targetSubnit.id;
+                    bySubnit[targetSubnit.id].unshift(p);
+                }
+            }
         });
 
         // Generate schedule for each date
         let currentDate = new Date(tanggal_mulai);
         const endDate = new Date(tanggal_selesai);
+        let dayCounter = 0;
 
         while (currentDate <= endDate) {
-            const dateStr = currentDate.toISOString().split('T')[0];
+            const yyyy = currentDate.getFullYear();
+            const mm = String(currentDate.getMonth() + 1).padStart(2, '0');
+            const dd = String(currentDate.getDate()).padStart(2, '0');
+            const dateStr = `${yyyy}-${mm}-${dd}`;
+
             const dayOfWeek = currentDate.getDay();
             const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
             const isHoliday = holidaySet.has(dateStr);
@@ -180,31 +212,37 @@ router.post('/generate', adminAuth, async (req, res) => {
                 const members = bySubnit[subnit.id] || [];
                 if (members.length === 0) continue;
 
+                // For each shift (Pagi, Sore, Malam), assign 2 members
                 for (let shiftIdx = 0; shiftIdx < shifts.length; shiftIdx++) {
-                    // Assign members round-robin to shifts
-                    const memberIdx = (shiftIdx + Math.floor((currentDate.getTime() / 86400000)) ) % members.length;
-                    const member = members[memberIdx];
+                    const shiftName = shifts[shiftIdx];
+                    const offset = (dayCounter * 3 + shiftIdx) * 2;
 
-                    // Check for duplicate
-                    const [existing] = await db.query(
-                        'SELECT id FROM duty_schedules WHERE tanggal = ? AND shift = ? AND user_id = ?',
-                        [dateStr, shifts[shiftIdx], member.id]
-                    );
-                    if (existing.length === 0) {
-                        await db.query(
-                            `INSERT INTO duty_schedules (tanggal, shift, user_id, subnit_id, regu_id, tipe, created_by) 
-                             VALUES (?, ?, ?, ?, ?, ?, ?)`,
-                            [dateStr, shifts[shiftIdx], member.id, subnit.id, member.regu_id, tipe, req.user.id]
+                    for (let count = 0; count < 2; count++) {
+                        const memberIdx = (offset + count) % members.length;
+                        const member = members[memberIdx];
+
+                        // Avoid duplicate entry for same date, shift, user
+                        const [existing] = await db.query(
+                            'SELECT id FROM duty_schedules WHERE tanggal = ? AND shift = ? AND user_id = ?',
+                            [dateStr, shiftName, member.id]
                         );
-                        inserted++;
+                        if (existing.length === 0) {
+                            await db.query(
+                                `INSERT INTO duty_schedules (tanggal, shift, user_id, subnit_id, regu_id, tipe, created_by) 
+                                 VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                                [dateStr, shiftName, member.id, subnit.id, member.regu_id || null, tipe, req.user.id]
+                            );
+                            inserted++;
+                        }
                     }
                 }
             }
 
             currentDate.setDate(currentDate.getDate() + 1);
+            dayCounter++;
         }
 
-        res.status(201).json({ message: `Jadwal berhasil di-generate: ${inserted} entri baru.`, count: inserted });
+        res.status(201).json({ message: `Jadwal berhasil di-generate: ${inserted} entri baru. (2 orang per shift per Subnit)`, count: inserted });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
