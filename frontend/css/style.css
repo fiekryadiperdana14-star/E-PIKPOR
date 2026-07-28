@@ -30,9 +30,9 @@
     --info: #06b6d4;
     --info-light: #22d3ee;
 
-    --text-primary: #fafafa;
-    --text-secondary: #a3a3a3;
-    --text-muted: #737373;
+    --text-primary: #ffffff;
+    --text-secondary: #e5e5e5;
+    --text-muted: #b3b3b3;
     --text-dark: #0a0a0a;
 
     --white: #ffffff;
@@ -294,9 +294,9 @@ body {
 .form-control, .form-select {
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
-    color: var(--text-primary);
+    color: var(--white) !important;
     border-radius: var(--radius-sm);
-    padding: 0.6rem 0.85rem;
+    padding: 0.65rem 0.85rem;
     font-size: 0.875rem;
     transition: all var(--transition-fast);
 }
@@ -304,10 +304,10 @@ body {
     background: var(--bg-tertiary);
     border-color: var(--primary);
     box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
-    color: var(--text-primary);
+    color: var(--white) !important;
 }
-.form-select option { background: var(--bg-secondary); color: var(--text-primary); }
-.form-control::placeholder { color: var(--text-muted); }
+.form-select option { background: var(--bg-secondary); color: var(--white); }
+.form-control::placeholder { color: rgba(255, 255, 255, 0.4) !important; }
 .form-label {
     font-size: 0.82rem;
     font-weight: 500;
@@ -367,8 +367,8 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
    Main Container
    ============================================ */
 .main-container {
-    padding: 1.5rem 2rem 3rem;
-    max-width: 1280px;
+    padding: 2rem 2.5rem 4rem;
+    max-width: 1440px;
     margin: 0 auto;
 }
 
@@ -447,29 +447,30 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
     align-items: center;
     gap: 0.3rem;
 }
-.badge-pending { background: rgba(249,115,22,0.12); color: var(--primary-light); border: 1px solid rgba(249,115,22,0.25); }
-.badge-dilimpahkan { background: rgba(6,182,212,0.12); color: var(--info-light); border: 1px solid rgba(6,182,212,0.25); }
-.badge-selesai { background: rgba(34,197,94,0.12); color: var(--success-light); border: 1px solid rgba(34,197,94,0.25); }
-.badge-menunggu { background: rgba(249,115,22,0.12); color: var(--primary-light); border: 1px solid rgba(249,115,22,0.25); }
-.badge-diterima { background: rgba(34,197,94,0.12); color: var(--success-light); border: 1px solid rgba(34,197,94,0.25); }
-.badge-ditolak { background: rgba(239,68,68,0.12); color: var(--danger-light); border: 1px solid rgba(239,68,68,0.25); }
+.badge-pending { background: rgba(255,255,255,0.1); color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.2); }
+.badge-dilimpahkan { background: rgba(255,255,255,0.15); color: var(--white); border: 1px solid rgba(255,255,255,0.3); }
+.badge-selesai { background: rgba(249,115,22,0.15); color: var(--primary); border: 1px solid var(--primary); }
+.badge-menunggu { background: rgba(255,255,255,0.1); color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.2); }
+.badge-diterima { background: rgba(249,115,22,0.15); color: var(--primary); border: 1px solid var(--primary); }
+.badge-ditolak { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1); }
 
-/* Kategori Gakkum Badges */
+/* Unified Kategori Badges (Orange & Monochrome) */
 .badge-kategori {
-    font-size: 0.63rem;
-    font-weight: 700;
-    padding: 0.25rem 0.6rem;
-    border-radius: 6px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 0.3rem 0.65rem;
+    border-radius: var(--radius-sm);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
 }
-.badge-kat-tilang { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.2); }
-.badge-kat-penderekan { background: rgba(249,115,22,0.12); color: var(--primary-light); border: 1px solid rgba(249,115,22,0.2); }
-.badge-kat-razia { background: rgba(168,85,247,0.12); color: #c084fc; border: 1px solid rgba(168,85,247,0.2); }
-.badge-kat-pengamanan { background: rgba(6,182,212,0.12); color: #22d3ee; border: 1px solid rgba(6,182,212,0.2); }
-.badge-kat-patroli { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.2); }
-.badge-kat-laka_lantas { background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.25); }
-.badge-kat-lainnya { background: rgba(115,115,115,0.12); color: #a3a3a3; border: 1px solid rgba(115,115,115,0.2); }
+.badge-kat-tilang, .badge-kat-penderekan, .badge-kat-razia, .badge-kat-pengamanan, .badge-kat-patroli, .badge-kat-laka_lantas {
+    background: rgba(249,115,22,0.12);
+    color: var(--primary-light);
+    border: 1px solid rgba(249,115,22,0.2);
+}
+.badge-kat-lainnya { background: rgba(255,255,255,0.1); color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.2); }
 
 /* ============================================
    Table
@@ -616,9 +617,9 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
 .avatar-danregu { background: var(--warning); box-shadow: 0 4px 10px rgba(234,179,8,0.3); }
 .avatar-anggota { background: #404040; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
 
-.badge-role-admin { background: rgba(249,115,22,0.12); color: var(--primary-light); border: 1px solid rgba(249,115,22,0.25); }
-.badge-role-danregu { background: rgba(234,179,8,0.12); color: var(--warning-light); border: 1px solid rgba(234,179,8,0.25); }
-.badge-role-anggota { background: rgba(115,115,115,0.12); color: var(--text-secondary); border: 1px solid rgba(115,115,115,0.2); }
+.badge-role-admin { background: rgba(249,115,22,0.15); color: var(--primary); border: 1px solid rgba(249,115,22,0.3); }
+.badge-role-danregu { background: rgba(255,255,255,0.1); color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.2); }
+.badge-role-anggota { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1); }
 
 /* SweetAlert2 dark override */
 .swal2-popup { font-family: 'Inter', sans-serif !important; }
