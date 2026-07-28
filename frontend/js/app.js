@@ -10,7 +10,7 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
         .when('/dashboard', { templateUrl: 'views/dashboard.html?v=14', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=15', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=14', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=24', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=25', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=14', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/sop', { templateUrl: 'views/sop.html?v=14', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/struktur', { templateUrl: 'views/org-chart.html?v=14', controller: 'OrgChartCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
@@ -564,12 +564,42 @@ function($scope, ApiService, $rootScope) {
     $scope.subnitModalData = null;
     $scope.showSubnitDetail = function(day, shift, subGroup) {
         $scope.subnitModalData = {
+            rawDate: day.dateStr,
             dateStr: day.dayName + ', ' + day.dayNum + ' ' + $scope.monthNames[$scope.selectedMonth - 1] + ' ' + $scope.selectedYear,
             shift: shift,
             subnitName: subGroup.name,
             list: subGroup.list
         };
         new bootstrap.Modal(document.getElementById('subnitDetailModal')).show();
+    };
+
+    $scope.openAddScheduleForSubnit = function(subData) {
+        var detailEl = document.getElementById('subnitDetailModal');
+        var m = bootstrap.Modal.getInstance(detailEl);
+        if (m) m.hide();
+
+        var subId = '';
+        if (subData && subData.subnitName) {
+            var found = ($scope.subnitList || []).find(function(s) {
+                return s.nama.toLowerCase().indexOf(subData.subnitName.toLowerCase()) >= 0 ||
+                       subData.subnitName.toLowerCase().indexOf(s.nama.toLowerCase()) >= 0;
+            });
+            if (found) subId = String(found.id);
+        }
+
+        var parts = subData && subData.rawDate ? subData.rawDate.split('-') : [];
+        var dt = parts.length === 3 ? new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2])) : new Date();
+
+        $scope.schedForm = {
+            tanggal: dt,
+            shift: subData ? subData.shift : 'Pagi',
+            subnit_id: subId,
+            tipe: 'reguler'
+        };
+
+        setTimeout(function() {
+            new bootstrap.Modal(document.getElementById('addScheduleModal')).show();
+        }, 300);
     };
 
     $scope.selectDate = function(day) {

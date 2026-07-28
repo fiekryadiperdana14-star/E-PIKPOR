@@ -284,7 +284,7 @@
                     <strong style="color: #1e293b; font-size: 0.9rem;">{{ subnitModalData.dateStr }}</strong>
                 </div>
 
-                <div class="list-group">
+                <div class="list-group mb-3">
                     <div class="list-group-item d-flex justify-content-between align-items-center p-3" ng-repeat="p in subnitModalData.list">
                         <div>
                             <div class="fw-bold fs-6" style="color: #000;">{{ p.pangkat }} {{ p.nama_lengkap }}</div>
@@ -298,6 +298,12 @@
                             <button class="btn-hapus" ng-click="deleteSchedule(p.id)" ng-if="user.role==='admin'||user.role==='kanit'" title="Hapus Personel Ini"><i class="bi bi-trash3-fill"></i></button>
                         </div>
                     </div>
+                </div>
+
+                <div class="pt-2 border-top" ng-if="user.role==='admin'||user.role==='kanit'||user.role==='kasubnit'">
+                    <button type="button" class="btn btn-primary w-100 fw-bold py-2 fs-7" ng-click="openAddScheduleForSubnit(subnitModalData)">
+                        <i class="bi bi-person-plus-fill me-2"></i>+ Tambah Anggota / Personel
+                    </button>
                 </div>
             </div>
         </div>
