@@ -531,3 +531,38 @@
         </div>
     </div>
 </div>
+
+<!-- ============== AUTO GENERATE MODAL ============== -->
+<div class="modal fade" id="generateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-modal">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold text-primary"><i class="bi bi-magic me-2"></i>Auto Generate Jadwal Piket</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form ng-submit="submitGenerate()" id="formGenerate">
+                    <div class="alert alert-info py-2 px-3 fs-7 mb-3">
+                        <i class="bi bi-info-circle-fill me-1"></i>
+                        Sistem akan menggenerate jadwal otomatis: <strong>2 orang per Regu + Kasubnit/Kanit</strong> per shift per Zona.
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tanggal Mulai</label>
+                        <input type="date" class="form-control" ng-model="genForm.tanggal_mulai" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Tanggal Selesai</label>
+                        <input type="date" class="form-control" ng-model="genForm.tanggal_selesai" required>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary fw-bold" ng-disabled="isGenerating">
+                            <span ng-if="isGenerating" class="spinner-border spinner-border-sm me-1"></span>
+                            <i class="bi bi-magic me-1" ng-if="!isGenerating"></i>Generate Sekarang
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

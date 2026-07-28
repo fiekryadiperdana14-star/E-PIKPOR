@@ -10,7 +10,7 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
         .when('/dashboard', { templateUrl: 'views/dashboard.html?v=14', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=15', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=14', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=32', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=33', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=14', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/sop', { templateUrl: 'views/sop.html?v=14', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/struktur', { templateUrl: 'views/org-chart.html?v=14', controller: 'OrgChartCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
@@ -815,12 +815,29 @@ function($scope, ApiService, $rootScope) {
         }).then(function(r) { if (r.isConfirmed) { ApiService.deleteSchedule(id).then(function() { loadData(); $scope.selectedDateSchedules = []; }); } });
     };
     $scope.generateSchedule = function() {
-        $scope.genForm = {};
+        var lastDayNum = new Date($scope.selectedYear, $scope.selectedMonth, 0).getDate();
+        $scope.genForm = {
+            tanggal_mulai: new Date($scope.selectedYear, $scope.selectedMonth - 1, 1),
+            tanggal_selesai: new Date($scope.selectedYear, $scope.selectedMonth - 1, lastDayNum)
+        };
         new bootstrap.Modal(document.getElementById('generateModal')).show();
     };
     $scope.submitGenerate = function() {
         $scope.isGenerating = true;
-        ApiService.generateSchedule($scope.genForm).then(function(r) {
+        var payload = {
+            tanggal_mulai: $scope.genForm.tanggal_mulai ? 
+                ($scope.genForm.tanggal_mulai instanceof Date ? 
+                    $scope.genForm.tanggal_mulai.getFullYear() + '-' + String($scope.genForm.tanggal_mulai.getMonth()+1).padStart(2,'0') + '-' + String($scope.genForm.tanggal_mulai.getDate()).padStart(2,'0') 
+                    : $scope.genForm.tanggal_mulai) 
+                : '',
+            tanggal_selesai: $scope.genForm.tanggal_selesai ? 
+                ($scope.genForm.tanggal_selesai instanceof Date ? 
+                    $scope.genForm.tanggal_selesai.getFullYear() + '-' + String($scope.genForm.tanggal_selesai.getMonth()+1).padStart(2,'0') + '-' + String($scope.genForm.tanggal_selesai.getDate()).padStart(2,'0') 
+                    : $scope.genForm.tanggal_selesai) 
+                : ''
+        };
+
+        ApiService.generateSchedule(payload).then(function(r) {
             Swal.fire({ icon: 'success', title: 'Berhasil!', text: r.data.message, background: '#1e293b', color: '#fff' });
             var m = bootstrap.Modal.getInstance(document.getElementById('generateModal')); if(m) m.hide();
             loadData();
