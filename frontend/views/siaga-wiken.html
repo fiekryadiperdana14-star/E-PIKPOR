@@ -83,52 +83,54 @@
     </div>
 
     <!-- All Events List -->
-    <div class="glass-card-static animate-fade-in-up">
-        <div class="section-title"><i class="bi bi-list-ul"></i> Riwayat Event Siaga Wiken</div>
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
+    <div class="glass-card-static animate-fade-in-up p-3 p-md-4">
+        <div class="section-title fw-extrabold mb-3"><i class="bi bi-list-ul text-primary me-2"></i> Riwayat Event Siaga Wiken</div>
+        
+        <!-- DESKTOP TABLE VIEW (d-none d-md-block) -->
+        <div class="table-responsive d-none d-md-block">
+            <table class="table table-hover align-middle mb-0">
                 <thead>
-                    <tr>
+                    <tr style="background: #fff7ed; color: #9a3412; border-bottom: 2px solid #fed7aa;">
                         <th>#</th>
                         <th>Event</th>
                         <th>Periode</th>
                         <th>Tipe</th>
                         <th>Personel</th>
                         <th>Status</th>
-                        <th ng-if="user.role === 'admin' || user.role === 'kanit'">Aksi</th>
+                        <th class="text-center" ng-if="user.role === 'admin' || user.role === 'kanit'">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="e in allEvents track by e.id">
-                        <td data-label="No">{{ $index + 1 }}</td>
-                        <td data-label="Event"><strong>{{ e.nama_event }}</strong></td>
-                        <td data-label="Periode" style="white-space:nowrap;">
+                        <td>{{ $index + 1 }}</td>
+                        <td><strong class="text-dark">{{ e.nama_event }}</strong></td>
+                        <td style="white-space:nowrap;">
                             {{ e.tanggal_mulai | date:'dd MMM' }} — {{ e.tanggal_selesai | date:'dd MMM yyyy' }}
                         </td>
-                        <td data-label="Tipe">
+                        <td>
                             <span class="badge-status" ng-class="{
                                 'badge-dilimpahkan': e.tipe==='weekend',
                                 'badge-selesai': e.tipe==='libur_nasional',
                                 'badge-pending': e.tipe==='cuti_bersama'
                             }">{{ e.tipe | uppercase }}</span>
                         </td>
-                        <td data-label="Personel">
-                            <span class="text-success">{{ e.hadir_count }}</span> / {{ e.total_personel }}
+                        <td>
+                            <span class="text-success fw-bold">{{ e.hadir_count }}</span> / {{ e.total_personel }}
                         </td>
-                        <td data-label="Status">
+                        <td>
                             <span class="badge-status" ng-class="{
                                 'badge-pending': e.status==='upcoming',
                                 'badge-dilimpahkan': e.status==='active',
                                 'badge-selesai': e.status==='completed'
                             }">{{ e.status | uppercase }}</span>
                         </td>
-                        <td ng-if="user.role === 'admin' || user.role === 'kanit'">
-                            <div class="d-flex gap-1">
+                        <td class="text-center" ng-if="user.role === 'admin' || user.role === 'kanit'">
+                            <div class="d-flex justify-content-center gap-1">
                                 <button class="btn btn-sm btn-outline-info" ng-click="manageEvent(e)" title="Kelola">
-                                    <i class="bi bi-gear"></i>
+                                    <i class="bi bi-gear me-1"></i>Kelola
                                 </button>
                                 <button class="btn btn-sm btn-outline-danger" ng-click="deleteEvent(e.id)" title="Hapus">
-                                    <i class="bi bi-trash3"></i>
+                                    <i class="bi bi-trash3 me-1"></i>Hapus
                                 </button>
                             </div>
                         </td>
@@ -136,9 +138,51 @@
                 </tbody>
             </table>
         </div>
-        <div class="empty-state" ng-if="allEvents.length === 0">
-            <i class="bi bi-shield-x"></i>
-            <p>Belum ada event Siaga Wiken.</p>
+
+        <!-- MOBILE CARDS VIEW (d-block d-md-none) -->
+        <div class="d-block d-md-none">
+            <div class="d-flex flex-column gap-3">
+                <div class="card border rounded-3 p-3 shadow-sm" style="background: #ffffff; border-color: #fed7aa !important;" ng-repeat="e in allEvents track by e.id">
+                    <div class="d-flex justify-content-between align-items-start border-bottom pb-2 mb-2">
+                        <div class="d-flex align-items-center gap-1.5">
+                            <span class="badge bg-secondary text-white rounded-circle" style="width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem;">
+                                {{ $index + 1 }}
+                            </span>
+                            <span class="badge-status" ng-class="{
+                                'badge-dilimpahkan': e.tipe==='weekend',
+                                'badge-selesai': e.tipe==='libur_nasional',
+                                'badge-pending': e.tipe==='cuti_bersama'
+                            }" style="font-size: 0.68rem;">{{ e.tipe | uppercase }}</span>
+                        </div>
+                        <span class="badge-status" ng-class="{
+                            'badge-pending': e.status==='upcoming',
+                            'badge-dilimpahkan': e.status==='active',
+                            'badge-selesai': e.status==='completed'
+                        }" style="font-size: 0.68rem;">{{ e.status | uppercase }}</span>
+                    </div>
+
+                    <div class="fw-extrabold text-dark mb-1" style="font-size: 0.95rem;">{{ e.nama_event }}</div>
+
+                    <div class="p-2.5 rounded-2 mb-2" style="background: #fff7ed; border: 1px solid #ffedd5; font-size: 0.8rem;">
+                        <div class="text-dark mb-1"><i class="bi bi-calendar3 text-primary me-1"></i><strong>Periode:</strong> {{ e.tanggal_mulai | date:'dd MMM' }} — {{ e.tanggal_selesai | date:'dd MMM yyyy' }}</div>
+                        <div class="text-dark"><i class="bi bi-people-fill text-success me-1"></i><strong>Kehadiran:</strong> <span class="text-success fw-bold">{{ e.hadir_count }}</span> dari {{ e.total_personel }} Personel</div>
+                    </div>
+
+                    <div class="d-flex gap-2 pt-1" ng-if="user.role === 'admin' || user.role === 'kanit'">
+                        <button class="btn btn-sm btn-outline-info flex-fill fw-bold py-1.5" ng-click="manageEvent(e)">
+                            <i class="bi bi-gear me-1"></i>Kelola
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger flex-fill fw-bold py-1.5" ng-click="deleteEvent(e.id)">
+                            <i class="bi bi-trash3 me-1"></i>Hapus
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="empty-state py-4 text-center" ng-if="allEvents.length === 0">
+            <i class="bi bi-shield-x fs-1 text-muted opacity-50 mb-2 d-block"></i>
+            <p class="text-muted mb-0">Belum ada event Siaga Wiken.</p>
         </div>
     </div>
 </div>

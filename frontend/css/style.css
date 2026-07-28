@@ -92,4 +92,36 @@ div.modal-content,
     }
 }
 
-/* ============================================    Glassmorphism Sidebar (Mobile)    ============================================ */ @media screen and (max-width: 991px) {     .app-sidebar {         background: rgba(255, 255, 255, 0.95) !important;         backdrop-filter: blur(20px);         -webkit-backdrop-filter: blur(20px);         border-right: 1px solid var(--border-orange);         width: 280px;     } } /* ============================================    Force All Fonts to Black    ============================================ */ body, h1, h2, h3, h4, h5, h6, p, a, span, div, button, input, select, textarea, small, strong, b, i, label, td, th, .btn, .badge, .form-control, .form-select, .nav-link, .stat-value, .stat-label, .page-title, .holiday-day, .holiday-dow {     color: #000000 !important; }  .form-control::placeholder {     color: #000000 !important;     opacity: 0.6 !important; }
+/* ============================================    Glassmorphism Sidebar (Mobile)    ============================================ */
+@media screen and (max-width: 991px) {
+    .app-sidebar {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        opacity: 1 !important;
+        border-right: 1.5px solid var(--border-orange) !important;
+        width: 280px !important;
+        z-index: 1055 !important;
+        box-shadow: 4px 0 25px rgba(0,0,0,0.15) !important;
+    }
+    .app-sidebar .offcanvas-header,
+    .app-sidebar .offcanvas-body {
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+    }
+}
+
+.offcanvas-backdrop {
+    background-color: rgba(15, 23, 42, 0.6) !important;
+    backdrop-filter: blur(4px) !important;
+    z-index: 1050 !important;
+}
+
+/* ============================================    Force All Fonts to Black    ============================================ */
+body, h1, h2, h3, h4, h5, h6, p, a, span, div, button, input, select, textarea, small, strong, b, i, label, td, th, .btn, .badge, .form-control, .form-select, .nav-link, .stat-value, .stat-label, .page-title, .holiday-day, .holiday-dow {
+    color: #000000 !important;
+}
+
+.form-control::placeholder {
+    color: #000000 !important;
+    opacity: 0.6 !important;
+}

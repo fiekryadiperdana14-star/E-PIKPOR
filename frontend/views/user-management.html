@@ -45,25 +45,26 @@
         </div>
     </div>
 
-    <!-- Users Table -->
-    <div class="glass-card-static animate-fade-in-up">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0" id="tabelUsers">
+    <!-- Users Table / Cards -->
+    <div class="glass-card-static animate-fade-in-up p-3 p-md-4">
+        <!-- DESKTOP TABLE VIEW (d-none d-md-block) -->
+        <div class="table-responsive d-none d-md-block">
+            <table class="table table-hover align-middle mb-0" id="tabelUsers">
                 <thead>
-                    <tr>
+                    <tr style="background: #fff7ed; color: #9a3412; border-bottom: 2px solid #fed7aa;">
                         <th>#</th>
                         <th>Personel</th>
                         <th>Username</th>
                         <th>Role</th>
                         <th>Subnit / Regu</th>
                         <th>Status</th>
-                        <th>Aksi</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="u in allUsers | filter:searchQuery | startFrom:(currentPage-1)*pageSize | limitTo:pageSize track by u.id">
-                        <td data-label="No">{{ (currentPage-1)*pageSize + $index + 1 }}</td>
-                        <td data-label="Personel">
+                        <td>{{ (currentPage-1)*pageSize + $index + 1 }}</td>
+                        <td>
                             <div class="d-flex align-items-center gap-2">
                                 <div class="user-avatar" ng-class="{
                                     'avatar-admin': u.role === 'admin',
@@ -78,44 +79,95 @@
                                     }"></i>
                                 </div>
                                 <div>
-                                    <strong>{{ u.pangkat }} {{ u.nama_lengkap }}</strong>
+                                    <strong class="text-dark">{{ u.pangkat }} {{ u.nama_lengkap }}</strong>
                                     <small class="d-block text-muted" ng-if="u.nrp">NRP: {{ u.nrp }}</small>
                                 </div>
                             </div>
                         </td>
-                        <td data-label="Username"><code class="text-white">{{ u.username }}</code></td>
-                        <td data-label="Role">
+                        <td><code class="text-dark bg-light px-2 py-1 rounded">{{ u.username }}</code></td>
+                        <td>
                             <span class="badge-status" ng-class="{
                                 'badge-role-admin': u.role === 'admin',
                                 'badge-role-danregu': u.role === 'kanit' || u.role === 'kasubnit' || u.role === 'danregu',
                                 'badge-role-anggota': u.role === 'anggota' || u.role === 'bamin'
                             }">{{ u.role | uppercase }}</span>
                         </td>
-                        <td data-label="Subnit">
-                            <span ng-if="u.subnit_nama" class="badge bg-dark bg-opacity-50 me-1">{{ u.subnit_nama }}</span>
-                            <span ng-if="u.regu_nama" class="badge bg-dark bg-opacity-50">{{ u.regu_nama }}</span>
+                        <td>
+                            <span ng-if="u.subnit_nama" class="badge bg-secondary bg-opacity-10 text-dark border me-1">{{ u.subnit_nama }}</span>
+                            <span ng-if="u.regu_nama" class="badge bg-secondary bg-opacity-10 text-dark border">{{ u.regu_nama }}</span>
                             <span ng-if="!u.subnit_nama && !u.regu_nama" class="text-muted">—</span>
                         </td>
-                        <td data-label="Status">
-                            <span class="badge" ng-class="u.is_active ? 'bg-success bg-opacity-25 text-success' : 'bg-danger bg-opacity-25 text-danger'">
+                        <td>
+                            <span class="badge" ng-class="u.is_active ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle'" style="font-size: 0.78rem;">
                                 {{ u.is_active ? 'Aktif' : 'Nonaktif' }}
                             </span>
                         </td>
-                        <td data-label="Aksi">
-                            <div class="d-flex gap-1">
-                                <button class="btn btn-sm btn-outline-info" ng-click="openEditModal(u)"><i class="bi bi-pencil"></i></button>
-                                <button class="btn btn-sm btn-outline-danger" ng-click="deleteUser(u)" ng-if="u.id !== currentUser.id"><i class="bi bi-trash3"></i></button>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-1">
+                                <button class="btn btn-sm btn-outline-info" ng-click="openEditModal(u)" title="Edit User"><i class="bi bi-pencil me-1"></i>Edit</button>
+                                <button class="btn btn-sm btn-outline-danger" ng-click="deleteUser(u)" ng-if="u.id !== currentUser.id" title="Hapus User"><i class="bi bi-trash3 me-1"></i>Hapus</button>
                             </div>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
-        <div class="d-flex justify-content-between align-items-center mt-3" ng-if="(allUsers | filter:searchQuery).length > pageSize">
-            <small class="text-muted">Hal. {{ currentPage }}</small>
+
+        <!-- MOBILE CARDS VIEW (d-block d-md-none) -->
+        <div class="d-block d-md-none">
+            <div class="d-flex flex-column gap-3">
+                <div class="card border rounded-3 p-3 shadow-sm" style="background: #ffffff; border-color: #fed7aa !important;" ng-repeat="u in allUsers | filter:searchQuery | startFrom:(currentPage-1)*pageSize | limitTo:pageSize track by u.id">
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="user-avatar" ng-class="{
+                                'avatar-admin': u.role === 'admin',
+                                'avatar-danregu': u.role === 'kanit' || u.role === 'kasubnit' || u.role === 'danregu',
+                                'avatar-anggota': u.role === 'anggota' || u.role === 'bamin'
+                            }" style="width: 32px; height: 32px; font-size: 0.85rem;">
+                                <i class="bi" ng-class="{
+                                    'bi-shield-fill': u.role === 'admin',
+                                    'bi-star-fill': u.role === 'kanit' || u.role === 'kasubnit',
+                                    'bi-person-badge-fill': u.role === 'danregu',
+                                    'bi-person-fill': u.role === 'anggota' || u.role === 'bamin'
+                                }"></i>
+                            </div>
+                            <span class="badge-status" ng-class="{
+                                'badge-role-admin': u.role === 'admin',
+                                'badge-role-danregu': u.role === 'kanit' || u.role === 'kasubnit' || u.role === 'danregu',
+                                'badge-role-anggota': u.role === 'anggota' || u.role === 'bamin'
+                            }" style="font-size: 0.68rem;">{{ u.role | uppercase }}</span>
+                        </div>
+                        <span class="badge" ng-class="u.is_active ? 'bg-success-subtle text-success border border-success-subtle' : 'bg-danger-subtle text-danger border border-danger-subtle'" style="font-size: 0.7rem;">
+                            {{ u.is_active ? 'Aktif' : 'Nonaktif' }}
+                        </span>
+                    </div>
+
+                    <div class="fw-extrabold text-dark mb-1" style="font-size: 0.95rem;">{{ u.pangkat }} {{ u.nama_lengkap }}</div>
+                    <small class="text-muted d-block mb-2" ng-if="u.nrp">NRP: {{ u.nrp }}</small>
+
+                    <div class="p-2.5 rounded-2 mb-2" style="background: #fff7ed; border: 1px solid #ffedd5; font-size: 0.8rem;">
+                        <div class="text-dark mb-1"><i class="bi bi-person-fill text-primary me-1"></i><strong>Username:</strong> <code>{{ u.username }}</code></div>
+                        <div class="text-dark"><i class="bi bi-building me-1 text-warning"></i><strong>Subnit / Regu:</strong> {{ u.subnit_nama || '-' }} / {{ u.regu_nama || '-' }}</div>
+                    </div>
+
+                    <div class="d-flex gap-2 pt-1">
+                        <button class="btn btn-sm btn-outline-info flex-fill fw-bold py-1.5" ng-click="openEditModal(u)">
+                            <i class="bi bi-pencil me-1"></i>Edit
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger flex-fill fw-bold py-1.5" ng-click="deleteUser(u)" ng-if="u.id !== currentUser.id">
+                            <i class="bi bi-trash3 me-1"></i>Hapus
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-3 pt-2 border-top gap-2" ng-if="(allUsers | filter:searchQuery).length > pageSize">
+            <small class="text-muted fw-medium">Hal. {{ currentPage }} dari {{ ((allUsers | filter:searchQuery).length / pageSize) | number:0 }}</small>
             <div class="btn-group">
-                <button class="btn btn-sm btn-outline-secondary" ng-disabled="currentPage == 1" ng-click="currentPage = currentPage - 1"><i class="bi bi-chevron-left"></i></button>
-                <button class="btn btn-sm btn-outline-secondary" ng-disabled="currentPage >= (allUsers | filter:searchQuery).length/pageSize" ng-click="currentPage = currentPage + 1"><i class="bi bi-chevron-right"></i></button>
+                <button class="btn btn-sm btn-outline-secondary px-3" ng-disabled="currentPage == 1" ng-click="currentPage = currentPage - 1"><i class="bi bi-chevron-left me-1"></i>Prev</button>
+                <button class="btn btn-sm btn-outline-secondary px-3" ng-disabled="currentPage >= (allUsers | filter:searchQuery).length/pageSize" ng-click="currentPage = currentPage + 1">Next<i class="bi bi-chevron-right ms-1"></i></button>
             </div>
         </div>
     </div>
