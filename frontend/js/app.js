@@ -10,7 +10,7 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
         .when('/dashboard', { templateUrl: 'views/dashboard.html?v=14', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=15', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=14', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=31', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=32', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=14', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/sop', { templateUrl: 'views/sop.html?v=14', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/struktur', { templateUrl: 'views/org-chart.html?v=14', controller: 'OrgChartCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
@@ -398,53 +398,75 @@ function($scope, ApiService, $rootScope) {
         return dayNamesFull[dt.getDay()] + ', ' + dt.getDate() + ' ' + $scope.monthNames[dt.getMonth()] + ' ' + dt.getFullYear();
     }
 
-    function groupByReguAndLeadership(arr) {
-        var map = {};
-        (arr || []).forEach(function(s) {
-            var groupKey = '';
-            var type = 'regu';
-            var subName = s.subnit_nama || '';
+    function groupByZona(shiftSchedules) {
+        var zonaOrder = ['Zona Timur', 'Zona Barat', 'Zona Tengah'];
+        var zonaSubnitMap = {
+            'Zona Timur': 'Timur',
+            'Zona Barat': 'Barat',
+            'Zona Tengah': 'Tengah'
+        };
 
-            if (s.role === 'kanit' || (s.nama_lengkap && s.nama_lengkap.toLowerCase().indexOf('fiekry') >= 0)) {
-                groupKey = 'Kanit Gakkum';
-                type = 'kanit';
-            } else if (s.role === 'kasubnit' || (s.nama_lengkap && s.nama_lengkap.toLowerCase().indexOf('sucipto') >= 0)) {
-                groupKey = 'Kasubnit I';
-                type = 'kasubnit_1';
-            } else if (s.role === 'kasubnit' || (s.nama_lengkap && s.nama_lengkap.toLowerCase().indexOf('sari') >= 0)) {
-                groupKey = 'Kasubnit II';
-                type = 'kasubnit_2';
-            } else if (s.regu_nama && subName) {
-                groupKey = subName + ' - ' + s.regu_nama;
-            } else if (s.regu_nama) {
-                groupKey = s.regu_nama;
-            } else if (subName) {
-                groupKey = subName;
+        var zonas = {};
+        zonaOrder.forEach(function(zName) {
+            zonas[zName] = {
+                name: zName,
+                subnitKeyword: zonaSubnitMap[zName],
+                kasubnitList: [],
+                reguMap: {},
+                allMembers: [],
+                count: 0
+            };
+        });
+
+        (shiftSchedules || []).forEach(function(s) {
+            var subName = (s.subnit_nama || '').toLowerCase();
+            var targetKey = 'Zona Timur';
+            if (subName.indexOf('barat') >= 0) targetKey = 'Zona Barat';
+            else if (subName.indexOf('tengah') >= 0) targetKey = 'Zona Tengah';
+            else if (subName.indexOf('timur') >= 0) targetKey = 'Zona Timur';
+            else {
+                if (s.regu_id >= 4 && s.regu_id <= 6) targetKey = 'Zona Tengah';
+                else if (s.regu_id >= 7 && s.regu_id <= 9) targetKey = 'Zona Barat';
+                else targetKey = 'Zona Timur';
+            }
+
+            var zObj = zonas[targetKey];
+            zObj.allMembers.push(s);
+            zObj.count++;
+
+            var isLeader = s.role === 'kanit' || s.role === 'kasubnit' ||
+                (s.nama_lengkap && (s.nama_lengkap.toLowerCase().indexOf('fiekry') >= 0 ||
+                                    s.nama_lengkap.toLowerCase().indexOf('sucipto') >= 0 ||
+                                    s.nama_lengkap.toLowerCase().indexOf('sari') >= 0));
+
+            if (isLeader) {
+                zObj.kasubnitList.push(s);
             } else {
-                groupKey = 'Piket';
+                var rName = s.regu_nama || 'Regu Anggota';
+                if (!zObj.reguMap[rName]) zObj.reguMap[rName] = [];
+                zObj.reguMap[rName].push(s);
             }
-
-            if (!map[groupKey]) {
-                map[groupKey] = {
-                    name: groupKey,
-                    type: type,
-                    subnitName: subName,
-                    list: []
-                };
-            }
-            map[groupKey].list.push(s);
         });
 
         var res = [];
-        for (var k in map) {
+        zonaOrder.forEach(function(zName) {
+            var zObj = zonas[zName];
+            var reguArray = [];
+            for (var rName in zObj.reguMap) {
+                reguArray.push({
+                    reguName: rName,
+                    members: zObj.reguMap[rName]
+                });
+            }
             res.push({
-                name: map[k].name,
-                type: map[k].type,
-                subnitName: map[k].subnitName,
-                count: map[k].list.length,
-                list: map[k].list
+                name: zObj.name,
+                subnitKeyword: zObj.subnitKeyword,
+                kasubnitList: zObj.kasubnitList,
+                reguList: reguArray,
+                allMembers: zObj.allMembers,
+                count: zObj.count
             });
-        }
+        });
         return res;
     }
 
@@ -460,40 +482,41 @@ function($scope, ApiService, $rootScope) {
         $scope.yesterdayStr = formatDateLabel(yesterday);
         $scope.tomorrowStr = formatDateLabel(tomorrow);
 
-        var rawToday = { Pagi: [], Sore: [], Malam: [] };
-        var rawYesterday = { Pagi: [], Sore: [], Malam: [] };
-        var rawTomorrow = { Pagi: [], Sore: [], Malam: [] };
+        var rawToday = { Pagi: [], Siang: [], Malam: [] };
+        var rawYesterday = { Pagi: [], Siang: [], Malam: [] };
+        var rawTomorrow = { Pagi: [], Siang: [], Malam: [] };
 
         (allSchedules || []).forEach(function(s) {
             var d = new Date(s.tanggal);
             var key = formatDateKey(d);
-            if (key === todayKey && s.shift && rawToday[s.shift]) rawToday[s.shift].push(s);
-            if (key === yesterdayKey && s.shift && rawYesterday[s.shift]) rawYesterday[s.shift].push(s);
-            if (key === tomorrowKey && s.shift && rawTomorrow[s.shift]) rawTomorrow[s.shift].push(s);
+            var shiftName = s.shift === 'Sore' ? 'Siang' : s.shift; // Normalize Sore to Siang
+            if (key === todayKey && shiftName && rawToday[shiftName]) rawToday[shiftName].push(s);
+            if (key === yesterdayKey && shiftName && rawYesterday[shiftName]) rawYesterday[shiftName].push(s);
+            if (key === tomorrowKey && shiftName && rawTomorrow[shiftName]) rawTomorrow[shiftName].push(s);
         });
 
         $scope.todaySchedules = {
-            Pagi: groupByReguAndLeadership(rawToday.Pagi),
-            Sore: groupByReguAndLeadership(rawToday.Sore),
-            Malam: groupByReguAndLeadership(rawToday.Malam),
+            Pagi: groupByZona(rawToday.Pagi),
+            Siang: groupByZona(rawToday.Siang),
+            Malam: groupByZona(rawToday.Malam),
             rawDate: todayKey,
             dateLabel: $scope.todayStr,
             dayName: dayNamesFull[today.getDay()],
             dayNum: today.getDate()
         };
         $scope.yesterdaySchedules = {
-            Pagi: groupByReguAndLeadership(rawYesterday.Pagi),
-            Sore: groupByReguAndLeadership(rawYesterday.Sore),
-            Malam: groupByReguAndLeadership(rawYesterday.Malam),
+            Pagi: groupByZona(rawYesterday.Pagi),
+            Siang: groupByZona(rawYesterday.Siang),
+            Malam: groupByZona(rawYesterday.Malam),
             rawDate: yesterdayKey,
             dateLabel: $scope.yesterdayStr,
             dayName: dayNamesFull[yesterday.getDay()],
             dayNum: yesterday.getDate()
         };
         $scope.tomorrowSchedules = {
-            Pagi: groupByReguAndLeadership(rawTomorrow.Pagi),
-            Sore: groupByReguAndLeadership(rawTomorrow.Sore),
-            Malam: groupByReguAndLeadership(rawTomorrow.Malam),
+            Pagi: groupByZona(rawTomorrow.Pagi),
+            Siang: groupByZona(rawTomorrow.Siang),
+            Malam: groupByZona(rawTomorrow.Malam),
             rawDate: tomorrowKey,
             dateLabel: $scope.tomorrowStr,
             dayName: dayNamesFull[tomorrow.getDay()],
@@ -559,9 +582,10 @@ function($scope, ApiService, $rootScope) {
         ($scope.schedules || []).forEach(function(s) {
             var d = new Date(s.tanggal);
             var key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
-            if (!schedByDate[key]) schedByDate[key] = { Pagi: [], Sore: [], Malam: [], all: [] };
-            if (s.shift && schedByDate[key][s.shift]) {
-                schedByDate[key][s.shift].push(s);
+            if (!schedByDate[key]) schedByDate[key] = { Pagi: [], Siang: [], Malam: [], all: [] };
+            var shiftKey = s.shift === 'Sore' ? 'Siang' : s.shift;
+            if (shiftKey && schedByDate[key][shiftKey]) {
+                schedByDate[key][shiftKey].push(s);
             }
             schedByDate[key].all.push(s);
         });
@@ -583,7 +607,7 @@ function($scope, ApiService, $rootScope) {
             var key = $scope.selectedYear + '-' + String($scope.selectedMonth).padStart(2,'0') + '-' + String(d).padStart(2,'0');
 
             var pagiArr = (schedByDate[key] && schedByDate[key].Pagi) || [];
-            var soreArr = (schedByDate[key] && schedByDate[key].Sore) || [];
+            var siangArr = (schedByDate[key] && schedByDate[key].Siang) || [];
             var malamArr = (schedByDate[key] && schedByDate[key].Malam) || [];
 
             var dayItem = {
@@ -595,11 +619,11 @@ function($scope, ApiService, $rootScope) {
                 isHoliday: !!holidayMap[key],
                 holidayName: holidayMap[key] || null,
                 pagi: pagiArr,
-                sore: soreArr,
+                siang: siangArr,
                 malam: malamArr,
-                pagiSubnits: groupByReguAndLeadership(pagiArr),
-                soreSubnits: groupByReguAndLeadership(soreArr),
-                malamSubnits: groupByReguAndLeadership(malamArr),
+                pagiZonas: groupByZona(pagiArr),
+                siangZonas: groupByZona(siangArr),
+                malamZonas: groupByZona(malamArr),
                 all: (schedByDate[key] && schedByDate[key].all) || []
             };
 
@@ -627,16 +651,49 @@ function($scope, ApiService, $rootScope) {
         });
     };
 
-    $scope.subnitModalData = null;
-    $scope.showSubnitDetail = function(day, shift, subGroup) {
-        $scope.subnitModalData = {
-            rawDate: day.dateStr,
-            dateStr: day.dayName + ', ' + day.dayNum + ' ' + $scope.monthNames[$scope.selectedMonth - 1] + ' ' + $scope.selectedYear,
+    $scope.zonaModalData = null;
+    $scope.showZonaModal = function(day, shift, zonaObj) {
+        var dateFormatted = day.dateStr || day.rawDate;
+        var dateLabel = day.dayName ? (day.dayName + ', ' + day.dayNum + ' ' + $scope.monthNames[$scope.selectedMonth - 1] + ' ' + $scope.selectedYear) : (day.dateLabel || dateFormatted);
+        $scope.zonaModalData = {
+            rawDate: dateFormatted,
+            dateStr: dateLabel,
             shift: shift,
-            subnitName: subGroup.name,
-            list: subGroup.list
+            zonaName: zonaObj.name,
+            subnitKeyword: zonaObj.subnitKeyword,
+            kasubnitList: zonaObj.kasubnitList || [],
+            reguList: zonaObj.reguList || [],
+            allMembers: zonaObj.allMembers || []
         };
-        new bootstrap.Modal(document.getElementById('subnitDetailModal')).show();
+        new bootstrap.Modal(document.getElementById('zonaDetailModal')).show();
+    };
+
+    $scope.openAddScheduleForZona = function(zonaData) {
+        var modalEl = document.getElementById('zonaDetailModal');
+        var modalInstance = bootstrap.Modal.getInstance(modalEl);
+        if (modalInstance) modalInstance.hide();
+
+        var subId = '';
+        if (zonaData && zonaData.subnitKeyword) {
+            var found = ($scope.subnitList || []).find(function(s) {
+                return s.nama.toLowerCase().indexOf(zonaData.subnitKeyword.toLowerCase()) >= 0;
+            });
+            if (found) subId = String(found.id);
+        }
+
+        var parts = zonaData && zonaData.rawDate ? zonaData.rawDate.split('-') : [];
+        var dt = parts.length === 3 ? new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2])) : new Date();
+
+        $scope.schedForm = {
+            tanggal: dt,
+            shift: zonaData ? (zonaData.shift === 'Siang' ? 'Sore' : zonaData.shift) : 'Pagi',
+            subnit_id: subId,
+            tipe: 'reguler'
+        };
+
+        setTimeout(function() {
+            new bootstrap.Modal(document.getElementById('addScheduleModal')).show();
+        }, 300);
     };
 
     $scope.openAddScheduleForSubnit = function(subData) {
