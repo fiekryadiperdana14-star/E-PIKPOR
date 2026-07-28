@@ -14,7 +14,7 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
         .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=45', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/sop', { templateUrl: 'views/sop.html?v=14', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/struktur', { templateUrl: 'views/org-chart.html?v=14', controller: 'OrgChartCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/users', { templateUrl: 'views/user-management.html?v=45', controller: 'UserMgmtCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/users', { templateUrl: 'views/user-management.html?v=46', controller: 'UserManagementCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/kalender-libur', { templateUrl: 'views/holidays.html?v=14', controller: 'HolidayCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .otherwise({ redirectTo: '/landing' });
 
