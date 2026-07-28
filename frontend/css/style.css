@@ -1353,10 +1353,10 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
    ============================================ */
 @media screen and (max-width: 991px) {
     .app-sidebar {
-        background: rgba(10, 10, 10, 0.95) !important;
+        background: rgba(255, 255, 255, 0.95) !important;
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
-        border-right: 1px solid var(--border-color);
+        border-right: 1px solid var(--border-orange);
         width: 280px;
     }
 }
