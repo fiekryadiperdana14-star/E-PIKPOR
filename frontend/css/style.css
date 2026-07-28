@@ -133,6 +133,9 @@ body {
     background: var(--bg-tertiary);
     border-right: 1px solid var(--border-color);
 }
+.app-sidebar .offcanvas-body {
+    padding-bottom: 3rem !important;
+}
 .app-sidebar .nav-link {
     color: var(--text-secondary);
     font-weight: 500;
@@ -1061,9 +1064,9 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
     padding: 0.4rem;
     flex-shrink: 0;
 }
-.hd-libur { background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.2); }
-.hd-cuti { background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.2); }
-.hd-khusus { background: rgba(6,182,212,0.12); border: 1px solid rgba(6,182,212,0.2); }
+.hd-libur { background: rgba(249,115,22,0.15); border: 1px solid rgba(249,115,22,0.3); color: var(--primary); }
+.hd-cuti { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: var(--text-secondary); }
+.hd-khusus { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); }
 .holiday-day { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); display: block; }
 .holiday-dow { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; }
 .holiday-info { flex: 1; font-size: 0.88rem; }
