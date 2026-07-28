@@ -1007,16 +1007,15 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
 .org-subnits-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0 2rem;
+/* Subnits Wrapper & Spacing */
+.org-subnits-wrapper {
     width: 100%;
-}
-.org-subnit-col-contents {
-    display: contents;
-}
-.org-grid-item {
+    position: relative;
     display: flex;
-    justify-content: center;
-    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
 }
 
 /* Overriding cyan line for subnits */
@@ -1028,31 +1027,23 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
     background: rgba(6,182,212,0.3);
 }
 
-/* Kasubnit Slot Alignment */
-.org-kasubnit-slot {
-    min-height: 120px;
-    width: 100%;
+/* Kasubnit Row Stretch */
+.org-kasubnit-row {
+    align-items: stretch !important;
+}
+.org-kasubnit-row .org-col {
     display: flex;
-    flex-direction: column;
-    align-items: center;
     justify-content: center;
 }
-.org-line-v-full {
-    width: 2px;
-    height: 100%;
-    min-height: 120px;
-    background: linear-gradient(to bottom, rgba(6,182,212,0.5), rgba(6,182,212,0.15));
-}
 
-/* Spacer & Continuous Line */
-.org-line-v-continuous {
+.org-line-v-full {
     width: 2px;
     height: 100%;
     min-height: 40px;
     background: linear-gradient(to bottom, rgba(6,182,212,0.5), rgba(6,182,212,0.15));
 }
 
-/* Gap for org-row-3 */
+/* Row & Column flex setup */
 .org-row-3 {
     display: flex;
     width: 100%;
@@ -1063,6 +1054,9 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
     flex: 1;
     min-width: 0;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 /* Cards */

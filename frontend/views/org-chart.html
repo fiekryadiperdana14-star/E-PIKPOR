@@ -76,35 +76,59 @@
                 </div>
             </div>
 
-            <!-- SUBNITS (Splits into 3 columns using Flex Slot) -->
+            <!-- SUBNITS (Splits into 3 columns using 4 synchronized flex rows) -->
             <div class="org-subnits-wrapper">
                 <div class="org-line-h subnit-h-line"></div>
+                
+                <!-- Row 1: Top Connecting Lines -->
                 <div class="org-row-3">
-                    
-                    <!-- Generate 3 Subnit Columns (TIMUR, TENGAH, BARAT) -->
-                    <div class="org-col" ng-repeat="kode in ['TIMUR', 'TENGAH', 'BARAT']">
-                        <!-- Top Line -->
-                        <div class="org-line-v"></div>
-                        
-                        <!-- Kasubnit Slot (Uniform height container) -->
-                        <div class="org-kasubnit-slot">
-                            <!-- Kasubnit Card (if exists) -->
-                            <div class="orgchart__card orgchart__card--kasubnit w-100" ng-if="getKasubnit(kode)">
-                                <span class="orgchart__badge orgchart__badge--cyan">KASUBNIT {{ kode === 'TIMUR' ? 'I' : 'II' }}</span>
-                                <div class="orgchart__name">{{ getKasubnit(kode).nama_lengkap }}</div>
-                                <div class="orgchart__rank">{{ getKasubnit(kode).pangkat }}</div>
-                                <div class="orgchart__btns" ng-if="user.role === 'admin'">
-                                    <button class="orgchart__btn orgchart__btn--edit" ng-click="editOrgUser(getKasubnit(kode))"><i class="bi bi-pencil-square"></i></button>
-                                </div>
+                    <div class="org-col"><div class="org-line-v"></div></div>
+                    <div class="org-col"><div class="org-line-v"></div></div>
+                    <div class="org-col"><div class="org-line-v"></div></div>
+                </div>
+
+                <!-- Row 2: Kasubnit Level (Stretches equally across all 3 columns) -->
+                <div class="org-row-3 org-kasubnit-row">
+                    <!-- Timur (Kasubnit I) -->
+                    <div class="org-col">
+                        <div class="orgchart__card orgchart__card--kasubnit w-100 h-100" ng-if="getKasubnit('TIMUR')">
+                            <span class="orgchart__badge orgchart__badge--cyan">KASUBNIT I</span>
+                            <div class="orgchart__name">{{ getKasubnit('TIMUR').nama_lengkap }}</div>
+                            <div class="orgchart__rank">{{ getKasubnit('TIMUR').pangkat }}</div>
+                            <div class="orgchart__btns" ng-if="user.role === 'admin'">
+                                <button class="orgchart__btn orgchart__btn--edit" ng-click="editOrgUser(getKasubnit('TIMUR'))"><i class="bi bi-pencil-square"></i></button>
                             </div>
-                            <!-- Continuous Line (if NO Kasubnit) -->
-                            <div class="org-line-v-full" ng-if="!getKasubnit(kode)"></div>
                         </div>
-                        
-                        <!-- Vertical line connecting Kasubnit to Subnit -->
-                        <div class="org-line-v" ng-if="getKasubnit(kode)"></div>
-                        
-                        <!-- Subnit Sections (Regu) -->
+                    </div>
+
+                    <!-- Tengah (Continuous Line) -->
+                    <div class="org-col d-flex justify-content-center align-items-center">
+                        <div class="org-line-v-full"></div>
+                    </div>
+
+                    <!-- Barat (Kasubnit II) -->
+                    <div class="org-col">
+                        <div class="orgchart__card orgchart__card--kasubnit w-100 h-100" ng-if="getKasubnit('BARAT')">
+                            <span class="orgchart__badge orgchart__badge--cyan">KASUBNIT II</span>
+                            <div class="orgchart__name">{{ getKasubnit('BARAT').nama_lengkap }}</div>
+                            <div class="orgchart__rank">{{ getKasubnit('BARAT').pangkat }}</div>
+                            <div class="orgchart__btns" ng-if="user.role === 'admin'">
+                                <button class="orgchart__btn orgchart__btn--edit" ng-click="editOrgUser(getKasubnit('BARAT'))"><i class="bi bi-pencil-square"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 3: Bottom Connecting Lines -->
+                <div class="org-row-3">
+                    <div class="org-col"><div class="org-line-v"></div></div>
+                    <div class="org-col"><div class="org-line-v"></div></div>
+                    <div class="org-col"><div class="org-line-v"></div></div>
+                </div>
+
+                <!-- Row 4: Subnit Cards (All 3 start at the EXACT SAME Y-OFFSET!) -->
+                <div class="org-row-3">
+                    <div class="org-col" ng-repeat="kode in ['TIMUR', 'TENGAH', 'BARAT']">
                         <div class="orgchart__subnit-card w-100" ng-if="getSubnit(kode)" ng-class="{
                             'orgchart__subnit-card--timur': kode==='TIMUR',
                             'orgchart__subnit-card--tengah': kode==='TENGAH',
@@ -139,8 +163,8 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
+
             </div>
 
         </div>

@@ -7,15 +7,15 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
     $routeProvider
         .when('/landing', { templateUrl: 'views/landing.html' })
         .when('/login', { templateUrl: 'views/login.html', controller: 'LoginCtrl' })
-        .when('/dashboard', { templateUrl: 'views/dashboard.html?v=7', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=7', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=7', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=7', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=7', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/sop', { templateUrl: 'views/sop.html?v=7', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/struktur', { templateUrl: 'views/org-chart.html?v=7', controller: 'OrgChartCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/users', { templateUrl: 'views/user-management.html?v=7', controller: 'UserManagementCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/kalender-libur', { templateUrl: 'views/holidays.html?v=7', controller: 'HolidayCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/dashboard', { templateUrl: 'views/dashboard.html?v=8', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=8', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=8', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=8', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=8', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/sop', { templateUrl: 'views/sop.html?v=8', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/struktur', { templateUrl: 'views/org-chart.html?v=8', controller: 'OrgChartCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/users', { templateUrl: 'views/user-management.html?v=8', controller: 'UserManagementCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/kalender-libur', { templateUrl: 'views/holidays.html?v=8', controller: 'HolidayCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .otherwise({ redirectTo: '/landing' });
 
     $httpProvider.interceptors.push(['$q', '$window', '$location', function($q, $window, $location) {
