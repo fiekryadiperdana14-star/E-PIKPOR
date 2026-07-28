@@ -123,9 +123,9 @@ router.post('/', adminAuth, async (req, res) => {
 // PUT /api/siaga-wiken/:id — Update status
 router.put('/:id', adminAuth, async (req, res) => {
     try {
-        const { status, catatan } = req.body;
-        await db.query('UPDATE siaga_wiken SET status = ?, catatan = ? WHERE id = ?',
-            [status, catatan, req.params.id]);
+        const { status, catatan, nama_event } = req.body;
+        await db.query('UPDATE siaga_wiken SET status = ?, catatan = ?, nama_event = COALESCE(?, nama_event) WHERE id = ?',
+            [status, catatan, nama_event || null, req.params.id]);
         res.json({ message: 'Event Siaga Wiken berhasil diupdate.' });
     } catch (error) {
         res.status(500).json({ message: error.message });

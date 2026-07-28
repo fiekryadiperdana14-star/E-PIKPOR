@@ -36,33 +36,33 @@ router.post('/', async (req, res) => {
 router.get('/penerima/:id', async (req, res) => {
     try {
         // Find user role & subnit
-        const [u] = await db.query('SELECT role, subnit_id FROM users WHERE id = ?', [req.params.id]);
-        const user = u[0] || {};
+        const [users] = await db.query('SELECT role, subnit_id, regu_id FROM users WHERE id = ?', [req.params.id]);
+        const user = users[0] || {};
         
         let query = `
-            SELECT h.*, r.judul, r.lokasi, r.waktu_kejadian, r.kategori,
-                   CONCAT(u_pengirim.pangkat, ' ', u_pengirim.nama_lengkap) as pengirim 
+            SELECT h.*, r.judul, r.lokasi, r.waktu_kejadian, r.kategori_gakkum as kategori,
+                   COALESCE(u_pengirim.pangkat || ' ' || u_pengirim.nama_lengkap, 'Administrator') as pengirim,
+                   COALESCE(u_penerima.pangkat || ' ' || u_penerima.nama_lengkap, '-') as penerima_nama
             FROM handovers h
             JOIN reports r ON h.report_id = r.id
-            JOIN users u_pengirim ON h.regu_pengirim_id = u_pengirim.id
+            LEFT JOIN users u_pengirim ON h.regu_pengirim_id = u_pengirim.id
+            LEFT JOIN users u_penerima ON h.regu_penerima_id = u_penerima.id
         `;
         let params = [];
 
         if (user.role === 'admin' || user.role === 'kanit') {
             query += ` ORDER BY h.waktu_pelimpahan DESC`;
-        } else if (user.subnit_id) {
-            query += ` JOIN users u_penerima ON h.regu_penerima_id = u_penerima.id 
-                       WHERE u_penerima.subnit_id = ? OR h.regu_penerima_id = ? 
-                       ORDER BY h.waktu_pelimpahan DESC`;
-            params = [user.subnit_id, req.params.id];
         } else {
-            query += ` WHERE h.regu_penerima_id = ? ORDER BY h.waktu_pelimpahan DESC`;
-            params = [req.params.id];
+            query += ` WHERE h.regu_penerima_id = ?
+                          OR (u_penerima.subnit_id IS NOT NULL AND u_penerima.subnit_id = ?)
+                       ORDER BY h.waktu_pelimpahan DESC`;
+            params = [parseInt(req.params.id), user.subnit_id || 0];
         }
 
         const [handovers] = await db.query(query, params);
         res.json(handovers);
     } catch (error) {
+        console.error('Handover GET error:', error);
         res.status(500).json({ message: error.message });
     }
 });

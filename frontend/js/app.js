@@ -11,7 +11,7 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
         .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=15', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=40', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=39', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=14', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=41', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/sop', { templateUrl: 'views/sop.html?v=14', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/struktur', { templateUrl: 'views/org-chart.html?v=14', controller: 'OrgChartCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/users', { templateUrl: 'views/user-management.html?v=14', controller: 'UserManagementCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
@@ -109,6 +109,7 @@ app.factory('ApiService', ['$http', function($http) {
         getActiveSiaga: function() { return $http.get(b + '/siaga-wiken/active'); },
         createSiagaWiken: function(d) { return $http.post(b + '/siaga-wiken', d); },
         checkinSiaga: function(id) { return $http.post(b + '/siaga-wiken/' + id + '/checkin'); },
+        updateSiagaWiken: function(id, d) { return $http.put(b + '/siaga-wiken/' + id, d); },
         deleteSiagaWiken: function(id) { return $http.delete(b + '/siaga-wiken/' + id); },
         getSOPs: function(params) { return $http.get(b + '/sop', { params: params }); },
         createSOP: function(fd) { return $http.post(b + '/sop', fd, { transformRequest: angular.identity, headers: {'Content-Type': undefined} }); },
@@ -1028,9 +1029,27 @@ function($scope, ApiService, $rootScope) {
             Swal.fire({ icon: 'error', title: 'Gagal', text: (err.data && err.data.message) || 'Gagal.', background: '#1e293b', color: '#fff' });
         });
     };
+    $scope.manageEvent = function(e) {
+        $scope.manageForm = {
+            id: e.id,
+            nama_event: e.nama_event,
+            status: e.status || 'upcoming',
+            catatan: e.catatan || ''
+        };
+        new bootstrap.Modal(document.getElementById('manageEventModal')).show();
+    };
+    $scope.submitManageEvent = function() {
+        ApiService.updateSiagaWiken($scope.manageForm.id, $scope.manageForm).then(function(r) {
+            Swal.fire({ icon: 'success', title: 'Berhasil!', text: r.data.message, timer: 1500, showConfirmButton: false });
+            var m = bootstrap.Modal.getInstance(document.getElementById('manageEventModal')); if(m) m.hide();
+            load();
+        }).catch(function(err) {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: (err.data && err.data.message) || 'Gagal update.' });
+        });
+    };
     $scope.deleteEvent = function(id) {
         Swal.fire({ title: 'Hapus Event?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#ef4444',
-            confirmButtonText: 'Hapus', cancelButtonText: 'Batal', background: '#1e293b', color: '#fff'
+            confirmButtonText: 'Hapus', cancelButtonText: 'Batal'
         }).then(function(r) { if (r.isConfirmed) ApiService.deleteSiagaWiken(id).then(function() { load(); }); });
     };
 }]);
