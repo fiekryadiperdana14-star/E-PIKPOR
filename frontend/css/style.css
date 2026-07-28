@@ -126,52 +126,49 @@ body {
 .animate-fade-in-up:nth-child(4) { animation-delay: 0.2s; }
 
 /* ============================================
-   Navbar
+   Sidebar & Layout
    ============================================ */
-.glass-nav {
-    position: sticky;
-    top: 0;
-    z-index: 1050;
-    padding: 0.4rem 0;
-    border-bottom: 1px solid var(--border-color);
-    background: rgba(10, 10, 10, 0.92);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+.app-sidebar {
+    width: 280px;
+    background: var(--bg-tertiary);
+    border-right: 1px solid var(--border-color);
 }
-.glass-nav::before {
-    display: none;
-}
-.glass-nav .navbar-brand {
-    font-size: 1.2rem;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    color: var(--primary) !important;
-    -webkit-text-fill-color: var(--primary);
-}
-.glass-nav .navbar-brand i {
-    -webkit-text-fill-color: var(--primary);
-    color: var(--primary);
-}
-.glass-nav .nav-link {
+.app-sidebar .nav-link {
     color: var(--text-secondary);
     font-weight: 500;
-    font-size: 0.82rem;
-    padding: 0.45rem 0.85rem !important;
+    font-size: 0.88rem;
+    padding: 0.65rem 1rem !important;
     border-radius: var(--radius-sm);
     transition: all var(--transition-fast);
-    position: relative;
-    letter-spacing: -0.01em;
+    display: flex;
+    align-items: center;
 }
-.glass-nav .nav-link:hover {
+.app-sidebar .nav-link i {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    transition: all var(--transition-fast);
+}
+.app-sidebar .nav-link:hover {
     color: var(--white);
     background: rgba(249, 115, 22, 0.08);
 }
-.glass-nav .nav-link.active,
-.glass-nav .nav-link:focus {
+.app-sidebar .nav-link:hover i {
     color: var(--primary);
 }
-.glass-nav .navbar-toggler { border-color: var(--border-color); }
-.glass-nav .navbar-toggler-icon { filter: invert(1); }
+.app-sidebar .nav-link.active,
+.app-sidebar .nav-link:focus {
+    color: var(--primary);
+    background: rgba(249, 115, 22, 0.12);
+    font-weight: 600;
+}
+.app-sidebar .nav-link.active i {
+    color: var(--primary);
+}
+
+.app-header-mobile {
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(10px);
+}
 
 /* User badge in nav */
 .user-badge-nav {
@@ -1346,20 +1343,11 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
    Glassmorphism Sidebar (Mobile)
    ============================================ */
 @media screen and (max-width: 991px) {
-    .glass-sidebar {
+    .app-sidebar {
         background: rgba(10, 10, 10, 0.95) !important;
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
         border-right: 1px solid var(--border-color);
         width: 280px;
-    }
-    .glass-sidebar .nav-link {
-        padding: 0.8rem 1rem;
-        border-radius: 8px;
-        margin-bottom: 0.5rem;
-    }
-    .glass-sidebar .nav-link:hover,
-    .glass-sidebar .nav-link:focus {
-        background: rgba(249, 115, 22, 0.08);
     }
 }
