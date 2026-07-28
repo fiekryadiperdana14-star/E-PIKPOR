@@ -7,10 +7,10 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
     $routeProvider
         .when('/landing', { templateUrl: 'views/landing.html' })
         .when('/login', { templateUrl: 'views/login.html', controller: 'LoginCtrl' })
-        .when('/dashboard', { templateUrl: 'views/dashboard.html?v=14', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/dashboard', { templateUrl: 'views/dashboard.html?v=36', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=15', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=14', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=35', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=36', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=14', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/sop', { templateUrl: 'views/sop.html?v=14', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/struktur', { templateUrl: 'views/org-chart.html?v=14', controller: 'OrgChartCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
@@ -185,15 +185,49 @@ function($scope, ApiService, $window, $location, $rootScope) {
 app.controller('DashboardCtrl', ['$scope', 'ApiService', '$rootScope',
 function($scope, ApiService, $rootScope) {
     $scope.reports = []; $scope.users = []; $scope.stats = {}; $scope.todaySchedule = [];
+    $scope.todayZonas = { Pagi: [], Siang: [], Malam: [] };
     $scope.currentPage = 1; $scope.pageSize = 10;
+
+    function buildDashboardTodayZonas(schedules) {
+        var rawToday = { Pagi: [], Siang: [], Malam: [] };
+        (schedules || []).forEach(function(s) {
+            var shiftName = s.shift === 'Sore' ? 'Siang' : s.shift;
+            if (shiftName && rawToday[shiftName]) rawToday[shiftName].push(s);
+        });
+        return {
+            Pagi: groupByZona(rawToday.Pagi),
+            Siang: groupByZona(rawToday.Siang),
+            Malam: groupByZona(rawToday.Malam)
+        };
+    }
 
     function loadAll() {
         ApiService.getReports().then(function(r) { $scope.reports = r.data; });
         ApiService.getStats().then(function(r) { $scope.stats = r.data; });
         ApiService.getUsers().then(function(r) { $scope.users = r.data.filter(function(u) { return u.id !== $rootScope.user.id; }); });
-        ApiService.getTodaySchedule().then(function(r) { $scope.todaySchedule = r.data; });
+        ApiService.getTodaySchedule().then(function(r) {
+            $scope.todaySchedule = r.data;
+            $scope.todayZonas = buildDashboardTodayZonas(r.data);
+        });
     }
     loadAll();
+
+    $scope.dashZonaModalData = null;
+    $scope.showDashboardZonaModal = function(shift, zObj) {
+        var today = new Date();
+        var dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+        var monthNames = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        var dateStr = dayNames[today.getDay()] + ', ' + today.getDate() + ' ' + monthNames[today.getMonth()] + ' ' + today.getFullYear();
+        $scope.dashZonaModalData = {
+            dateStr: dateStr,
+            shift: shift,
+            zonaName: zObj.name,
+            kasubnitList: zObj.kasubnitList || [],
+            reguList: zObj.reguList || [],
+            allMembers: zObj.allMembers || []
+        };
+        new bootstrap.Modal(document.getElementById('dashZonaModal')).show();
+    };
 
     $scope.openHandoverModal = function(report) {
         $scope.selectedReport = report;

@@ -73,26 +73,96 @@
         </div>
     </div>
 
-    <!-- Today's Schedule Preview -->
-    <div class="glass-card-static animate-fade-in-up mb-4" ng-if="todaySchedule.length > 0">
-        <div class="section-title"><i class="bi bi-calendar-day"></i> Jadwal Piket Hari Ini</div>
-        <div class="row g-2">
-            <div class="col-md-4" ng-repeat="shift in ['Pagi','Sore','Malam']">
-                <div class="shift-block">
-                    <div class="shift-block-header">
-                        <i class="bi" ng-class="{'bi-sunrise': shift==='Pagi', 'bi-sun': shift==='Sore', 'bi-moon-stars': shift==='Malam'}"></i>
-                        <span>Shift {{ shift }}</span>
+    <!-- Today's Schedule Preview (Zona UI Buttons) -->
+    <div class="glass-card-static animate-fade-in-up mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="section-title mb-0"><i class="bi bi-calendar-check-fill text-success"></i> Jadwal Piket Hari Ini</div>
+            <a href="#!/jadwal-piket" class="btn btn-sm btn-outline-primary fw-bold"><i class="bi bi-calendar3 me-1"></i>Halaman Utama Jadwal</a>
+        </div>
+        <div class="row g-3">
+            <!-- Shift Pagi -->
+            <div class="col-md-4">
+                <div class="shift-col-box bg-white p-3 rounded-3 border shadow-sm">
+                    <div class="shift-box-title fw-bold text-dark mb-2 pb-1 border-bottom">
+                        <i class="bi bi-sunrise text-warning me-1"></i> Shift Pagi
                     </div>
-                    <div class="shift-block-body">
-                        <div class="shift-person" ng-repeat="s in todaySchedule | filter:{shift: shift}">
-                            <span class="shift-person-badge" ng-class="{'spb-timur': s.subnit_kode==='TIMUR', 'spb-tengah': s.subnit_kode==='TENGAH', 'spb-barat': s.subnit_kode==='BARAT'}">
-                                {{ s.subnit_kode | limitTo:1 }}
-                            </span>
-                            <span class="shift-person-name">{{ s.pangkat }} {{ s.nama_lengkap | limitTo:25 }}</span>
-                        </div>
-                        <div ng-if="(todaySchedule | filter:{shift: shift}).length === 0" class="text-muted small text-center py-2">
-                            <i class="bi bi-dash-circle me-1"></i>Belum ada jadwal
-                        </div>
+                    <div class="zona-btn-group d-flex flex-column gap-2">
+                        <button class="zona-btn zona-btn-timur d-flex justify-content-between align-items-center"
+                                ng-repeat="z in todayZonas.Pagi | filter:{name:'Zona Timur'}"
+                                ng-click="showDashboardZonaModal('Pagi', z)">
+                            <span><i class="bi bi-geo-alt-fill me-1"></i>{{ z.name }}</span>
+                            <span class="count-pill">{{ z.count }} Personel</span>
+                        </button>
+                        <button class="zona-btn zona-btn-barat d-flex justify-content-between align-items-center"
+                                ng-repeat="z in todayZonas.Pagi | filter:{name:'Zona Barat'}"
+                                ng-click="showDashboardZonaModal('Pagi', z)">
+                            <span><i class="bi bi-geo-alt-fill me-1"></i>{{ z.name }}</span>
+                            <span class="count-pill">{{ z.count }} Personel</span>
+                        </button>
+                        <button class="zona-btn zona-btn-tengah d-flex justify-content-between align-items-center"
+                                ng-repeat="z in todayZonas.Pagi | filter:{name:'Zona Tengah'}"
+                                ng-click="showDashboardZonaModal('Pagi', z)">
+                            <span><i class="bi bi-geo-alt-fill me-1"></i>{{ z.name }}</span>
+                            <span class="count-pill">{{ z.count }} Personel</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shift Siang -->
+            <div class="col-md-4">
+                <div class="shift-col-box bg-white p-3 rounded-3 border shadow-sm">
+                    <div class="shift-box-title fw-bold text-dark mb-2 pb-1 border-bottom">
+                        <i class="bi bi-sun text-info me-1"></i> Shift Siang
+                    </div>
+                    <div class="zona-btn-group d-flex flex-column gap-2">
+                        <button class="zona-btn zona-btn-timur d-flex justify-content-between align-items-center"
+                                ng-repeat="z in todayZonas.Siang | filter:{name:'Zona Timur'}"
+                                ng-click="showDashboardZonaModal('Siang', z)">
+                            <span><i class="bi bi-geo-alt-fill me-1"></i>{{ z.name }}</span>
+                            <span class="count-pill">{{ z.count }} Personel</span>
+                        </button>
+                        <button class="zona-btn zona-btn-barat d-flex justify-content-between align-items-center"
+                                ng-repeat="z in todayZonas.Siang | filter:{name:'Zona Barat'}"
+                                ng-click="showDashboardZonaModal('Siang', z)">
+                            <span><i class="bi bi-geo-alt-fill me-1"></i>{{ z.name }}</span>
+                            <span class="count-pill">{{ z.count }} Personel</span>
+                        </button>
+                        <button class="zona-btn zona-btn-tengah d-flex justify-content-between align-items-center"
+                                ng-repeat="z in todayZonas.Siang | filter:{name:'Zona Tengah'}"
+                                ng-click="showDashboardZonaModal('Siang', z)">
+                            <span><i class="bi bi-geo-alt-fill me-1"></i>{{ z.name }}</span>
+                            <span class="count-pill">{{ z.count }} Personel</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shift Malam -->
+            <div class="col-md-4">
+                <div class="shift-col-box bg-white p-3 rounded-3 border shadow-sm">
+                    <div class="shift-box-title fw-bold text-dark mb-2 pb-1 border-bottom">
+                        <i class="bi bi-moon-stars text-primary me-1"></i> Shift Malam
+                    </div>
+                    <div class="zona-btn-group d-flex flex-column gap-2">
+                        <button class="zona-btn zona-btn-timur d-flex justify-content-between align-items-center"
+                                ng-repeat="z in todayZonas.Malam | filter:{name:'Zona Timur'}"
+                                ng-click="showDashboardZonaModal('Malam', z)">
+                            <span><i class="bi bi-geo-alt-fill me-1"></i>{{ z.name }}</span>
+                            <span class="count-pill">{{ z.count }} Personel</span>
+                        </button>
+                        <button class="zona-btn zona-btn-barat d-flex justify-content-between align-items-center"
+                                ng-repeat="z in todayZonas.Malam | filter:{name:'Zona Barat'}"
+                                ng-click="showDashboardZonaModal('Malam', z)">
+                            <span><i class="bi bi-geo-alt-fill me-1"></i>{{ z.name }}</span>
+                            <span class="count-pill">{{ z.count }} Personel</span>
+                        </button>
+                        <button class="zona-btn zona-btn-tengah d-flex justify-content-between align-items-center"
+                                ng-repeat="z in todayZonas.Malam | filter:{name:'Zona Tengah'}"
+                                ng-click="showDashboardZonaModal('Malam', z)">
+                            <span><i class="bi bi-geo-alt-fill me-1"></i>{{ z.name }}</span>
+                            <span class="count-pill">{{ z.count }} Personel</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -369,6 +439,65 @@
                 </button>
                 <div ng-if="isEditingReport"></div>
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============== DASHBOARD ZONA DETAIL MODAL ============== -->
+<div class="modal fade" id="dashZonaModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-modal">
+            <div class="modal-header bg-light">
+                <div>
+                    <h5 class="modal-title fw-extrabold text-primary mb-0"><i class="bi bi-geo-alt-fill me-2"></i>{{ dashZonaModalData.zonaName }}</h5>
+                    <small class="text-muted fw-bold">Shift {{ dashZonaModalData.shift }} — {{ dashZonaModalData.dateStr }}</small>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <!-- Section 1: Kasubnit / Kanit -->
+                <div class="mb-4">
+                    <label class="form-label fw-extrabold text-dark border-bottom pb-1 w-100" style="font-size: 0.95rem;">
+                        <i class="bi bi-award-fill text-warning me-1"></i> Kasubnit / Kanit
+                    </label>
+                    <div class="p-3 rounded-3 bg-white border" style="box-shadow: 0 2px 6px rgba(0,0,0,0.03);">
+                        <div class="d-flex align-items-center justify-content-between my-1" ng-repeat="k in dashZonaModalData.kasubnitList">
+                            <div>
+                                <span class="badge bg-warning text-dark fw-bold me-2" ng-if="k.role==='kanit'">Kanit Gakkum</span>
+                                <span class="badge bg-info text-white fw-bold me-2" ng-if="k.role==='kasubnit'">Kasubnit</span>
+                                <strong style="color: #0f172a; font-size: 0.95rem;">{{ k.pangkat }} {{ k.nama_lengkap }}</strong>
+                            </div>
+                        </div>
+                        <div ng-if="!dashZonaModalData.kasubnitList || dashZonaModalData.kasubnitList.length===0" class="text-muted fst-italic fs-7">
+                            — Belum Ada Kasubnit / Kanit Dijadwalkan —
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Regu Personel -->
+                <div class="mb-3">
+                    <label class="form-label fw-extrabold text-dark border-bottom pb-1 w-100" style="font-size: 0.95rem;">
+                        <i class="bi bi-people-fill text-primary me-1"></i> Regu Personel
+                    </label>
+                    <div class="d-flex flex-column gap-3">
+                        <div class="p-3 rounded-3 bg-white border" style="box-shadow: 0 2px 6px rgba(0,0,0,0.03);" ng-repeat="rg in dashZonaModalData.reguList">
+                            <div class="fw-extrabold text-orange border-bottom pb-2 mb-2 d-flex align-items-center" style="color: #f97316;">
+                                <i class="bi bi-diagram-3-fill me-2"></i>{{ rg.reguName }}
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between my-1 py-1 border-bottom border-light" ng-repeat="m in rg.members">
+                                <span class="fw-bold text-dark fs-7">{{ m.pangkat }} {{ m.nama_lengkap }}</span>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1 fs-8">Dijadwalkan</span>
+                            </div>
+                        </div>
+                        <div ng-if="!dashZonaModalData.reguList || dashZonaModalData.reguList.length===0" class="text-muted fst-italic fs-7 p-3 bg-white rounded border text-center">
+                            — Belum Ada Regu Personel Dijadwalkan —
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-top-0">
+                <button type="button" class="btn btn-secondary w-100 fw-bold" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
