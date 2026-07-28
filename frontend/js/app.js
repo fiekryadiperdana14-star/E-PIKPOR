@@ -8,7 +8,7 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
         .when('/landing', { templateUrl: 'views/landing.html' })
         .when('/login', { templateUrl: 'views/login.html', controller: 'LoginCtrl' })
         .when('/dashboard', { templateUrl: 'views/dashboard.html?v=14', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=14', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=15', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=14', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=14', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=14', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })

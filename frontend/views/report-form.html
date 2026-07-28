@@ -1,141 +1,159 @@
-<div class="container mt-2 mb-5">
-    <div class="row justify-content-center">
-        <div class="col-12 col-lg-10 col-xl-10">
-            <h2 class="page-title mb-4 animate-fade-in-up"><i class="bi bi-file-earmark-plus"></i> Buat Laporan Baru</h2>
-            
-            <div class="glass-card animate-fade-in-up">
-                <form ng-submit="submitReport()" id="formLaporan">
-                    <!-- Judul -->
-                    <div class="mb-4">
-                        <label class="form-label">Judul Laporan</label>
-                        <input type="text" class="form-control" id="inputJudul" ng-model="report.judul" placeholder="Contoh: Laporan Razia Kendaraan Bermotor" required>
-                    </div>
-                    
-                    <!-- Waktu & Lokasi -->
-                    <div class="row mb-4">
-                        <div class="col-md-6 mb-3 mb-md-0">
-                            <label class="form-label"><i class="bi bi-calendar-event me-1"></i>Waktu Kejadian</label>
-                            <input type="text" class="form-control" id="waktuKejadian" placeholder="Pilih tanggal & waktu" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label"><i class="bi bi-geo-alt me-1"></i>Lokasi TKP (Kecamatan)</label>
-                            <select class="form-select" id="inputLokasi" ng-model="report.lokasi" required>
-                                <option value="">— Pilih Kecamatan —</option>
-                                <option value="Andir">Andir</option>
-                                <option value="Antapani">Antapani</option>
-                                <option value="Arcamanik">Arcamanik</option>
-                                <option value="Astana Anyar">Astana Anyar</option>
-                                <option value="Babakan Ciparay">Babakan Ciparay</option>
-                                <option value="Bandung Kidul">Bandung Kidul</option>
-                                <option value="Bandung Kulon">Bandung Kulon</option>
-                                <option value="Bandung Wetan">Bandung Wetan</option>
-                                <option value="Batununggal">Batununggal</option>
-                                <option value="Bojongloa Kaler">Bojongloa Kaler</option>
-                                <option value="Bojongloa Kidul">Bojongloa Kidul</option>
-                                <option value="Buahbatu">Buahbatu</option>
-                                <option value="Cibeunying Kaler">Cibeunying Kaler</option>
-                                <option value="Cibeunying Kidul">Cibeunying Kidul</option>
-                                <option value="Cibiru">Cibiru</option>
-                                <option value="Cicendo">Cicendo</option>
-                                <option value="Cidadap">Cidadap</option>
-                                <option value="Cinambo">Cinambo</option>
-                                <option value="Coblong">Coblong</option>
-                                <option value="Gedebage">Gedebage</option>
-                                <option value="Kiaracondong">Kiaracondong</option>
-                                <option value="Lengkong">Lengkong</option>
-                                <option value="Mandalajati">Mandalajati</option>
-                                <option value="Panyileukan">Panyileukan</option>
-                                <option value="Rancasari">Rancasari</option>
-                                <option value="Regol">Regol</option>
-                                <option value="Sukajadi">Sukajadi</option>
-                                <option value="Sukasari">Sukasari</option>
-                                <option value="Sumur Bandung">Sumur Bandung</option>
-                                <option value="Ujungberung">Ujungberung</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Zona & Shift -->
-                    <div class="row mb-4">
-                        <div class="col-md-6 mb-3 mb-md-0">
-                            <label class="form-label"><i class="bi bi-compass me-1"></i>Zona TKP</label>
-                            <select class="form-select" id="inputZona" ng-model="report.zona" required>
-                                <option value="">— Pilih Zona —</option>
-                                <option value="Barat">Zona Barat</option>
-                                <option value="Tengah">Zona Tengah</option>
-                                <option value="Timur">Zona Timur</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label"><i class="bi bi-clock-history me-1"></i>Shift Piket</label>
-                            <select class="form-select" id="inputShift" ng-model="report.shift" required>
-                                <option value="">— Pilih Shift —</option>
-                                <option value="Pagi">Pagi (06:00-14:00)</option>
-                                <option value="Sore">Sore (14:00-22:00)</option>
-                                <option value="Malam">Malam (22:00-06:00)</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Kategori Gakkum -->
-                    <div class="row mb-4">
-                        <div class="col-md-6 mb-3 mb-md-0">
-                            <label class="form-label"><i class="bi bi-badge-cc me-1"></i>Kategori Gakkum</label>
-                            <select class="form-select" id="inputKategori" ng-model="report.kategori_gakkum" required>
-                                <option value="">— Pilih Kategori —</option>
-                                <option value="tilang">Tilang</option>
-                                <option value="penderekan">Penderekan</option>
-                                <option value="razia">Razia</option>
-                                <option value="pengamanan">Pengamanan</option>
-                                <option value="patroli">Patroli</option>
-                                <option value="laka_lantas">Laka Lantas</option>
-                                <option value="lainnya">Lainnya</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label"><i class="bi bi-book me-1"></i>Pasal Pelanggaran</label>
-                            <input type="text" class="form-control" ng-model="report.pasal_pelanggaran" placeholder="Opsional (Misal: Pasal 287 UU LLAJ)">
-                        </div>
-                    </div>
-                    
-                    <!-- Deskripsi -->
-                    <div class="mb-4">
-                        <label class="form-label">Detail Laporan Piket</label>
-                        <textarea class="form-control" id="inputDeskripsi" rows="4" ng-model="report.deskripsi" placeholder="Contoh: Siap 86 Kondisi Terkendali" required></textarea>
-                    </div>
-
-                    <!-- Tindakan -->
-                    <div class="mb-4">
-                        <label class="form-label"><i class="bi bi-check2-square me-1"></i>Tindakan yang Diambil</label>
-                        <textarea class="form-control" rows="2" ng-model="report.tindakan" placeholder="Opsional — Jelaskan tindakan yang telah dilakukan"></textarea>
-                    </div>
-
-                    <!-- Foto Upload -->
-                    <div class="mb-4">
-                        <label class="form-label"><i class="bi bi-camera me-1"></i>Upload Foto / Bukti (Opsional, Maks 5)</label>
-                        <input type="file" class="form-control" id="inputFoto" file-model="fotos" accept="image/*" multiple>
-                        <div class="mt-3 photo-preview-grid" ng-if="fotoPreviews && fotoPreviews.length > 0">
-                            <div class="preview-item" ng-repeat="prev in fotoPreviews track by $index">
-                                <img ng-src="{{prev}}" alt="Preview">
-                                <button type="button" class="btn-remove" ng-click="removePhoto($index)"><i class="bi bi-x"></i></button>
-                            </div>
-                        </div>
-                        <small class="text-muted mt-2 d-block"><i class="bi bi-info-circle me-1"></i>Format: JPG, PNG, WEBP. Maks 5MB per file.</small>
-                    </div>
-
-                    <hr style="border-color: rgba(0,0,0,0.1); margin: 1.5rem 0;">
-                    
-                    <div class="d-flex justify-content-end gap-2">
-                        <a href="#!/dashboard" class="btn btn-outline-secondary">Batal</a>
-                        <button type="submit" class="btn btn-primary" id="btnSimpanLaporan" ng-disabled="isSubmitting">
-                            <span ng-if="isSubmitting" class="spinner-border spinner-border-sm me-1"></span>
-                            <i class="bi bi-save me-1" ng-if="!isSubmitting"></i>
-                            <span ng-if="!isSubmitting">Simpan Laporan</span>
-                            <span ng-if="isSubmitting">Menyimpan...</span>
-                        </button>
-                    </div>
-                </form>
-            </div>
+<div class="container-fluid px-0">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 animate-fade-in-up">
+        <div>
+            <h2 class="page-title mb-1"><i class="bi bi-file-earmark-plus"></i> Buat Laporan Baru</h2>
+            <small class="text-muted">Isi formulir di bawah ini untuk mencatat laporan piket & kegiatan Unit Gakkum</small>
         </div>
+        <a href="#!/dashboard" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left me-1"></i> Kembali ke Dashboard
+        </a>
+    </div>
+    
+    <!-- Form Card (Full Desktop Width) -->
+    <div class="glass-card animate-fade-in-up" style="padding: 2rem 2.5rem;">
+        <form ng-submit="submitReport()" id="formLaporan">
+            
+            <!-- Section 1: Informasi Utama -->
+            <h5 class="fw-bold mb-3 pb-2 border-bottom text-primary" style="font-size: 1.05rem;">
+                <i class="bi bi-info-circle me-2"></i>Informasi Utama Laporan
+            </h5>
+
+            <!-- Judul Laporan (Full Width) -->
+            <div class="mb-4">
+                <label class="form-label fw-bold">Judul Laporan <span class="text-danger">*</span></label>
+                <input type="text" class="form-control form-control-lg fs-6" id="inputJudul" ng-model="report.judul" placeholder="Contoh: Laporan Razia Kendaraan Bermotor / Laka Lantas di Jl. Soekarno-Hatta" required>
+            </div>
+            
+            <!-- Row 1: Waktu, Lokasi, Zona -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold"><i class="bi bi-calendar-event me-1 text-primary"></i>Waktu Kejadian <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="waktuKejadian" placeholder="Pilih tanggal & waktu" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold"><i class="bi bi-geo-alt me-1 text-primary"></i>Lokasi TKP (Kecamatan) <span class="text-danger">*</span></label>
+                    <select class="form-select" id="inputLokasi" ng-model="report.lokasi" required>
+                        <option value="">— Pilih Kecamatan —</option>
+                        <option value="Andir">Andir</option>
+                        <option value="Antapani">Antapani</option>
+                        <option value="Arcamanik">Arcamanik</option>
+                        <option value="Astana Anyar">Astana Anyar</option>
+                        <option value="Babakan Ciparay">Babakan Ciparay</option>
+                        <option value="Bandung Kidul">Bandung Kidul</option>
+                        <option value="Bandung Kulon">Bandung Kulon</option>
+                        <option value="Bandung Wetan">Bandung Wetan</option>
+                        <option value="Batununggal">Batununggal</option>
+                        <option value="Bojongloa Kaler">Bojongloa Kaler</option>
+                        <option value="Bojongloa Kidul">Bojongloa Kidul</option>
+                        <option value="Buahbatu">Buahbatu</option>
+                        <option value="Cibeunying Kaler">Cibeunying Kaler</option>
+                        <option value="Cibeunying Kidul">Cibeunying Kidul</option>
+                        <option value="Cibiru">Cibiru</option>
+                        <option value="Cicendo">Cicendo</option>
+                        <option value="Cidadap">Cidadap</option>
+                        <option value="Cinambo">Cinambo</option>
+                        <option value="Coblong">Coblong</option>
+                        <option value="Gedebage">Gedebage</option>
+                        <option value="Kiaracondong">Kiaracondong</option>
+                        <option value="Lengkong">Lengkong</option>
+                        <option value="Mandalajati">Mandalajati</option>
+                        <option value="Panyileukan">Panyileukan</option>
+                        <option value="Rancasari">Rancasari</option>
+                        <option value="Regol">Regol</option>
+                        <option value="Sukajadi">Sukajadi</option>
+                        <option value="Sukasari">Sukasari</option>
+                        <option value="Sumur Bandung">Sumur Bandung</option>
+                        <option value="Ujungberung">Ujungberung</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold"><i class="bi bi-compass me-1 text-primary"></i>Zona TKP <span class="text-danger">*</span></label>
+                    <select class="form-select" id="inputZona" ng-model="report.zona" required>
+                        <option value="">— Pilih Zona —</option>
+                        <option value="Barat">Zona Barat</option>
+                        <option value="Tengah">Zona Tengah</option>
+                        <option value="Timur">Zona Timur</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Row 2: Shift, Kategori, Pasal -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold"><i class="bi bi-clock-history me-1 text-primary"></i>Shift Piket <span class="text-danger">*</span></label>
+                    <select class="form-select" id="inputShift" ng-model="report.shift" required>
+                        <option value="">— Pilih Shift —</option>
+                        <option value="Pagi">Pagi (06:00 - 14:00)</option>
+                        <option value="Sore">Sore (14:00 - 22:00)</option>
+                        <option value="Malam">Malam (22:00 - 06:00)</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold"><i class="bi bi-badge-cc me-1 text-primary"></i>Kategori Gakkum <span class="text-danger">*</span></label>
+                    <select class="form-select" id="inputKategori" ng-model="report.kategori_gakkum" required>
+                        <option value="">— Pilih Kategori —</option>
+                        <option value="tilang">Tilang</option>
+                        <option value="penderekan">Penderekan</option>
+                        <option value="razia">Razia</option>
+                        <option value="pengamanan">Pengamanan</option>
+                        <option value="patroli">Patroli</option>
+                        <option value="laka_lantas">Laka Lantas</option>
+                        <option value="lainnya">Lainnya</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold"><i class="bi bi-book me-1 text-primary"></i>Pasal Pelanggaran</label>
+                    <input type="text" class="form-control" ng-model="report.pasal_pelanggaran" placeholder="Opsional (Misal: Pasal 287 UU LLAJ)">
+                </div>
+            </div>
+
+            <!-- Section 2: Detail & Tindakan -->
+            <h5 class="fw-bold mb-3 pb-2 border-bottom text-primary pt-3" style="font-size: 1.05rem;">
+                <i class="bi bi-file-text me-2"></i>Rincian Kegiatan & Tindakan
+            </h5>
+
+            <!-- Deskripsi & Tindakan Side-by-Side on Desktop -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Detail Laporan Piket <span class="text-danger">*</span></label>
+                    <textarea class="form-control" id="inputDeskripsi" rows="5" ng-model="report.deskripsi" placeholder="Jelaskan secara rinci kronologi kejadian, situasi di lapangan, serta temuan petugas..." required></textarea>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold"><i class="bi bi-check2-square me-1 text-primary"></i>Tindakan yang Diambil</label>
+                    <textarea class="form-control" rows="5" ng-model="report.tindakan" placeholder="Opsional — Jelaskan penanganan yang telah dilakukan oleh petugas di lokasi (penindakan, penderekan, pengaturan lalu lintas, dll)..."></textarea>
+                </div>
+            </div>
+
+            <!-- Section 3: Lampiran Foto -->
+            <h5 class="fw-bold mb-3 pb-2 border-bottom text-primary pt-3" style="font-size: 1.05rem;">
+                <i class="bi bi-camera me-2"></i>Bukti Foto Dokumentasi
+            </h5>
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Upload Foto / Bukti (Opsional, Maksimal 5 Foto)</label>
+                <input type="file" class="form-control" id="inputFoto" file-model="fotos" accept="image/*" multiple>
+                <div class="mt-3 photo-preview-grid" ng-if="fotoPreviews && fotoPreviews.length > 0">
+                    <div class="preview-item" ng-repeat="prev in fotoPreviews track by $index">
+                        <img ng-src="{{prev}}" alt="Preview">
+                        <button type="button" class="btn-remove" ng-click="removePhoto($index)"><i class="bi bi-x"></i></button>
+                    </div>
+                </div>
+                <small class="text-muted mt-2 d-block"><i class="bi bi-info-circle me-1"></i>Format yang didukung: JPG, PNG, WEBP. Ukuran maksimal 5MB per file.</small>
+            </div>
+
+            <hr class="my-4" style="border-color: rgba(0,0,0,0.1);">
+            
+            <!-- Submit Buttons -->
+            <div class="d-flex justify-content-end gap-3 align-items-center">
+                <a href="#!/dashboard" class="btn btn-outline-secondary px-4 py-2">Batal</a>
+                <button type="submit" class="btn btn-primary px-4 py-2 fw-bold" id="btnSimpanLaporan" ng-disabled="isSubmitting">
+                    <span ng-if="isSubmitting" class="spinner-border spinner-border-sm me-2"></span>
+                    <i class="bi bi-check-lg me-2 fs-5" ng-if="!isSubmitting"></i>
+                    <span ng-if="!isSubmitting">Simpan & Terbitkan Laporan</span>
+                    <span ng-if="isSubmitting">Menyimpan Laporan...</span>
+                </button>
+            </div>
+        </form>
     </div>
 </div>
