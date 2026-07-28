@@ -616,15 +616,50 @@ function($scope, ApiService) {
     $scope.orgLeaders = [];
     $scope.isEditingLeader = false;
     $scope.leaderForm = {};
+    $scope.orgUserForm = {};
 
+    // --- Load data ---
     $scope.loadOrgLeaders = function() {
         ApiService.getOrgLeaders().then(function(res) {
             $scope.orgLeaders = res.data;
-        }).catch(function(err) {
-            console.error('Error loading org leaders', err);
+        }).catch(function(err) { console.error('Error loading org leaders', err); });
+    };
+
+    $scope.loadOrgChart = function() {
+        ApiService.getOrgChart().then(function(r) {
+            var users = r.data;
+            $scope.orgKanit = users.find(function(u) { return u.role === 'kanit'; });
+            $scope.orgKasubnit = users.filter(function(u) { return u.role === 'kasubnit'; });
+            $scope.orgBamin = users.filter(function(u) { return u.role === 'bamin'; });
+
+            var subnits = {};
+            users.forEach(function(u) {
+                if (u.subnit_kode && (u.role === 'danregu' || u.role === 'anggota')) {
+                    if (!subnits[u.subnit_kode]) {
+                        subnits[u.subnit_kode] = { nama: u.subnit_nama, kode: u.subnit_kode, regus: {} };
+                    }
+                    var reguKey = u.regu_kode || 'unassigned';
+                    if (!subnits[u.subnit_kode].regus[reguKey]) {
+                        subnits[u.subnit_kode].regus[reguKey] = { nama: u.regu_nama || 'Belum Ditugaskan', members: [] };
+                    }
+                    subnits[u.subnit_kode].regus[reguKey].members.push(u);
+                }
+            });
+
+            var order = ['TIMUR', 'TENGAH', 'BARAT'];
+            $scope.orgSubnits = order.map(function(kode) {
+                if (!subnits[kode]) return null;
+                var s = subnits[kode];
+                s.regus = Object.values(s.regus).sort(function(a,b) { return a.nama.localeCompare(b.nama); });
+                s.regus.forEach(function(r) {
+                    r.members.sort(function(a,b) { return a.role === 'danregu' ? -1 : 1; });
+                });
+                return s;
+            }).filter(Boolean);
         });
     };
 
+    // --- Leader CRUD ---
     $scope.openCreateLeader = function() {
         $scope.isEditingLeader = false;
         $scope.leaderForm = { urutan: $scope.orgLeaders.length + 1 };
@@ -641,71 +676,50 @@ function($scope, ApiService) {
         var req = $scope.isEditingLeader ? ApiService.updateOrgLeader($scope.leaderForm.id, $scope.leaderForm) : ApiService.createOrgLeader($scope.leaderForm);
         req.then(function() {
             var m = bootstrap.Modal.getInstance(document.getElementById('leaderFormModal')); if(m) m.hide();
-            Swal.fire({ icon: 'success', title: 'Tersimpan', text: 'Data pimpinan berhasil disimpan.', timer: 1500, showConfirmButton: false, background: '#1e293b', color: '#000000' });
+            Swal.fire({ icon: 'success', title: 'Tersimpan!', text: 'Data pimpinan berhasil disimpan.', timer: 1500, showConfirmButton: false });
             $scope.loadOrgLeaders();
         }).catch(function(err) {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: err.data.message || 'Gagal menyimpan.', background: '#1e293b', color: '#000000' });
+            Swal.fire({ icon: 'error', title: 'Gagal', text: (err.data && err.data.message) || 'Gagal menyimpan.' });
         });
     };
 
     $scope.deleteLeader = function(id) {
         Swal.fire({
-            title: 'Hapus pimpinan?',
-            text: "Tindakan ini tidak bisa dibatalkan!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Ya, Hapus!',
-            cancelButtonText: 'Batal',
-            background: '#1e293b', color: '#000000'
-        }).then((result) => {
+            title: 'Hapus pimpinan?', text: 'Tindakan ini tidak bisa dibatalkan!',
+            icon: 'warning', showCancelButton: true,
+            confirmButtonColor: '#dc3545', cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Hapus!', cancelButtonText: 'Batal'
+        }).then(function(result) {
             if (result.isConfirmed) {
-                ApiService.deleteOrgLeader(id).then(function() {
-                    $scope.loadOrgLeaders();
-                });
+                ApiService.deleteOrgLeader(id).then(function() { $scope.loadOrgLeaders(); });
             }
         });
     };
 
-    ApiService.getOrgChart().then(function(r) {
-        var users = r.data;
-        $scope.orgKanit = users.find(function(u) { return u.role === 'kanit'; });
-        $scope.orgKasubnit = users.filter(function(u) { return u.role === 'kasubnit'; });
-        $scope.orgBamin = users.filter(function(u) { return u.role === 'bamin'; });
+    // --- Personel (User) Edit from Org Chart ---
+    $scope.editOrgUser = function(u) {
+        $scope.orgUserForm = {
+            id: u.id,
+            nama_lengkap: u.nama_lengkap,
+            pangkat: u.pangkat,
+            role: u.role
+        };
+        new bootstrap.Modal(document.getElementById('orgUserEditModal')).show();
+    };
 
-        // Build subnit structure
-        var subnits = {};
-        users.forEach(function(u) {
-            if (u.subnit_kode && (u.role === 'danregu' || u.role === 'anggota')) {
-                if (!subnits[u.subnit_kode]) {
-                    subnits[u.subnit_kode] = { nama: u.subnit_nama, kode: u.subnit_kode, regus: {} };
-                }
-                var reguKey = u.regu_kode || 'unassigned';
-                if (!subnits[u.subnit_kode].regus[reguKey]) {
-                    subnits[u.subnit_kode].regus[reguKey] = { nama: u.regu_nama || 'Belum Ditugaskan', members: [] };
-                }
-                subnits[u.subnit_kode].regus[reguKey].members.push(u);
-            }
+    $scope.saveOrgUser = function() {
+        ApiService.updateUser($scope.orgUserForm.id, $scope.orgUserForm).then(function() {
+            var m = bootstrap.Modal.getInstance(document.getElementById('orgUserEditModal')); if(m) m.hide();
+            Swal.fire({ icon: 'success', title: 'Tersimpan!', text: 'Data personel berhasil diperbarui.', timer: 1500, showConfirmButton: false });
+            $scope.loadOrgChart();
+        }).catch(function(err) {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: (err.data && err.data.message) || 'Gagal memperbarui.' });
         });
+    };
 
-        // Convert to array and sort
-        var order = ['TIMUR', 'TENGAH', 'BARAT'];
-        $scope.orgSubnits = order.map(function(kode) {
-            if (!subnits[kode]) return null;
-            var s = subnits[kode];
-            s.regus = Object.values(s.regus).sort(function(a,b) { return a.nama.localeCompare(b.nama); });
-            // Sort members: danregu first
-            s.regus.forEach(function(r) {
-                r.members.sort(function(a,b) { return a.role === 'danregu' ? -1 : 1; });
-            });
-            return s;
-        }).filter(Boolean);
-    });
-
-    ApiService.getSubnit().then(function(r) { /* already handled */ });
-
+    // --- Init ---
     $scope.loadOrgLeaders();
+    $scope.loadOrgChart();
 }]);
 
 // ============================================================

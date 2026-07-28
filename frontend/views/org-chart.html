@@ -1,4 +1,5 @@
 <div class="container-fluid px-0">
+    <!-- Header -->
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 animate-fade-in-up">
         <div>
             <h2 class="page-title mb-1"><i class="bi bi-diagram-3"></i> Struktur Organisasi</h2>
@@ -9,115 +10,111 @@
         </button>
     </div>
 
-    <!-- Top Leadership (from org_leaders table) -->
-    <div class="org-section animate-fade-in-up" ng-if="orgLeaders.length > 0">
-        <!-- First Leader (Top) -->
-        <div class="org-level org-level-top">
-            <div class="org-card org-card-top">
-                <div class="org-card-badge">{{ orgLeaders[0].jabatan }}</div>
-                <div class="org-card-name">{{ orgLeaders[0].nama_lengkap }}</div>
-                <div class="org-card-rank">{{ orgLeaders[0].pangkat }}</div>
-                <div class="org-card-actions" ng-if="user.role === 'admin'">
-                    <button class="btn btn-sm btn-outline-warning" ng-click="editLeader(orgLeaders[0])"><i class="bi bi-pencil-square"></i></button>
-                    <button class="btn btn-sm btn-outline-danger" ng-click="deleteLeader(orgLeaders[0].id)"><i class="bi bi-trash3"></i></button>
+    <!-- ========== BAGAN ORGANISASI ========== -->
+    <div class="org-chart-wrapper animate-fade-in-up">
+
+        <!-- PIMPINAN ATAS (from org_leaders) -->
+        <div class="org-tier" ng-repeat="leader in orgLeaders">
+            <div class="org-card-v2" ng-class="{'org-card-v2--primary': $index === 0, 'org-card-v2--secondary': $index > 0}">
+                <div class="org-card-v2__badge">{{ leader.jabatan }}</div>
+                <div class="org-card-v2__name">{{ leader.nama_lengkap }}</div>
+                <div class="org-card-v2__rank">{{ leader.pangkat }}</div>
+                <div class="org-card-v2__actions" ng-if="user.role === 'admin'">
+                    <button class="btn-icon btn-icon--edit" ng-click="editLeader(leader)" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                    <button class="btn-icon btn-icon--delete" ng-click="deleteLeader(leader.id)" title="Hapus"><i class="bi bi-trash3"></i></button>
                 </div>
             </div>
+            <div class="org-connector-v2"></div>
         </div>
-        <div class="org-connector"></div>
 
-        <!-- Remaining Leaders -->
-        <div ng-repeat="leader in orgLeaders" ng-if="$index > 0">
-            <div class="org-level">
-                <div class="org-card org-card-secondary">
-                    <div class="org-card-badge">{{ leader.jabatan }}</div>
-                    <div class="org-card-name">{{ leader.nama_lengkap }}</div>
-                    <div class="org-card-rank">{{ leader.pangkat }}</div>
-                    <div class="org-card-actions" ng-if="user.role === 'admin'">
-                        <button class="btn btn-sm btn-outline-warning" ng-click="editLeader(leader)"><i class="bi bi-pencil-square"></i></button>
-                        <button class="btn btn-sm btn-outline-danger" ng-click="deleteLeader(leader.id)"><i class="bi bi-trash3"></i></button>
-                    </div>
-                </div>
-            </div>
-            <div class="org-connector"></div>
-        </div>
-    </div>
-
-    <!-- Kanit + Bamin Level -->
-    <div class="org-section animate-fade-in-up">
-        <div class="org-level org-level-kanit">
-            <!-- Bamin Card -->
-            <div class="org-side-card" ng-if="orgBamin.length > 0">
-                <div class="org-card org-card-bamin">
-                    <div class="org-card-badge">BAMIN GAKKUM</div>
-                    <div class="bamin-members">
-                        <div class="bamin-member" ng-repeat="b in orgBamin">
-                            <i class="bi bi-person-badge me-1"></i>
-                            <span>{{ b.pangkat }} {{ b.nama_lengkap }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Kanit Card -->
-            <div class="org-card org-card-kanit" ng-if="orgKanit">
-                <div class="org-card-badge">KANIT GAKKUM</div>
-                <div class="org-card-name">{{ orgKanit.nama_lengkap }}</div>
-                <div class="org-card-rank">{{ orgKanit.pangkat }}</div>
-            </div>
-        </div>
-        <div class="org-connector"></div>
-
-        <!-- Kasubnit Level -->
-        <div class="org-level org-level-kasubnit" ng-if="orgKasubnit.length > 0">
-            <div class="org-card org-card-kasubnit" ng-repeat="ks in orgKasubnit">
-                <div class="org-card-badge">KASUBNIT {{ $index + 1 }}</div>
-                <div class="org-card-name">{{ ks.nama_lengkap }}</div>
-                <div class="org-card-rank">{{ ks.pangkat }}</div>
-                <small class="subnit-label" ng-if="ks.subnit_nama">{{ ks.subnit_nama }}</small>
-            </div>
-        </div>
-    </div>
-
-    <!-- Subnit Sections -->
-    <div class="row g-4 mt-3">
-        <div class="col-lg-4 col-md-6 animate-fade-in-up" ng-repeat="subnit in orgSubnits" style="animation-delay: {{ $index * 0.1 }}s">
-            <div class="subnit-org-card" ng-class="{
-                'subnit-org-timur': subnit.kode==='TIMUR',
-                'subnit-org-tengah': subnit.kode==='TENGAH',
-                'subnit-org-barat': subnit.kode==='BARAT'
-            }">
-                <div class="subnit-org-header">
-                    <i class="bi bi-geo-alt-fill"></i>
-                    <span>{{ subnit.nama }}</span>
-                </div>
-                <div class="subnit-org-body">
-                    <div class="regu-section" ng-repeat="regu in subnit.regus">
-                        <div class="regu-header">
-                            <i class="bi bi-people-fill me-1"></i>{{ regu.nama }}
-                        </div>
-                        <div class="regu-members">
-                            <div class="member-row" ng-repeat="m in regu.members">
-                                <span class="member-role-badge" ng-class="{
-                                    'mrb-danregu': m.role==='danregu',
-                                    'mrb-anggota': m.role==='anggota'
-                                }">
-                                    <i class="bi" ng-class="{'bi-star-fill': m.role==='danregu', 'bi-person-fill': m.role==='anggota'}"></i>
-                                </span>
-                                <div>
-                                    <span class="member-name">{{ m.pangkat }} {{ m.nama_lengkap }}</span>
-                                    <small class="d-block text-muted" ng-if="m.role==='danregu'">Danregu</small>
-                                </div>
+        <!-- BAMIN + KANIT -->
+        <div class="org-tier org-tier--split">
+            <!-- BAMIN -->
+            <div class="org-card-v2 org-card-v2--bamin" ng-if="orgBamin.length > 0">
+                <div class="org-card-v2__badge">BAMIN GAKKUM</div>
+                <div class="bamin-list">
+                    <div class="bamin-item" ng-repeat="b in orgBamin">
+                        <div class="bamin-item__info">
+                            <i class="bi bi-person-badge"></i>
+                            <div>
+                                <div class="bamin-item__name">{{ b.nama_lengkap }}</div>
+                                <div class="bamin-item__rank">{{ b.pangkat }}</div>
                             </div>
-                            <div ng-if="regu.members.length === 0" class="text-muted small text-center py-2">-</div>
+                        </div>
+                        <button class="btn-icon btn-icon--edit btn-icon--sm" ng-if="user.role === 'admin'" ng-click="editOrgUser(b)" title="Edit"><i class="bi bi-pencil"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KANIT -->
+            <div class="org-card-v2 org-card-v2--kanit" ng-if="orgKanit">
+                <div class="org-card-v2__badge org-card-v2__badge--orange">KANIT GAKKUM</div>
+                <div class="org-card-v2__name">{{ orgKanit.nama_lengkap }}</div>
+                <div class="org-card-v2__rank">{{ orgKanit.pangkat }}</div>
+                <div class="org-card-v2__actions" ng-if="user.role === 'admin'">
+                    <button class="btn-icon btn-icon--edit" ng-click="editOrgUser(orgKanit)" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="org-connector-v2"></div>
+
+        <!-- KASUBNIT -->
+        <div class="org-tier org-tier--multi">
+            <div class="org-card-v2 org-card-v2--kasubnit" ng-repeat="ks in orgKasubnit">
+                <div class="org-card-v2__badge org-card-v2__badge--cyan">KASUBNIT {{ $index + 1 }}</div>
+                <div class="org-card-v2__name">{{ ks.nama_lengkap }}</div>
+                <div class="org-card-v2__rank">{{ ks.pangkat }}</div>
+                <span class="org-card-v2__subnit-tag" ng-if="ks.subnit_nama">{{ ks.subnit_nama }}</span>
+                <div class="org-card-v2__actions" ng-if="user.role === 'admin'">
+                    <button class="btn-icon btn-icon--edit" ng-click="editOrgUser(ks)" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                </div>
+            </div>
+        </div>
+        <div class="org-connector-v2 org-connector-v2--branch"></div>
+
+        <!-- SUBNIT SECTIONS -->
+        <div class="org-subnit-grid">
+            <div class="org-subnit-col" ng-repeat="subnit in orgSubnits" style="animation-delay: {{ $index * 0.1 }}s">
+                <div class="subnit-card-v2" ng-class="{
+                    'subnit-card-v2--timur': subnit.kode==='TIMUR',
+                    'subnit-card-v2--tengah': subnit.kode==='TENGAH',
+                    'subnit-card-v2--barat': subnit.kode==='BARAT'
+                }">
+                    <div class="subnit-card-v2__header">
+                        <div class="subnit-card-v2__icon">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <span>{{ subnit.nama }}</span>
+                    </div>
+                    <div class="subnit-card-v2__body">
+                        <div class="regu-block" ng-repeat="regu in subnit.regus">
+                            <div class="regu-block__title">
+                                <i class="bi bi-people-fill"></i>
+                                <span>{{ regu.nama }}</span>
+                            </div>
+                            <div class="regu-block__members">
+                                <div class="member-item" ng-repeat="m in regu.members">
+                                    <div class="member-item__badge" ng-class="{'member-item__badge--danregu': m.role==='danregu', 'member-item__badge--anggota': m.role==='anggota'}">
+                                        <i class="bi" ng-class="{'bi-star-fill': m.role==='danregu', 'bi-person-fill': m.role==='anggota'}"></i>
+                                    </div>
+                                    <div class="member-item__info">
+                                        <div class="member-item__name">{{ m.pangkat }} {{ m.nama_lengkap }}</div>
+                                        <div class="member-item__role" ng-if="m.role==='danregu'">Danregu</div>
+                                    </div>
+                                    <button class="btn-icon btn-icon--edit btn-icon--xs" ng-if="user.role === 'admin'" ng-click="editOrgUser(m)" title="Edit"><i class="bi bi-pencil"></i></button>
+                                </div>
+                                <div ng-if="regu.members.length === 0" class="text-muted small text-center py-2">Belum ada anggota</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 
-<!-- Leader Form Modal -->
+<!-- ========== MODAL: EDIT PIMPINAN (org_leaders) ========== -->
 <div class="modal fade" id="leaderFormModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content glass-modal">
@@ -147,6 +144,47 @@
                             <label class="form-label fw-semibold">Urutan</label>
                             <input type="number" class="form-control" ng-model="leaderForm.urutan" required>
                         </div>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2 mt-2">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Simpan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== MODAL: EDIT PERSONEL (users) ========== -->
+<div class="modal fade" id="orgUserEditModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-modal">
+            <div class="modal-header border-0">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-pencil-square me-2" style="color: #f97316;"></i>
+                    Edit Personel
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form ng-submit="saveOrgUser()">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nama Lengkap</label>
+                        <input type="text" class="form-control" ng-model="orgUserForm.nama_lengkap" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Pangkat</label>
+                        <input type="text" class="form-control" ng-model="orgUserForm.pangkat" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Role</label>
+                        <select class="form-select" ng-model="orgUserForm.role">
+                            <option value="kanit">Kanit</option>
+                            <option value="kasubnit">Kasubnit</option>
+                            <option value="bamin">Bamin</option>
+                            <option value="danregu">Danregu</option>
+                            <option value="anggota">Anggota</option>
+                        </select>
                     </div>
                     <div class="d-flex justify-content-end gap-2 mt-2">
                         <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
