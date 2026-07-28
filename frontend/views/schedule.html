@@ -1,42 +1,51 @@
 <style>
 /* ================================================================
-   SCHEDULE PAGE — SIMPLE FLAT TABLE (1 row = 1 person)
-   Colors: RED, BLUE, GREEN, BLACK, YELLOW only
+   SCHEDULE PAGE — COMPACT SUBNIT MATRIX DESIGN
+   Show only Subnit Badges in table; click Subnit to view personnel!
    ================================================================ */
 .sched-table { background: #ffffff !important; border-color: #94a3b8 !important; }
 .sched-table thead th {
     background: #000000 !important; color: #ffffff !important;
-    font-weight: 800 !important; font-size: 0.8rem !important;
+    font-weight: 800 !important; font-size: 0.82rem !important;
     letter-spacing: 0.04em !important; text-transform: uppercase !important;
     border-color: #000000 !important; padding: 10px 12px !important;
 }
 .sched-table thead th * { color: #ffffff !important; }
 .sched-table tbody td {
     border-color: #cbd5e1 !important; color: #1e293b !important;
-    padding: 8px 12px !important; font-size: 0.85rem !important;
+    padding: 10px 12px !important; font-size: 0.85rem !important;
     vertical-align: middle !important;
 }
-.sched-table tbody tr:hover { background: #fef3c7 !important; }
+.sched-table tbody tr:hover { background: #fef9c3 !important; }
 
-/* Solid Color Labels */
-.lbl { font-weight: 700 !important; font-size: 0.75rem !important; padding: 4px 10px !important; border-radius: 5px !important; display: inline-block !important; }
-.lbl-pagi   { background: #eab308 !important; color: #000 !important; }
-.lbl-sore   { background: #2563eb !important; color: #fff !important; }
-.lbl-malam  { background: #000000 !important; color: #fff !important; }
-.lbl-timur  { background: #16a34a !important; color: #fff !important; }
-.lbl-tengah { background: #dc2626 !important; color: #fff !important; }
-.lbl-barat  { background: #2563eb !important; color: #fff !important; }
-.lbl-regu   { background: #000000 !important; color: #fff !important; }
-.lbl-reguler    { background: #16a34a !important; color: #fff !important; }
-.lbl-wiken      { background: #dc2626 !important; color: #fff !important; }
-.lbl-libur      { background: #dc2626 !important; color: #fff !important; }
-.lbl-dijadwalkan{ background: #eab308 !important; color: #000 !important; }
-.lbl-hadir      { background: #16a34a !important; color: #fff !important; }
-.lbl-tidak-hadir{ background: #dc2626 !important; color: #fff !important; }
+/* Subnit Badges — Clickable */
+.subnit-clickable {
+    font-weight: 700 !important; font-size: 0.78rem !important;
+    padding: 5px 12px !important; border-radius: 6px !important;
+    cursor: pointer !important; transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+    display: inline-flex !important; align-items: center !important; gap: 6px !important;
+    user-select: none !important; margin: 2px !important;
+}
+.subnit-clickable:hover { transform: translateY(-2px) scale(1.05); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
 
-.btn-edit { background: #2563eb !important; color: #fff !important; font-weight: 700 !important; font-size: 0.72rem !important; padding: 4px 10px !important; border-radius: 5px !important; border: none !important; cursor: pointer !important; }
+.lbl-timur  { background: #16a34a !important; color: #ffffff !important; }
+.lbl-tengah { background: #dc2626 !important; color: #ffffff !important; }
+.lbl-barat  { background: #2563eb !important; color: #ffffff !important; }
+.lbl-default{ background: #475569 !important; color: #ffffff !important; }
+
+.lbl-pagi   { background: #eab308 !important; color: #000000 !important; font-weight: 800 !important; padding: 4px 10px !important; border-radius: 5px !important; }
+.lbl-sore   { background: #2563eb !important; color: #ffffff !important; font-weight: 800 !important; padding: 4px 10px !important; border-radius: 5px !important; }
+.lbl-malam  { background: #000000 !important; color: #ffffff !important; font-weight: 800 !important; padding: 4px 10px !important; border-radius: 5px !important; }
+
+.lbl-dijadwalkan{ background: #eab308 !important; color: #000000 !important; font-weight: 700 !important; padding: 3px 8px !important; border-radius: 4px !important; font-size: 0.72rem !important; }
+.lbl-hadir      { background: #16a34a !important; color: #ffffff !important; font-weight: 700 !important; padding: 3px 8px !important; border-radius: 4px !important; font-size: 0.72rem !important; }
+.lbl-tidak-hadir{ background: #dc2626 !important; color: #ffffff !important; font-weight: 700 !important; padding: 3px 8px !important; border-radius: 4px !important; font-size: 0.72rem !important; }
+.lbl-libur      { background: #dc2626 !important; color: #ffffff !important; font-weight: 700 !important; padding: 3px 8px !important; border-radius: 4px !important; font-size: 0.72rem !important; }
+.lbl-wiken      { background: #eab308 !important; color: #000000 !important; font-weight: 800 !important; padding: 3px 8px !important; border-radius: 4px !important; font-size: 0.68rem !important; }
+
+.btn-edit { background: #2563eb !important; color: #fff !important; font-weight: 700 !important; font-size: 0.75rem !important; padding: 4px 10px !important; border-radius: 5px !important; border: none !important; cursor: pointer !important; }
 .btn-edit:hover { background: #1d4ed8 !important; }
-.btn-hapus { background: #dc2626 !important; color: #fff !important; font-weight: 700 !important; font-size: 0.72rem !important; padding: 4px 10px !important; border-radius: 5px !important; border: none !important; cursor: pointer !important; }
+.btn-hapus { background: #dc2626 !important; color: #fff !important; font-weight: 700 !important; font-size: 0.75rem !important; padding: 4px 10px !important; border-radius: 5px !important; border: none !important; cursor: pointer !important; }
 .btn-hapus:hover { background: #991b1b !important; }
 
 /* Quick View */
@@ -61,7 +70,6 @@
 .qv-dot.dot-malam { background: #000; }
 .qv-empty { color: #94a3b8; font-style: italic; font-size: 0.78rem; padding: 3px 0; }
 
-/* Row number column */
 .row-num { font-weight: 800; color: #475569; font-size: 0.85rem; text-align: center; }
 </style>
 
@@ -70,7 +78,7 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 animate-fade-in-up">
         <div>
             <h2 class="page-title mb-1"><i class="bi bi-calendar3 text-primary"></i> Jadwal Piket Unit Gakkum</h2>
-            <small style="color: #475569;">Lihat siapa yang piket hari ini, kemarin, dan besok</small>
+            <small style="color: #475569;">Tampilan ringkas per Subnit — Klik badge Subnit untuk melihat nama personel</small>
         </div>
         <div class="d-flex gap-2" ng-if="user.role === 'admin' || user.role === 'kanit' || user.role === 'kasubnit'">
             <button class="btn btn-outline-secondary btn-sm" ng-click="generateSchedule()"><i class="bi bi-magic me-1"></i>Auto Generate</button>
@@ -152,7 +160,7 @@
         </div>
     </div>
 
-    <!-- ============== TABEL FLAT PER MINGGU (1 baris = 1 orang) ============== -->
+    <!-- ============== TABEL RINGKAS PER SUBNIT (1 HARI = 1 BARIS) ============== -->
     <div ng-repeat="week in monthlyWeeks" class="glass-card-static animate-fade-in-up mb-4" style="padding: 1.25rem; background: #fff; border: 1px solid #cbd5e1; transition: all 0.3s ease;">
         <!-- Header Card — Clickable to Toggle Open / Close -->
         <div class="d-flex justify-content-between align-items-center cursor-pointer select-none py-1" 
@@ -176,78 +184,122 @@
             </div>
         </div>
         
-        <!-- Table Body — Hidden when week.collapsed is true -->
+        <!-- Table Body (1 Row per Day) -->
         <div class="table-responsive mt-3" ng-show="!week.collapsed">
             <table class="table table-bordered mb-0 sched-table">
                 <thead>
                     <tr>
-                        <th style="width:4%;" class="text-center">No</th>
-                        <th style="width:13%;">Hari & Tanggal</th>
-                        <th style="width:10%;">Shift</th>
-                        <th style="width:25%;">Nama Personel</th>
-                        <th style="width:12%;">Subnit</th>
-                        <th style="width:10%;">Regu</th>
-                        <th style="width:10%;">Tipe</th>
-                        <th style="width:10%;">Status</th>
-                        <th style="width:6%;" ng-if="user.role === 'admin' || user.role === 'kanit'" class="text-center">Aksi</th>
+                        <th style="width:5%;" class="text-center">No</th>
+                        <th style="width:18%;">Hari & Tanggal</th>
+                        <th style="width:23%;"><i class="bi bi-sunrise text-warning me-1"></i>Shift Pagi (06-14)</th>
+                        <th style="width:23%;"><i class="bi bi-sun text-info me-1"></i>Shift Sore (14-22)</th>
+                        <th style="width:23%;"><i class="bi bi-moon-stars text-warning me-1"></i>Shift Malam (22-06)</th>
+                        <th style="width:8%;" class="text-center">Kelola</th>
                     </tr>
                 </thead>
-                <tbody ng-repeat="day in week.days">
-                    <tr ng-repeat="s in day.all" ng-style="{'background': day.isHoliday ? '#fee2e2' : (day.isWeekend ? '#fef9c3' : '#ffffff')}">
+                <tbody>
+                    <tr ng-repeat="day in week.days" ng-style="{'background': day.isHoliday ? '#fee2e2' : (day.isWeekend ? '#fef9c3' : '#ffffff')}">
                         <!-- No -->
                         <td class="row-num">{{ day.dayNum }}</td>
+
                         <!-- Hari & Tanggal -->
                         <td>
-                            <strong style="color: #1e293b;">{{ day.dayName }}</strong>, <span style="color: #ea580c; font-weight: 800;">{{ day.dayNum }}</span> {{ monthNames[selectedMonth-1] }}
-                            <div ng-if="day.isHoliday" style="margin-top: 2px;"><span class="lbl lbl-libur" style="font-size: 0.65rem !important;">{{ day.holidayName }}</span></div>
-                            <div ng-if="day.isWeekend && !day.isHoliday" style="margin-top: 2px;"><span class="lbl lbl-wiken" style="font-size: 0.65rem !important; background: #eab308 !important; color: #000 !important;">SIAGA</span></div>
+                            <strong style="color: #1e293b; font-size: 0.9rem;">{{ day.dayName }}</strong>, <span style="color: #ea580c; font-weight: 800; font-size: 1.05rem;">{{ day.dayNum }}</span> {{ monthNames[selectedMonth-1] }}
+                            <div ng-if="day.isHoliday" style="margin-top: 2px;"><span class="lbl lbl-libur">{{ day.holidayName }}</span></div>
+                            <div ng-if="day.isWeekend && !day.isHoliday" style="margin-top: 2px;"><span class="lbl lbl-wiken">SIAGA WIKEN</span></div>
                         </td>
-                        <!-- Shift -->
+
+                        <!-- Shift Pagi -->
                         <td>
-                            <span class="lbl lbl-pagi" ng-if="s.shift==='Pagi'"><i class="bi bi-sunrise"></i> Pagi</span>
-                            <span class="lbl lbl-sore" ng-if="s.shift==='Sore'"><i class="bi bi-sun"></i> Sore</span>
-                            <span class="lbl lbl-malam" ng-if="s.shift==='Malam'"><i class="bi bi-moon-stars"></i> Malam</span>
-                        </td>
-                        <!-- Nama -->
-                        <td><strong style="color: #000;">{{ s.pangkat }} {{ s.nama_lengkap }}</strong></td>
-                        <!-- Subnit -->
-                        <td>
-                            <span class="lbl lbl-timur" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Timur')>=0">{{ s.subnit_nama }}</span>
-                            <span class="lbl lbl-tengah" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Tengah')>=0">{{ s.subnit_nama }}</span>
-                            <span class="lbl lbl-barat" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Barat')>=0">{{ s.subnit_nama }}</span>
-                        </td>
-                        <!-- Regu -->
-                        <td><span class="lbl lbl-regu">{{ s.regu_nama || '-' }}</span></td>
-                        <!-- Tipe -->
-                        <td>
-                            <span class="lbl lbl-reguler" ng-if="s.tipe==='reguler'">Reguler</span>
-                            <span class="lbl lbl-wiken" ng-if="s.tipe==='wiken'">Wiken</span>
-                            <span class="lbl lbl-libur" ng-if="s.tipe==='libur_nasional'">Libur</span>
-                        </td>
-                        <!-- Status -->
-                        <td>
-                            <span class="lbl lbl-dijadwalkan" ng-if="s.status==='dijadwalkan'">Dijadwalkan</span>
-                            <span class="lbl lbl-hadir" ng-if="s.status==='hadir'">Hadir</span>
-                            <span class="lbl lbl-tidak-hadir" ng-if="s.status==='tidak_hadir'">Tdk Hadir</span>
-                        </td>
-                        <!-- Aksi -->
-                        <td ng-if="user.role === 'admin' || user.role === 'kanit'" class="text-center">
-                            <div class="d-flex gap-1 justify-content-center">
-                                <button class="btn-edit" ng-click="openEditSchedule(s)" title="Edit"><i class="bi bi-pencil-fill"></i></button>
-                                <button class="btn-hapus" ng-click="deleteSchedule(s.id)" title="Hapus"><i class="bi bi-trash3-fill"></i></button>
+                            <div class="d-flex flex-wrap gap-1">
+                                <span class="subnit-clickable" 
+                                      ng-repeat="sub in day.pagiSubnits" 
+                                      ng-class="{'lbl-timur': sub.name.indexOf('Timur')>=0, 'lbl-tengah': sub.name.indexOf('Tengah')>=0, 'lbl-barat': sub.name.indexOf('Barat')>=0, 'lbl-default': sub.name.indexOf('Timur')<0 && sub.name.indexOf('Tengah')<0 && sub.name.indexOf('Barat')<0}"
+                                      ng-click="showSubnitDetail(day, 'Pagi', sub)" 
+                                      title="Klik untuk melihat nama personel">
+                                    <i class="bi bi-people-fill"></i> {{ sub.name }} ({{ sub.count }})
+                                </span>
                             </div>
+                            <div ng-if="day.pagiSubnits.length === 0" style="color: #94a3b8; font-style: italic; font-size: 0.78rem;">— Kosong —</div>
                         </td>
-                    </tr>
-                    <!-- If day has no schedules at all, show empty row -->
-                    <tr ng-if="day.all.length === 0" style="background: #f8fafc;">
-                        <td class="row-num">{{ day.dayNum }}</td>
+
+                        <!-- Shift Sore -->
                         <td>
-                            <strong style="color: #1e293b;">{{ day.dayName }}</strong>, <span style="color: #ea580c; font-weight: 800;">{{ day.dayNum }}</span> {{ monthNames[selectedMonth-1] }}
+                            <div class="d-flex flex-wrap gap-1">
+                                <span class="subnit-clickable" 
+                                      ng-repeat="sub in day.soreSubnits" 
+                                      ng-class="{'lbl-timur': sub.name.indexOf('Timur')>=0, 'lbl-tengah': sub.name.indexOf('Tengah')>=0, 'lbl-barat': sub.name.indexOf('Barat')>=0, 'lbl-default': sub.name.indexOf('Timur')<0 && sub.name.indexOf('Tengah')<0 && sub.name.indexOf('Barat')<0}"
+                                      ng-click="showSubnitDetail(day, 'Sore', sub)" 
+                                      title="Klik untuk melihat nama personel">
+                                    <i class="bi bi-people-fill"></i> {{ sub.name }} ({{ sub.count }})
+                                </span>
+                            </div>
+                            <div ng-if="day.soreSubnits.length === 0" style="color: #94a3b8; font-style: italic; font-size: 0.78rem;">— Kosong —</div>
                         </td>
-                        <td colspan="7" class="text-center" style="color: #94a3b8; font-style: italic;">— Belum ada jadwal —</td>
+
+                        <!-- Shift Malam -->
+                        <td>
+                            <div class="d-flex flex-wrap gap-1">
+                                <span class="subnit-clickable" 
+                                      ng-repeat="sub in day.malamSubnits" 
+                                      ng-class="{'lbl-timur': sub.name.indexOf('Timur')>=0, 'lbl-tengah': sub.name.indexOf('Tengah')>=0, 'lbl-barat': sub.name.indexOf('Barat')>=0, 'lbl-default': sub.name.indexOf('Timur')<0 && sub.name.indexOf('Tengah')<0 && sub.name.indexOf('Barat')<0}"
+                                      ng-click="showSubnitDetail(day, 'Malam', sub)" 
+                                      title="Klik untuk melihat nama personel">
+                                    <i class="bi bi-people-fill"></i> {{ sub.name }} ({{ sub.count }})
+                                </span>
+                            </div>
+                            <div ng-if="day.malamSubnits.length === 0" style="color: #94a3b8; font-style: italic; font-size: 0.78rem;">— Kosong —</div>
+                        </td>
+
+                        <!-- Kelola / Detail -->
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-outline-primary fw-bold py-1 px-2.5" ng-click="selectDate(day)" title="Lihat semua jadwal tanggal ini">
+                                <i class="bi bi-eye-fill me-1"></i>Detail
+                            </button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
+        </div>
+    </div>
+</div>
+
+<!-- ============== MODAL DETAIL PERSONEL SUBNIT (Klik Badge Subnit) ============== -->
+<div class="modal fade" id="subnitDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-modal">
+            <div class="modal-header">
+                <h5 class="modal-title d-flex align-items-center gap-2">
+                    <i class="bi bi-shield-check text-primary fs-4"></i>
+                    Personel Piket — {{ subnitModalData.subnitName }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom">
+                    <span class="badge px-3 py-1.5 fs-7" 
+                          ng-class="{'lbl-pagi': subnitModalData.shift==='Pagi', 'lbl-sore': subnitModalData.shift==='Sore', 'lbl-malam': subnitModalData.shift==='Malam'}">
+                        Shift {{ subnitModalData.shift }}
+                    </span>
+                    <strong style="color: #1e293b; font-size: 0.9rem;">{{ subnitModalData.dateStr }}</strong>
+                </div>
+
+                <div class="list-group">
+                    <div class="list-group-item d-flex justify-content-between align-items-center p-3" ng-repeat="p in subnitModalData.list">
+                        <div>
+                            <div class="fw-bold fs-6" style="color: #000;">{{ p.pangkat }} {{ p.nama_lengkap }}</div>
+                            <small class="text-muted" ng-if="p.regu_nama"><i class="bi bi-diagram-3 me-1"></i>{{ p.regu_nama }}</small>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="lbl lbl-dijadwalkan" ng-if="p.status==='dijadwalkan'">Dijadwalkan</span>
+                            <span class="lbl lbl-hadir" ng-if="p.status==='hadir'">Hadir</span>
+                            <span class="lbl lbl-tidak-hadir" ng-if="p.status==='tidak_hadir'">Tidak Hadir</span>
+                            <button class="btn-edit ms-1" ng-click="openEditSchedule(p)" ng-if="user.role==='admin'||user.role==='kanit'" title="Edit Personel Ini"><i class="bi bi-pencil-fill"></i></button>
+                            <button class="btn-hapus" ng-click="deleteSchedule(p.id)" ng-if="user.role==='admin'||user.role==='kanit'" title="Hapus Personel Ini"><i class="bi bi-trash3-fill"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>

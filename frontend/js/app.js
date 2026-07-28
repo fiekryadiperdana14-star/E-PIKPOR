@@ -10,7 +10,7 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
         .when('/dashboard', { templateUrl: 'views/dashboard.html?v=14', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=15', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=14', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=23', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=24', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=14', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/sop', { templateUrl: 'views/sop.html?v=14', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/struktur', { templateUrl: 'views/org-chart.html?v=14', controller: 'OrgChartCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
@@ -497,10 +497,28 @@ function($scope, ApiService, $rootScope) {
         var weekNum = 1;
         var weekDays = [];
 
+        function groupBySubnit(arr) {
+            var map = {};
+            (arr || []).forEach(function(s) {
+                var subName = s.subnit_nama || 'Subnit';
+                if (!map[subName]) map[subName] = [];
+                map[subName].push(s);
+            });
+            var res = [];
+            for (var k in map) {
+                res.push({ name: k, list: map[k], count: map[k].length });
+            }
+            return res;
+        }
+
         for (var d = 1; d <= totalDays; d++) {
             var dateObj = new Date($scope.selectedYear, $scope.selectedMonth - 1, d);
             var dow = dateObj.getDay();
             var key = $scope.selectedYear + '-' + String($scope.selectedMonth).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+
+            var pagiArr = (schedByDate[key] && schedByDate[key].Pagi) || [];
+            var soreArr = (schedByDate[key] && schedByDate[key].Sore) || [];
+            var malamArr = (schedByDate[key] && schedByDate[key].Malam) || [];
 
             var dayItem = {
                 dayNum: d,
@@ -510,9 +528,12 @@ function($scope, ApiService, $rootScope) {
                 isWeekend: dow === 0 || dow === 6,
                 isHoliday: !!holidayMap[key],
                 holidayName: holidayMap[key] || null,
-                pagi: (schedByDate[key] && schedByDate[key].Pagi) || [],
-                sore: (schedByDate[key] && schedByDate[key].Sore) || [],
-                malam: (schedByDate[key] && schedByDate[key].Malam) || [],
+                pagi: pagiArr,
+                sore: soreArr,
+                malam: malamArr,
+                pagiSubnits: groupBySubnit(pagiArr),
+                soreSubnits: groupBySubnit(soreArr),
+                malamSubnits: groupBySubnit(malamArr),
                 all: (schedByDate[key] && schedByDate[key].all) || []
             };
 
@@ -538,6 +559,17 @@ function($scope, ApiService, $rootScope) {
         ($scope.monthlyWeeks || []).forEach(function(w) {
             w.collapsed = collapsedState;
         });
+    };
+
+    $scope.subnitModalData = null;
+    $scope.showSubnitDetail = function(day, shift, subGroup) {
+        $scope.subnitModalData = {
+            dateStr: day.dayName + ', ' + day.dayNum + ' ' + $scope.monthNames[$scope.selectedMonth - 1] + ' ' + $scope.selectedYear,
+            shift: shift,
+            subnitName: subGroup.name,
+            list: subGroup.list
+        };
+        new bootstrap.Modal(document.getElementById('subnitDetailModal')).show();
     };
 
     $scope.selectDate = function(day) {
