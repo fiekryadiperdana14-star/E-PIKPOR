@@ -656,6 +656,19 @@ function($scope, ApiService) {
                 });
                 return s;
             }).filter(Boolean);
+            
+            // Helper for template
+            $scope.getKasubnit = function(kode) {
+                // Determine Kasubnit by code based on typical assignment
+                // Image mapping: Timur -> Kasubnit I, Barat -> Kasubnit II, Tengah -> null
+                if (kode === 'TIMUR') return $scope.orgKasubnit[0] || null;
+                if (kode === 'BARAT') return $scope.orgKasubnit[1] || null;
+                return null;
+            };
+            
+            $scope.getSubnit = function(kode) {
+                return $scope.orgSubnits.find(function(s) { return s.kode === kode; });
+            };
         });
     };
 

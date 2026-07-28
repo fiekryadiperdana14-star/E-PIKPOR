@@ -12,94 +12,121 @@
 
     <!-- ========== BAGAN ORGANISASI ========== -->
     <div class="orgchart animate-fade-in-up">
-
-        <!-- PIMPINAN ATAS -->
-        <div class="orgchart__block" ng-repeat="leader in orgLeaders">
-            <div class="orgchart__card orgchart__card--leader" ng-class="{'orgchart__card--top': $first}">
-                <span class="orgchart__badge">{{ leader.jabatan }}</span>
-                <div class="orgchart__name">{{ leader.nama_lengkap }}</div>
-                <div class="orgchart__rank">{{ leader.pangkat }}</div>
-                <div class="orgchart__btns" ng-if="user.role === 'admin'">
-                    <button class="orgchart__btn orgchart__btn--edit" ng-click="editLeader(leader)"><i class="bi bi-pencil-square"></i></button>
-                    <button class="orgchart__btn orgchart__btn--del" ng-click="deleteLeader(leader.id)"><i class="bi bi-trash3"></i></button>
-                </div>
-            </div>
-            <div class="orgchart__line"></div>
-        </div>
-
-        <!-- BAMIN + KANIT (Side by Side) -->
-        <div class="orgchart__row">
-            <div class="orgchart__card orgchart__card--bamin" ng-if="orgBamin.length > 0">
-                <span class="orgchart__badge">BAMIN GAKKUM</span>
-                <div class="orgchart__bamin-list">
-                    <div class="orgchart__bamin-item" ng-repeat="b in orgBamin">
-                        <div>
-                            <div class="orgchart__bamin-name">{{ b.nama_lengkap }}</div>
-                            <div class="orgchart__bamin-rank">{{ b.pangkat }}</div>
+        <div class="org-layout">
+            
+            <!-- CENTRAL LEADERS STACK -->
+            <div class="org-stack">
+                <div ng-repeat="leader in orgLeaders" class="org-node">
+                    <div class="orgchart__card orgchart__card--leader" ng-class="{'orgchart__card--top': $first}">
+                        <span class="orgchart__badge">{{ leader.jabatan }}</span>
+                        <div class="orgchart__name">{{ leader.nama_lengkap }}</div>
+                        <div class="orgchart__rank">{{ leader.pangkat }}</div>
+                        <div class="orgchart__btns" ng-if="user.role === 'admin'">
+                            <button class="orgchart__btn orgchart__btn--edit" ng-click="editLeader(leader)"><i class="bi bi-pencil-square"></i></button>
+                            <button class="orgchart__btn orgchart__btn--del" ng-click="deleteLeader(leader.id)"><i class="bi bi-trash3"></i></button>
                         </div>
-                        <button class="orgchart__btn orgchart__btn--edit orgchart__btn--sm" ng-if="user.role === 'admin'" ng-click="editOrgUser(b)"><i class="bi bi-pencil"></i></button>
                     </div>
+                    <!-- Vertical line for leaders -->
+                    <div class="org-line-v"></div>
                 </div>
             </div>
-            <div class="orgchart__card orgchart__card--kanit" ng-if="orgKanit">
-                <span class="orgchart__badge orgchart__badge--accent">KANIT GAKKUM</span>
-                <div class="orgchart__name">{{ orgKanit.nama_lengkap }}</div>
-                <div class="orgchart__rank">{{ orgKanit.pangkat }}</div>
-                <div class="orgchart__btns" ng-if="user.role === 'admin'">
-                    <button class="orgchart__btn orgchart__btn--edit" ng-click="editOrgUser(orgKanit)"><i class="bi bi-pencil-square"></i></button>
-                </div>
-            </div>
-        </div>
-        <div class="orgchart__line"></div>
 
-        <!-- KASUBNIT -->
-        <div class="orgchart__row">
-            <div class="orgchart__card orgchart__card--kasubnit" ng-repeat="ks in orgKasubnit">
-                <span class="orgchart__badge orgchart__badge--cyan">KASUBNIT {{ $index + 1 }}</span>
-                <div class="orgchart__name">{{ ks.nama_lengkap }}</div>
-                <div class="orgchart__rank">{{ ks.pangkat }}</div>
-                <span class="orgchart__tag" ng-if="ks.subnit_nama">{{ ks.subnit_nama }}</span>
-                <div class="orgchart__btns" ng-if="user.role === 'admin'">
-                    <button class="orgchart__btn orgchart__btn--edit" ng-click="editOrgUser(ks)"><i class="bi bi-pencil-square"></i></button>
-                </div>
-            </div>
-        </div>
-        <div class="orgchart__line orgchart__line--branch"></div>
-
-        <!-- SUBNIT SECTIONS -->
-        <div class="orgchart__subnits">
-            <div class="orgchart__subnit" ng-repeat="subnit in orgSubnits">
-                <div class="orgchart__subnit-card" ng-class="{
-                    'orgchart__subnit-card--timur': subnit.kode==='TIMUR',
-                    'orgchart__subnit-card--tengah': subnit.kode==='TENGAH',
-                    'orgchart__subnit-card--barat': subnit.kode==='BARAT'
-                }">
-                    <div class="orgchart__subnit-hdr">
-                        <div class="orgchart__subnit-icon"><i class="bi bi-geo-alt-fill"></i></div>
-                        <span>{{ subnit.nama }}</span>
-                    </div>
-                    <div class="orgchart__subnit-body">
-                        <div class="orgchart__regu" ng-repeat="regu in subnit.regus">
-                            <div class="orgchart__regu-title">
-                                <i class="bi bi-people-fill"></i> {{ regu.nama }}
-                            </div>
-                            <div class="orgchart__member" ng-repeat="m in regu.members">
-                                <span class="orgchart__member-icon" ng-class="{'orgchart__member-icon--dan': m.role==='danregu'}">
-                                    <i class="bi" ng-class="{'bi-star-fill': m.role==='danregu', 'bi-person-fill': m.role==='anggota'}"></i>
-                                </span>
-                                <div class="orgchart__member-info">
-                                    <div class="orgchart__member-name">{{ m.pangkat }} {{ m.nama_lengkap }}</div>
-                                    <div class="orgchart__member-role" ng-if="m.role==='danregu'">Danregu</div>
+            <!-- BAMIN & KANIT ROW (Splits from center) -->
+            <div class="org-bamin-kanit-wrapper">
+                <div class="org-line-h bamin-h-line"></div>
+                <div class="org-row-3">
+                    <!-- Column 1: Bamin (Left) -->
+                    <div class="org-col">
+                        <div class="org-line-v"></div>
+                        <div class="orgchart__card orgchart__card--bamin" ng-if="orgBamin.length > 0">
+                            <span class="orgchart__badge">BAMIN GAKKUM</span>
+                            <div class="orgchart__bamin-list">
+                                <div class="orgchart__bamin-item" ng-repeat="b in orgBamin">
+                                    <div>
+                                        <div class="orgchart__bamin-name">{{ b.nama_lengkap }}</div>
+                                        <div class="orgchart__bamin-rank">{{ b.pangkat }}</div>
+                                    </div>
+                                    <button class="orgchart__btn orgchart__btn--edit orgchart__btn--sm" ng-if="user.role === 'admin'" ng-click="editOrgUser(b)"><i class="bi bi-pencil"></i></button>
                                 </div>
-                                <button class="orgchart__btn orgchart__btn--edit orgchart__btn--xs" ng-if="user.role === 'admin'" ng-click="editOrgUser(m)"><i class="bi bi-pencil"></i></button>
                             </div>
-                            <div ng-if="regu.members.length === 0" class="text-muted small text-center py-2">Belum ada anggota</div>
                         </div>
                     </div>
+                    
+                    <!-- Column 2: Kanit (Center) -->
+                    <div class="org-col">
+                        <div class="orgchart__card orgchart__card--kanit" ng-if="orgKanit">
+                            <span class="orgchart__badge orgchart__badge--accent">KANIT GAKKUM</span>
+                            <div class="orgchart__name">{{ orgKanit.nama_lengkap }}</div>
+                            <div class="orgchart__rank">{{ orgKanit.pangkat }}</div>
+                            <div class="orgchart__btns" ng-if="user.role === 'admin'">
+                                <button class="orgchart__btn orgchart__btn--edit" ng-click="editOrgUser(orgKanit)"><i class="bi bi-pencil-square"></i></button>
+                            </div>
+                        </div>
+                        <div class="org-line-v"></div>
+                    </div>
+                    
+                    <!-- Column 3: Empty right padding to keep center aligned -->
+                    <div class="org-col"></div>
                 </div>
             </div>
-        </div>
 
+            <!-- SUBNITS (Splits into 3 columns) -->
+            <div class="org-subnits-wrapper">
+                <div class="org-line-h subnit-h-line"></div>
+                <div class="org-row-3">
+                    
+                    <!-- Generate 3 Subnit Columns (TIMUR, TENGAH, BARAT) -->
+                    <div class="org-col" ng-repeat="kode in ['TIMUR', 'TENGAH', 'BARAT']">
+                        <div class="org-line-v"></div>
+                        
+                        <!-- Kasubnit (if exists for this kode) -->
+                        <div class="orgchart__card orgchart__card--kasubnit mb-3" ng-if="getKasubnit(kode)">
+                            <span class="orgchart__badge orgchart__badge--cyan">KASUBNIT {{ kode === 'TIMUR' ? 'I' : 'II' }}</span>
+                            <div class="orgchart__name">{{ getKasubnit(kode).nama_lengkap }}</div>
+                            <div class="orgchart__rank">{{ getKasubnit(kode).pangkat }}</div>
+                            <div class="orgchart__btns" ng-if="user.role === 'admin'">
+                                <button class="orgchart__btn orgchart__btn--edit" ng-click="editOrgUser(getKasubnit(kode))"><i class="bi bi-pencil-square"></i></button>
+                            </div>
+                        </div>
+                        
+                        <!-- Vertical line connecting Kasubnit to Subnit -->
+                        <div class="org-line-v" ng-if="getKasubnit(kode)"></div>
+                        
+                        <!-- Subnit Sections (Regu) -->
+                        <div class="orgchart__subnit-card" ng-if="getSubnit(kode)" ng-class="{
+                            'orgchart__subnit-card--timur': kode==='TIMUR',
+                            'orgchart__subnit-card--tengah': kode==='TENGAH',
+                            'orgchart__subnit-card--barat': kode==='BARAT'
+                        }">
+                            <div class="orgchart__subnit-hdr">
+                                <div class="orgchart__subnit-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                                <span>{{ getSubnit(kode).nama }}</span>
+                            </div>
+                            <div class="orgchart__subnit-body">
+                                <div class="orgchart__regu" ng-repeat="regu in getSubnit(kode).regus">
+                                    <div class="orgchart__regu-title">
+                                        <i class="bi bi-people-fill"></i> {{ regu.nama }}
+                                    </div>
+                                    <div class="orgchart__member" ng-repeat="m in regu.members">
+                                        <span class="orgchart__member-icon" ng-class="{'orgchart__member-icon--dan': m.role==='danregu'}">
+                                            <i class="bi" ng-class="{'bi-star-fill': m.role==='danregu', 'bi-person-fill': m.role==='anggota'}"></i>
+                                        </span>
+                                        <div class="orgchart__member-info">
+                                            <div class="orgchart__member-name">{{ m.pangkat }} {{ m.nama_lengkap }}</div>
+                                            <div class="orgchart__member-role" ng-if="m.role==='danregu'">Danregu</div>
+                                        </div>
+                                        <button class="orgchart__btn orgchart__btn--edit orgchart__btn--xs" ng-if="user.role === 'admin'" ng-click="editOrgUser(m)"><i class="bi bi-pencil"></i></button>
+                                    </div>
+                                    <div ng-if="regu.members.length === 0" class="text-muted small text-center py-2">Belum ada anggota</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
 

@@ -945,58 +945,95 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
     background: var(--border-color);
     margin: 0 auto;
 }
-/* ========== ORG CHART V3 (Block Layout) ========== */
+/* ========== ORG CHART V4 (Tree Layout) ========== */
 .orgchart {
     display: block;
-    text-align: center;
-    padding: 1.5rem 0;
     width: 100%;
+    padding: 1.5rem 0 3rem;
+}
+.org-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
-/* Blocks & Rows */
-.orgchart__block {
-    display: block;
-    text-align: center;
-    width: 100%;
-    margin: 0 auto;
-}
-.orgchart__row {
+/* Base Structural Elements */
+.org-stack, .org-col {
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    gap: 1.5rem;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: center;
+}
+.org-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.org-bamin-kanit-wrapper, .org-subnits-wrapper {
     width: 100%;
-    margin: 0 auto;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.org-row-3 {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+.org-col {
+    flex: 1;
+    min-width: 0; /* prevent flex blowout */
+    position: relative;
 }
 
 /* Connecting Lines */
-.orgchart__line {
+.org-line-v {
     width: 2px;
-    height: 32px;
+    height: 30px;
     background: linear-gradient(to bottom, rgba(249,115,22,0.5), rgba(249,115,22,0.15));
-    margin: 0 auto;
-    display: block;
 }
-.orgchart__line--branch {
-    height: 24px;
+.org-line-h {
+    height: 2px;
+    background: rgba(249,115,22,0.3);
+    position: absolute;
+    top: 0;
+}
+/* Horizontal line connecting Bamin (center of col 1) to Kanit (center of col 2) */
+.bamin-h-line {
+    left: 16.666%;
+    width: 33.333%;
+}
+/* Horizontal line connecting Subnit Timur (center of col 1) to Subnit Barat (center of col 3) */
+.subnit-h-line {
+    left: 16.666%;
+    width: 66.666%;
+}
+
+/* Overriding cyan line for subnits */
+.org-subnits-wrapper .org-line-v,
+.org-subnits-wrapper .org-line-h {
     background: linear-gradient(to bottom, rgba(6,182,212,0.5), rgba(6,182,212,0.15));
+}
+.org-subnits-wrapper .org-line-h {
+    background: rgba(6,182,212,0.3);
 }
 
 /* Cards */
 .orgchart__card {
-    display: inline-block;
     background: var(--bg-tertiary);
     border: 1px solid var(--border-color);
     border-radius: 16px;
     padding: 1.25rem 1.75rem;
-    min-width: 280px;
-    max-width: 380px;
+    width: 100%;
+    max-width: 340px;
     text-align: center;
     position: relative;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    margin: 0 auto;
-    vertical-align: top;
+    z-index: 2; /* keep above lines */
 }
 .orgchart__card:hover {
     transform: translateY(-4px);
@@ -1492,12 +1529,17 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
     .cal-day { min-height: 50px; padding: 0.25rem; }
     .cal-date { font-size: 0.75rem; }
     .cal-holiday-name { display: none; }
-    .orgchart__card { min-width: 180px; padding: 1rem; }
+    
+    /* Org Chart Mobile Tree Collapse */
+    .orgchart__card { max-width: 100%; min-width: 0; padding: 1rem; }
     .orgchart__name { font-size: 0.8rem; }
     .orgchart__btns { opacity: 1; }
     .orgchart__btn--xs { opacity: 1; }
-    .orgchart__row { flex-direction: column; gap: 1rem; align-items: center; }
-    .orgchart__subnits { grid-template-columns: 1fr; }
+    
+    .org-row-3 { flex-direction: column; gap: 1rem; }
+    .org-line-h { display: none; } /* Hide horizontal connecting lines on mobile */
+    .org-col { width: 100%; }
+    
     .siaga-content { flex-direction: column; text-align: center; }
 }
 
