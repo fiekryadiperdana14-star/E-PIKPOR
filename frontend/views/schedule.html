@@ -347,10 +347,10 @@
             <div ng-repeat="day in week.days" class="day-row-card" ng-style="{'background': day.isHoliday ? '#fef2f2' : (day.isWeekend ? '#fefce8' : '#ffffff')}">
                 <div class="row g-2 align-items-stretch">
                     <!-- Column 1: Hari, Tanggal, Bulan, Tahun -->
-                    <div class="col-md-3 col-lg-3">
+                    <div class="col-md-2 col-lg-2">
                         <div class="day-info-box">
-                            <h6 class="fw-extrabold mb-1" style="color: #1e293b; font-size: 1.05rem;">{{ day.dayName }}</h6>
-                            <div class="fw-bold" style="color: #ea580c; font-size: 1.2rem;">{{ day.dayNum }} {{ monthNames[selectedMonth-1] }} {{ selectedYear }}</div>
+                            <h6 class="fw-extrabold mb-1" style="color: #1e293b; font-size: 1rem;">{{ day.dayName }}</h6>
+                            <div class="fw-bold" style="color: #ea580c; font-size: 1.1rem;">{{ day.dayNum }} {{ monthNames[selectedMonth-1] }} {{ selectedYear }}</div>
                             <div ng-if="day.isHoliday" class="mt-1"><span class="lbl lbl-libur">{{ day.holidayName }}</span></div>
                             <div ng-if="day.isWeekend && !day.isHoliday" class="mt-1"><span class="lbl lbl-wiken">SIAGA WIKEN</span></div>
                         </div>
@@ -383,7 +383,7 @@
                     </div>
 
                     <!-- Column 4: Shift Malam -->
-                    <div class="col-md-2 col-lg-2">
+                    <div class="col-md-3 col-lg-3">
                         <div class="shift-col-box">
                             <div class="shift-box-title"><i class="bi bi-moon-stars text-primary me-1"></i>Shift Malam</div>
                             <div class="zona-btn-group">
@@ -397,7 +397,7 @@
 
                     <!-- Column 5: Edit Button -->
                     <div class="col-md-1 col-lg-1">
-                        <button class="btn btn-outline-primary btn-edit-day" ng-click="selectDate(day)" title="Kelola Jadwal Tanggal Ini">
+                        <button class="btn btn-outline-primary btn-edit-day" ng-click="openEditDayModal(day)" title="Kelola Jadwal Tanggal Ini">
                             <i class="bi bi-pencil-square fs-5"></i>
                             <span>Edit</span>
                         </button>
@@ -562,6 +562,71 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============== EDIT DAY MODAL ============== -->
+<div class="modal fade" id="editDayModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content glass-modal">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-pencil-square me-2"></i>Kelola Jadwal — {{ editingDayData.dayName }}, {{ editingDayData.dayNum }} {{ monthNames[selectedMonth-1] }} {{ selectedYear }}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h6 class="fw-bold mb-0 text-dark">Daftar Personel Dijadwalkan</h6>
+                    <button class="btn btn-sm btn-primary fw-bold" ng-click="openAddScheduleForDate(editingDayData)">
+                        <i class="bi bi-plus-circle me-1"></i>+ Tambah Personel
+                    </button>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Shift</th>
+                                <th>Subnit / Zona</th>
+                                <th>Pangkat & Nama Personel</th>
+                                <th>Role / Regu</th>
+                                <th class="text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="s in editingDayData.all">
+                                <td>
+                                    <span class="badge" ng-class="{'bg-warning text-dark': s.shift==='Pagi', 'bg-info text-dark': s.shift==='Sore'||s.shift==='Siang', 'bg-primary': s.shift==='Malam'}">
+                                        Shift {{ s.shift === 'Sore' ? 'Siang' : s.shift }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge" ng-class="{'bg-success': s.subnit_nama==='Subnit I (Zona Timur)', 'bg-primary': s.subnit_nama==='Subnit II (Zona Barat)', 'bg-danger': s.subnit_nama==='Subnit III (Zona Tengah)'}">
+                                        {{ s.subnit_nama || 'Zona' }}
+                                    </span>
+                                </td>
+                                <td><strong style="color: #0f172a;">{{ s.pangkat }} {{ s.nama_lengkap }}</strong></td>
+                                <td><small class="text-muted">{{ s.regu_nama || s.role }}</small></td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-outline-danger px-2 py-1" ng-click="deleteScheduleAndRefreshDay(s.id)" title="Hapus Entri Ini">
+                                        <i class="bi bi-trash"></i> Hapus
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr ng-if="!editingDayData.all || editingDayData.all.length === 0">
+                                <td colspan="5" class="text-center text-muted fst-italic py-3">
+                                    Belum ada entri personel dijadwalkan pada tanggal ini.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer border-top-0">
+                <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>

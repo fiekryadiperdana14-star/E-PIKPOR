@@ -10,7 +10,7 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
         .when('/dashboard', { templateUrl: 'views/dashboard.html?v=36', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=15', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=14', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=36', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=37', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=14', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/sop', { templateUrl: 'views/sop.html?v=14', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/struktur', { templateUrl: 'views/org-chart.html?v=14', controller: 'OrgChartCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
@@ -686,6 +686,54 @@ function($scope, ApiService, $rootScope) {
     };
 
     $scope.zonaModalData = null;
+    $scope.editingDayData = null;
+    $scope.openEditDayModal = function(day) {
+        $scope.editingDayData = day;
+        new bootstrap.Modal(document.getElementById('editDayModal')).show();
+    };
+
+    $scope.openAddScheduleForDate = function(day) {
+        var m = bootstrap.Modal.getInstance(document.getElementById('editDayModal'));
+        if (m) m.hide();
+
+        var parts = day && day.dateStr ? day.dateStr.split('-') : [];
+        var dt = parts.length === 3 ? new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2])) : new Date();
+
+        $scope.schedForm = {
+            tanggal: dt,
+            shift: 'Pagi',
+            subnit_id: '',
+            tipe: 'reguler'
+        };
+
+        setTimeout(function() {
+            new bootstrap.Modal(document.getElementById('addScheduleModal')).show();
+        }, 300);
+    };
+
+    $scope.deleteScheduleAndRefreshDay = function(id) {
+        Swal.fire({
+            title: 'Hapus Jadwal Personel?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Hapus',
+            cancelButtonText: 'Batal',
+            background: '#1e293b',
+            color: '#fff'
+        }).then(function(r) {
+            if (r.isConfirmed) {
+                ApiService.deleteSchedule(id).then(function() {
+                    if ($scope.editingDayData && $scope.editingDayData.all) {
+                        $scope.editingDayData.all = $scope.editingDayData.all.filter(function(item) { return item.id !== id; });
+                    }
+                    loadData();
+                });
+            }
+        });
+    };
+
     $scope.showZonaModal = function(day, shift, zonaObj) {
         var dateFormatted = day.dateStr || day.rawDate;
         var dateLabel = day.dayName ? (day.dayName + ', ' + day.dayNum + ' ' + $scope.monthNames[$scope.selectedMonth - 1] + ' ' + $scope.selectedYear) : (day.dateLabel || dateFormatted);
