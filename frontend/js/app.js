@@ -10,7 +10,7 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
         .when('/dashboard', { templateUrl: 'views/dashboard.html?v=14', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=15', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=14', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=26', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=27', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=14', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/sop', { templateUrl: 'views/sop.html?v=14', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/struktur', { templateUrl: 'views/org-chart.html?v=14', controller: 'OrgChartCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
@@ -497,16 +497,49 @@ function($scope, ApiService, $rootScope) {
         var weekNum = 1;
         var weekDays = [];
 
-        function groupBySubnit(arr) {
+        function groupByReguAndLeadership(arr) {
             var map = {};
             (arr || []).forEach(function(s) {
-                var subName = s.subnit_nama || 'Subnit';
-                if (!map[subName]) map[subName] = [];
-                map[subName].push(s);
+                var groupKey = '';
+                var type = 'regu';
+
+                if (s.role === 'kanit' || (s.nama_lengkap && s.nama_lengkap.toLowerCase().indexOf('fiekry') >= 0)) {
+                    groupKey = 'Kanit Gakkum';
+                    type = 'kanit';
+                } else if (s.role === 'kasubnit' || (s.nama_lengkap && s.nama_lengkap.toLowerCase().indexOf('sucipto') >= 0)) {
+                    groupKey = 'Kasubnit I';
+                    type = 'kasubnit_1';
+                } else if (s.role === 'kasubnit' || (s.nama_lengkap && s.nama_lengkap.toLowerCase().indexOf('sari') >= 0)) {
+                    groupKey = 'Kasubnit II';
+                    type = 'kasubnit_2';
+                } else if (s.regu_nama) {
+                    groupKey = s.regu_nama;
+                } else if (s.subnit_nama) {
+                    groupKey = s.subnit_nama;
+                } else {
+                    groupKey = 'Piket';
+                }
+
+                if (!map[groupKey]) {
+                    map[groupKey] = {
+                        name: groupKey,
+                        type: type,
+                        subnitName: s.subnit_nama || '',
+                        list: []
+                    };
+                }
+                map[groupKey].list.push(s);
             });
+
             var res = [];
             for (var k in map) {
-                res.push({ name: k, list: map[k], count: map[k].length });
+                res.push({
+                    name: map[k].name,
+                    type: map[k].type,
+                    subnitName: map[k].subnitName,
+                    count: map[k].list.length,
+                    list: map[k].list
+                });
             }
             return res;
         }
@@ -531,9 +564,9 @@ function($scope, ApiService, $rootScope) {
                 pagi: pagiArr,
                 sore: soreArr,
                 malam: malamArr,
-                pagiSubnits: groupBySubnit(pagiArr),
-                soreSubnits: groupBySubnit(soreArr),
-                malamSubnits: groupBySubnit(malamArr),
+                pagiSubnits: groupByReguAndLeadership(pagiArr),
+                soreSubnits: groupByReguAndLeadership(soreArr),
+                malamSubnits: groupByReguAndLeadership(malamArr),
                 all: (schedByDate[key] && schedByDate[key].all) || []
             };
 

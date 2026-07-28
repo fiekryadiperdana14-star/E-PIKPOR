@@ -173,21 +173,22 @@ router.post('/generate', adminAuth, async (req, res) => {
         personel.forEach(p => {
             if (p.subnit_id && bySubnit[p.subnit_id]) {
                 bySubnit[p.subnit_id].push(p);
-            } else if (p.role === 'kanit') {
-                // Kanit Gakkum leads Subnit Tengah (subnit id 2 or matching Tengah)
+            } else if (p.role === 'kanit' || (p.nama_lengkap && p.nama_lengkap.toLowerCase().includes('fiekry'))) {
+                // Kanit Gakkum leads Subnit Tengah (subnit id 2)
                 const tengah = subnits.find(s => s.nama.toLowerCase().includes('tengah')) || subnits[1] || subnits[0];
                 if (tengah && bySubnit[tengah.id]) {
                     p.subnit_id = tengah.id;
                     bySubnit[tengah.id].unshift(p);
                 }
-            } else if (p.role === 'kasubnit') {
-                // Kasubnit leads Subnit Timur / Barat
-                const notTengah = subnits.filter(s => !s.nama.toLowerCase().includes('tengah'));
-                if (notTengah.length > 0) {
-                    const targetSubnit = notTengah[kasubnitIdx % notTengah.length];
-                    kasubnitIdx++;
-                    p.subnit_id = targetSubnit.id;
-                    bySubnit[targetSubnit.id].unshift(p);
+            } else if (p.role === 'kasubnit' || (p.nama_lengkap && (p.nama_lengkap.toLowerCase().includes('sucipto') || p.nama_lengkap.toLowerCase().includes('sari')))) {
+                if (p.nama_lengkap.toLowerCase().includes('sucipto') || p.nama_lengkap.toLowerCase().includes('wardani')) {
+                    // Kasubnit 1 -> Subnit Timur (id 1)
+                    const timur = subnits.find(s => s.nama.toLowerCase().includes('timur')) || subnits[0];
+                    if (timur && bySubnit[timur.id]) { p.subnit_id = timur.id; bySubnit[timur.id].unshift(p); }
+                } else {
+                    // Kasubnit 2 -> Subnit Barat (id 3)
+                    const barat = subnits.find(s => s.nama.toLowerCase().includes('barat')) || subnits[2] || subnits[0];
+                    if (barat && bySubnit[barat.id]) { p.subnit_id = barat.id; bySubnit[barat.id].unshift(p); }
                 }
             }
         });

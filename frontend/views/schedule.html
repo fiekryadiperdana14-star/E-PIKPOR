@@ -31,6 +31,9 @@
 .lbl-timur  { background: #16a34a !important; color: #ffffff !important; }
 .lbl-tengah { background: #dc2626 !important; color: #ffffff !important; }
 .lbl-barat  { background: #2563eb !important; color: #ffffff !important; }
+.lbl-kanit  { background: #7e22ce !important; color: #ffffff !important; font-weight: 800 !important; box-shadow: 0 2px 6px rgba(126, 34, 206, 0.4) !important; }
+.lbl-kasubnit-1 { background: #0284c7 !important; color: #ffffff !important; font-weight: 800 !important; }
+.lbl-kasubnit-2 { background: #ea580c !important; color: #ffffff !important; font-weight: 800 !important; }
 .lbl-default{ background: #475569 !important; color: #ffffff !important; }
 
 .lbl-pagi   { background: #eab308 !important; color: #000000 !important; font-weight: 800 !important; padding: 4px 10px !important; border-radius: 5px !important; }
@@ -214,10 +217,21 @@
                             <div class="d-flex flex-wrap gap-1">
                                 <span class="subnit-clickable" 
                                       ng-repeat="sub in day.pagiSubnits" 
-                                      ng-class="{'lbl-timur': sub.name.indexOf('Timur')>=0, 'lbl-tengah': sub.name.indexOf('Tengah')>=0, 'lbl-barat': sub.name.indexOf('Barat')>=0, 'lbl-default': sub.name.indexOf('Timur')<0 && sub.name.indexOf('Tengah')<0 && sub.name.indexOf('Barat')<0}"
+                                      ng-class="{
+                                          'lbl-kanit': sub.type==='kanit',
+                                          'lbl-kasubnit-1': sub.type==='kasubnit_1',
+                                          'lbl-kasubnit-2': sub.type==='kasubnit_2',
+                                          'lbl-timur': sub.type==='regu' && (sub.subnitName.indexOf('Timur')>=0 || sub.name.indexOf('Regu 1')>=0 || sub.name.indexOf('Regu 2')>=0 || sub.name.indexOf('Regu 3')>=0),
+                                          'lbl-tengah': sub.type==='regu' && (sub.subnitName.indexOf('Tengah')>=0 || sub.name.indexOf('Regu 4')>=0 || sub.name.indexOf('Regu 5')>=0 || sub.name.indexOf('Regu 6')>=0),
+                                          'lbl-barat': sub.type==='regu' && (sub.subnitName.indexOf('Barat')>=0 || sub.name.indexOf('Regu 7')>=0 || sub.name.indexOf('Regu 8')>=0 || sub.name.indexOf('Regu 9')>=0),
+                                          'lbl-default': sub.type==='regu' && !sub.subnitName
+                                      }"
                                       ng-click="showSubnitDetail(day, 'Pagi', sub)" 
                                       title="Klik untuk melihat nama personel">
-                                    <i class="bi bi-people-fill"></i> {{ sub.name }} ({{ sub.count }})
+                                    <i class="bi bi-star-fill text-warning me-1" ng-if="sub.type==='kanit'"></i>
+                                    <i class="bi bi-award-fill me-1" ng-if="sub.type==='kasubnit_1' || sub.type==='kasubnit_2'"></i>
+                                    <i class="bi bi-diagram-3-fill me-1" ng-if="sub.type==='regu'"></i>
+                                    {{ sub.name }} <span ng-if="sub.type==='regu'">({{ sub.count }})</span>
                                 </span>
                             </div>
                             <div ng-if="day.pagiSubnits.length === 0" style="color: #94a3b8; font-style: italic; font-size: 0.78rem;">— Kosong —</div>
@@ -228,10 +242,21 @@
                             <div class="d-flex flex-wrap gap-1">
                                 <span class="subnit-clickable" 
                                       ng-repeat="sub in day.soreSubnits" 
-                                      ng-class="{'lbl-timur': sub.name.indexOf('Timur')>=0, 'lbl-tengah': sub.name.indexOf('Tengah')>=0, 'lbl-barat': sub.name.indexOf('Barat')>=0, 'lbl-default': sub.name.indexOf('Timur')<0 && sub.name.indexOf('Tengah')<0 && sub.name.indexOf('Barat')<0}"
+                                      ng-class="{
+                                          'lbl-kanit': sub.type==='kanit',
+                                          'lbl-kasubnit-1': sub.type==='kasubnit_1',
+                                          'lbl-kasubnit-2': sub.type==='kasubnit_2',
+                                          'lbl-timur': sub.type==='regu' && (sub.subnitName.indexOf('Timur')>=0 || sub.name.indexOf('Regu 1')>=0 || sub.name.indexOf('Regu 2')>=0 || sub.name.indexOf('Regu 3')>=0),
+                                          'lbl-tengah': sub.type==='regu' && (sub.subnitName.indexOf('Tengah')>=0 || sub.name.indexOf('Regu 4')>=0 || sub.name.indexOf('Regu 5')>=0 || sub.name.indexOf('Regu 6')>=0),
+                                          'lbl-barat': sub.type==='regu' && (sub.subnitName.indexOf('Barat')>=0 || sub.name.indexOf('Regu 7')>=0 || sub.name.indexOf('Regu 8')>=0 || sub.name.indexOf('Regu 9')>=0),
+                                          'lbl-default': sub.type==='regu' && !sub.subnitName
+                                      }"
                                       ng-click="showSubnitDetail(day, 'Sore', sub)" 
                                       title="Klik untuk melihat nama personel">
-                                    <i class="bi bi-people-fill"></i> {{ sub.name }} ({{ sub.count }})
+                                    <i class="bi bi-star-fill text-warning me-1" ng-if="sub.type==='kanit'"></i>
+                                    <i class="bi bi-award-fill me-1" ng-if="sub.type==='kasubnit_1' || sub.type==='kasubnit_2'"></i>
+                                    <i class="bi bi-diagram-3-fill me-1" ng-if="sub.type==='regu'"></i>
+                                    {{ sub.name }} <span ng-if="sub.type==='regu'">({{ sub.count }})</span>
                                 </span>
                             </div>
                             <div ng-if="day.soreSubnits.length === 0" style="color: #94a3b8; font-style: italic; font-size: 0.78rem;">— Kosong —</div>
@@ -242,10 +267,21 @@
                             <div class="d-flex flex-wrap gap-1">
                                 <span class="subnit-clickable" 
                                       ng-repeat="sub in day.malamSubnits" 
-                                      ng-class="{'lbl-timur': sub.name.indexOf('Timur')>=0, 'lbl-tengah': sub.name.indexOf('Tengah')>=0, 'lbl-barat': sub.name.indexOf('Barat')>=0, 'lbl-default': sub.name.indexOf('Timur')<0 && sub.name.indexOf('Tengah')<0 && sub.name.indexOf('Barat')<0}"
+                                      ng-class="{
+                                          'lbl-kanit': sub.type==='kanit',
+                                          'lbl-kasubnit-1': sub.type==='kasubnit_1',
+                                          'lbl-kasubnit-2': sub.type==='kasubnit_2',
+                                          'lbl-timur': sub.type==='regu' && (sub.subnitName.indexOf('Timur')>=0 || sub.name.indexOf('Regu 1')>=0 || sub.name.indexOf('Regu 2')>=0 || sub.name.indexOf('Regu 3')>=0),
+                                          'lbl-tengah': sub.type==='regu' && (sub.subnitName.indexOf('Tengah')>=0 || sub.name.indexOf('Regu 4')>=0 || sub.name.indexOf('Regu 5')>=0 || sub.name.indexOf('Regu 6')>=0),
+                                          'lbl-barat': sub.type==='regu' && (sub.subnitName.indexOf('Barat')>=0 || sub.name.indexOf('Regu 7')>=0 || sub.name.indexOf('Regu 8')>=0 || sub.name.indexOf('Regu 9')>=0),
+                                          'lbl-default': sub.type==='regu' && !sub.subnitName
+                                      }"
                                       ng-click="showSubnitDetail(day, 'Malam', sub)" 
                                       title="Klik untuk melihat nama personel">
-                                    <i class="bi bi-people-fill"></i> {{ sub.name }} ({{ sub.count }})
+                                    <i class="bi bi-star-fill text-warning me-1" ng-if="sub.type==='kanit'"></i>
+                                    <i class="bi bi-award-fill me-1" ng-if="sub.type==='kasubnit_1' || sub.type==='kasubnit_2'"></i>
+                                    <i class="bi bi-diagram-3-fill me-1" ng-if="sub.type==='regu'"></i>
+                                    {{ sub.name }} <span ng-if="sub.type==='regu'">({{ sub.count }})</span>
                                 </span>
                             </div>
                             <div ng-if="day.malamSubnits.length === 0" style="color: #94a3b8; font-style: italic; font-size: 0.78rem;">— Kosong —</div>
