@@ -10,7 +10,7 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
         .when('/dashboard', { templateUrl: 'views/dashboard.html?v=14', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=15', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=14', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=27', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=28', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=14', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/sop', { templateUrl: 'views/sop.html?v=14', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/struktur', { templateUrl: 'views/org-chart.html?v=14', controller: 'OrgChartCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
@@ -103,6 +103,8 @@ app.factory('ApiService', ['$http', function($http) {
         generateSchedule: function(d) { return $http.post(b + '/schedules/generate', d); },
         deleteSchedule: function(id) { return $http.delete(b + '/schedules/' + id); },
         updateSchedule: function(id, d) { return $http.put(b + '/schedules/' + id, d); },
+        deleteSchedulesByMonth: function(tahun, bulan) { return $http.delete(b + '/schedules/clear/month/' + tahun + '/' + bulan); },
+        clearAllSchedules: function() { return $http.delete(b + '/schedules/clear/all'); },
         getSiagaWiken: function() { return $http.get(b + '/siaga-wiken'); },
         getActiveSiaga: function() { return $http.get(b + '/siaga-wiken/active'); },
         createSiagaWiken: function(d) { return $http.post(b + '/siaga-wiken', d); },
@@ -633,6 +635,55 @@ function($scope, ApiService, $rootScope) {
         setTimeout(function() {
             new bootstrap.Modal(document.getElementById('addScheduleModal')).show();
         }, 300);
+    };
+
+    $scope.clearMonthSchedule = function() {
+        var monthName = $scope.monthNames[$scope.selectedMonth - 1];
+        Swal.fire({
+            title: 'Hapus Semua Jadwal ' + monthName + ' ' + $scope.selectedYear + '?',
+            text: 'Seluruh entri jadwal pada bulan ' + monthName + ' ' + $scope.selectedYear + ' akan dihapus permanen!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Ya, Hapus Bulan Ini',
+            cancelButtonText: 'Batal',
+            background: '#1e293b',
+            color: '#fff'
+        }).then(function(r) {
+            if (r.isConfirmed) {
+                ApiService.deleteSchedulesByMonth($scope.selectedYear, $scope.selectedMonth).then(function(res) {
+                    Swal.fire({ icon: 'success', title: 'Berhasil Hapus!', text: res.data.message, background: '#1e293b', color: '#fff' });
+                    loadData();
+                }).catch(function(err) {
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: (err.data && err.data.message) || 'Gagal menghapus.', background: '#1e293b', color: '#fff' });
+                });
+            }
+        });
+    };
+
+    $scope.clearAllSchedules = function() {
+        Swal.fire({
+            title: 'HAPUS KESELURUHAN JADWAL?',
+            text: 'PERINGATAN: SELURUH data jadwal piket di semua bulan dan tahun akan dihapus total secara permanen!',
+            icon: 'error',
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Ya, HAPUS SEMUA JADWAL',
+            cancelButtonText: 'Batal',
+            background: '#1e293b',
+            color: '#fff'
+        }).then(function(r) {
+            if (r.isConfirmed) {
+                ApiService.clearAllSchedules().then(function(res) {
+                    Swal.fire({ icon: 'success', title: 'Terhapus Total!', text: res.data.message, background: '#1e293b', color: '#fff' });
+                    loadData();
+                }).catch(function(err) {
+                    Swal.fire({ icon: 'error', title: 'Gagal', text: (err.data && err.data.message) || 'Gagal menghapus.', background: '#1e293b', color: '#fff' });
+                });
+            }
+        });
     };
 
     $scope.selectDate = function(day) {

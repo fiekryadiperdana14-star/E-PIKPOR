@@ -293,4 +293,28 @@ router.delete('/range/:start/:end', adminAuth, async (req, res) => {
     }
 });
 
+// DELETE /api/schedules/clear/month/:tahun/:bulan — Delete all schedules for a specific month
+router.delete('/clear/month/:tahun/:bulan', adminAuth, async (req, res) => {
+    try {
+        const { tahun, bulan } = req.params;
+        const [result] = await db.query(
+            'DELETE FROM duty_schedules WHERE YEAR(tanggal) = ? AND MONTH(tanggal) = ?',
+            [tahun, bulan]
+        );
+        res.json({ message: `${result.affectedRows} entri jadwal bulan ${bulan}/${tahun} berhasil dihapus.` });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// DELETE /api/schedules/clear/all — Delete ALL schedules in database
+router.delete('/clear/all', adminAuth, async (req, res) => {
+    try {
+        const [result] = await db.query('DELETE FROM duty_schedules');
+        res.json({ message: `Seluruh entri jadwal (${result.affectedRows} entri) berhasil dihapus total.` });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 module.exports = router;
