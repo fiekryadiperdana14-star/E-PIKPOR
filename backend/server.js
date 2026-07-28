@@ -36,6 +36,7 @@ const scheduleRoutes = require('./routes/scheduleRoutes');
 const siagaWikenRoutes = require('./routes/siagaWikenRoutes');
 const sopRoutes = require('./routes/sopRoutes');
 const holidayRoutes = require('./routes/holidayRoutes');
+const orgRoutes = require('./routes/orgRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/reports', reportRoutes);
@@ -45,6 +46,7 @@ app.use('/api/schedules', scheduleRoutes);
 app.use('/api/siaga-wiken', siagaWikenRoutes);
 app.use('/api/sop', sopRoutes);
 app.use('/api/holidays', holidayRoutes);
+app.use('/api/org-leaders', orgRoutes);
 
 // Stats endpoint for dashboard
 const db = require('./config/db');

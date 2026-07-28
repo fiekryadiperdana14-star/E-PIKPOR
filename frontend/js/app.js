@@ -108,12 +108,16 @@ app.factory('ApiService', ['$http', function($http) {
         checkinSiaga: function(id) { return $http.post(b + '/siaga-wiken/' + id + '/checkin'); },
         deleteSiagaWiken: function(id) { return $http.delete(b + '/siaga-wiken/' + id); },
         getSOPs: function(params) { return $http.get(b + '/sop', { params: params }); },
-        createSOP: function(d) { return $http.post(b + '/sop', d); },
-        updateSOP: function(id, d) { return $http.put(b + '/sop/' + id, d); },
+        createSOP: function(fd) { return $http.post(b + '/sop', fd, { transformRequest: angular.identity, headers: {'Content-Type': undefined} }); },
+        updateSOP: function(id, fd) { return $http.put(b + '/sop/' + id, fd, { transformRequest: angular.identity, headers: {'Content-Type': undefined} }); },
         deleteSOP: function(id) { return $http.delete(b + '/sop/' + id); },
         getHolidays: function(params) { return $http.get(b + '/holidays', { params: params }); },
         createHoliday: function(d) { return $http.post(b + '/holidays', d); },
         deleteHoliday: function(id) { return $http.delete(b + '/holidays/' + id); },
+        getOrgLeaders: function() { return $http.get(b + '/org-leaders'); },
+        createOrgLeader: function(d) { return $http.post(b + '/org-leaders', d); },
+        updateOrgLeader: function(id, d) { return $http.put(b + '/org-leaders/' + id, d); },
+        deleteOrgLeader: function(id) { return $http.delete(b + '/org-leaders/' + id); },
         getOrgChart: function() { return $http.get(b + '/org-chart'); }
     };
 }]);
@@ -577,13 +581,28 @@ function($scope, ApiService, $rootScope, $sce) {
         setTimeout(function() { new bootstrap.Modal(document.getElementById('sopFormModal')).show(); }, 300);
     };
     $scope.saveSOP = function() {
-        var req = $scope.isEditingSOP ? ApiService.updateSOP($scope.sopForm.id, $scope.sopForm) : ApiService.createSOP($scope.sopForm);
+        var fd = new FormData();
+        fd.append('judul', $scope.sopForm.judul);
+        fd.append('kategori', $scope.sopForm.kategori);
+        fd.append('konten', $scope.sopForm.konten);
+        if ($scope.sopForm.urutan) fd.append('urutan', $scope.sopForm.urutan);
+        if ($scope.sopForm.pdfFile) fd.append('pdfFile', $scope.sopForm.pdfFile);
+        
+        if ($scope.isEditingSOP) {
+            if ($scope.sopForm.remove_pdf) {
+                fd.append('existing_file_url', ''); // trigger removal
+            } else if ($scope.sopForm.file_url && !$scope.sopForm.pdfFile) {
+                fd.append('existing_file_url', $scope.sopForm.file_url); // keep existing
+            }
+        }
+
+        var req = $scope.isEditingSOP ? ApiService.updateSOP($scope.sopForm.id, fd) : ApiService.createSOP(fd);
         req.then(function(r) {
-            Swal.fire({ icon: 'success', title: 'Berhasil!', text: r.data.message, background: '#1e293b', color: '#fff', timer: 1500, showConfirmButton: false });
+            Swal.fire({ icon: 'success', title: 'Berhasil!', text: r.data.message, background: '#1e293b', color: '#000000', timer: 1500, showConfirmButton: false });
             var m = bootstrap.Modal.getInstance(document.getElementById('sopFormModal')); if(m) m.hide();
             $scope.loadSOPs();
         }).catch(function(err) {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: (err.data && err.data.message) || 'Gagal.', background: '#1e293b', color: '#fff' });
+            Swal.fire({ icon: 'error', title: 'Gagal', text: (err.data && err.data.message) || 'Gagal.', background: '#1e293b', color: '#000000' });
         });
     };
 }]);
@@ -594,6 +613,60 @@ function($scope, ApiService, $rootScope, $sce) {
 app.controller('OrgChartCtrl', ['$scope', 'ApiService',
 function($scope, ApiService) {
     $scope.orgKanit = null; $scope.orgKasubnit = []; $scope.orgBamin = []; $scope.orgSubnits = [];
+    $scope.orgLeaders = [];
+    $scope.isEditingLeader = false;
+    $scope.leaderForm = {};
+
+    $scope.loadOrgLeaders = function() {
+        ApiService.getOrgLeaders().then(function(res) {
+            $scope.orgLeaders = res.data;
+        }).catch(function(err) {
+            console.error('Error loading org leaders', err);
+        });
+    };
+
+    $scope.openCreateLeader = function() {
+        $scope.isEditingLeader = false;
+        $scope.leaderForm = { urutan: $scope.orgLeaders.length + 1 };
+        new bootstrap.Modal(document.getElementById('leaderFormModal')).show();
+    };
+
+    $scope.editLeader = function(l) {
+        $scope.isEditingLeader = true;
+        $scope.leaderForm = angular.copy(l);
+        new bootstrap.Modal(document.getElementById('leaderFormModal')).show();
+    };
+
+    $scope.saveLeader = function() {
+        var req = $scope.isEditingLeader ? ApiService.updateOrgLeader($scope.leaderForm.id, $scope.leaderForm) : ApiService.createOrgLeader($scope.leaderForm);
+        req.then(function() {
+            var m = bootstrap.Modal.getInstance(document.getElementById('leaderFormModal')); if(m) m.hide();
+            Swal.fire({ icon: 'success', title: 'Tersimpan', text: 'Data pimpinan berhasil disimpan.', timer: 1500, showConfirmButton: false, background: '#1e293b', color: '#000000' });
+            $scope.loadOrgLeaders();
+        }).catch(function(err) {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: err.data.message || 'Gagal menyimpan.', background: '#1e293b', color: '#000000' });
+        });
+    };
+
+    $scope.deleteLeader = function(id) {
+        Swal.fire({
+            title: 'Hapus pimpinan?',
+            text: "Tindakan ini tidak bisa dibatalkan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal',
+            background: '#1e293b', color: '#000000'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                ApiService.deleteOrgLeader(id).then(function() {
+                    $scope.loadOrgLeaders();
+                });
+            }
+        });
+    };
 
     ApiService.getOrgChart().then(function(r) {
         var users = r.data;
@@ -631,6 +704,8 @@ function($scope, ApiService) {
     });
 
     ApiService.getSubnit().then(function(r) { /* already handled */ });
+
+    $scope.loadOrgLeaders();
 }]);
 
 // ============================================================

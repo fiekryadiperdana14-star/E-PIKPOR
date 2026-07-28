@@ -4,37 +4,41 @@
             <h2 class="page-title mb-1"><i class="bi bi-diagram-3"></i> Struktur Organisasi</h2>
             <small class="text-muted">Unit Gakkum Satlantas Polrestabes Bandung</small>
         </div>
+        <button class="btn btn-primary btn-sm" ng-click="openCreateLeader()" ng-if="user.role === 'admin'">
+            <i class="bi bi-person-plus me-1"></i>Tambah Pimpinan
+        </button>
     </div>
 
     <!-- Top Leadership -->
     <div class="org-section animate-fade-in-up">
-        <div class="org-level org-level-top">
-            <!-- Kasat Lantas -->
+        <div class="org-level org-level-top" ng-if="orgLeaders.length > 0">
+            <!-- First Leader -->
             <div class="org-card org-card-top">
-                <div class="org-card-badge">KASAT LANTAS</div>
-                <div class="org-card-name">AH. HUDI ARIF, S.A.P., S.I.K., M.A.</div>
-                <div class="org-card-rank">AJUN KOMISARIS BESAR POLISI</div>
+                <div class="org-card-badge">{{ orgLeaders[0].jabatan }}</div>
+                <div class="org-card-name">{{ orgLeaders[0].nama_lengkap }}</div>
+                <div class="org-card-rank">{{ orgLeaders[0].pangkat }}</div>
+                <div class="mt-2" ng-if="user.role === 'admin'">
+                    <button class="btn btn-sm btn-outline-warning p-1 py-0 me-1" ng-click="editLeader(orgLeaders[0])"><i class="bi bi-pencil"></i></button>
+                    <button class="btn btn-sm btn-outline-danger p-1 py-0" ng-click="deleteLeader(orgLeaders[0].id)"><i class="bi bi-trash3"></i></button>
+                </div>
             </div>
         </div>
-        <div class="org-connector"></div>
+        <div class="org-connector" ng-if="orgLeaders.length > 1"></div>
 
-        <div class="org-level">
-            <div class="org-card org-card-secondary">
-                <div class="org-card-badge">WAKASAT LANTAS</div>
-                <div class="org-card-name">RINI WIDIYANTI, S.H., M.H.</div>
-                <div class="org-card-rank">KOMISARIS POLISI</div>
+        <div ng-repeat="leader in orgLeaders" ng-if="$index > 0">
+            <div class="org-level">
+                <div class="org-card org-card-secondary">
+                    <div class="org-card-badge">{{ leader.jabatan }}</div>
+                    <div class="org-card-name">{{ leader.nama_lengkap }}</div>
+                    <div class="org-card-rank">{{ leader.pangkat }}</div>
+                    <div class="mt-2" ng-if="user.role === 'admin'">
+                        <button class="btn btn-sm btn-outline-warning p-1 py-0 me-1" ng-click="editLeader(leader)"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-outline-danger p-1 py-0" ng-click="deleteLeader(leader.id)"><i class="bi bi-trash3"></i></button>
+                    </div>
+                </div>
             </div>
+            <div class="org-connector"></div>
         </div>
-        <div class="org-connector"></div>
-
-        <div class="org-level">
-            <div class="org-card org-card-secondary">
-                <div class="org-card-badge">KAUR BIN OPS</div>
-                <div class="org-card-name">DEDEN JUANDI, S.H., M.M.</div>
-                <div class="org-card-rank">AJUN KOMISARIS POLISI</div>
-            </div>
-        </div>
-        <div class="org-connector"></div>
 
         <!-- Kanit Gakkum + Bamin -->
         <div class="org-level org-level-kanit">
@@ -99,6 +103,44 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Leader Form Modal -->
+<div class="modal fade" id="leaderFormModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content glass-modal">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ isEditingLeader ? 'Edit Pimpinan' : 'Tambah Pimpinan' }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form ng-submit="saveLeader()">
+                    <div class="mb-3">
+                        <label class="form-label">Jabatan (Badge)</label>
+                        <input type="text" class="form-control" ng-model="leaderForm.jabatan" required placeholder="Contoh: KASAT LANTAS">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nama Lengkap</label>
+                        <input type="text" class="form-control" ng-model="leaderForm.nama_lengkap" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label">Pangkat</label>
+                            <input type="text" class="form-control" ng-model="leaderForm.pangkat" required placeholder="Contoh: AKBP">
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label">Urutan</label>
+                            <input type="number" class="form-control" ng-model="leaderForm.urutan" required>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
