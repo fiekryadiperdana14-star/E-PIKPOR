@@ -956,12 +956,13 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
     flex-direction: column;
     align-items: center;
     width: 100%;
-    max-width: 1100px;
+    max-width: 1280px;
     margin: 0 auto;
+    padding: 0 1.5rem;
 }
 
 /* Base Structural Elements */
-.org-stack, .org-col {
+.org-stack {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -972,36 +973,6 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
     align-items: center;
 }
 
-.org-bamin-kanit-wrapper, .org-subnits-wrapper {
-    width: 100%;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-/* Connecting Lines */
-.org-line-v {
-    width: 2px;
-    height: 30px;
-    background: linear-gradient(to bottom, rgba(249,115,22,0.5), rgba(249,115,22,0.15));
-}
-.org-line-h {
-    height: 2px;
-    background: rgba(249,115,22,0.3);
-    position: absolute;
-    top: 0;
-}
-/* Horizontal line connecting Bamin (center of col 1) to Kanit (center of col 2) */
-.bamin-h-line {
-    left: 16.666%;
-    width: 33.333%;
-}
-/* Horizontal line connecting Subnit Timur (center of col 1) to Subnit Barat (center of col 3) */
-.subnit-h-line {
-    left: 16.666%;
-    width: 66.666%;
-}
 .org-bamin-kanit-wrapper {
     width: 100%;
     position: relative;
@@ -1021,6 +992,29 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
     margin-bottom: 3rem;
 }
 
+/* Connecting Lines */
+.org-line-v {
+    width: 2px;
+    height: 30px;
+    background: linear-gradient(to bottom, rgba(249,115,22,0.5), rgba(249,115,22,0.15));
+}
+.org-line-h {
+    height: 2px;
+    background: rgba(249,115,22,0.3);
+    position: absolute;
+    top: 0;
+}
+
+/* Horizontal lines */
+.bamin-h-line {
+    left: 16.666%;
+    width: 33.333%;
+}
+.subnit-h-line {
+    left: 16.666%;
+    width: 66.666%;
+}
+
 /* Overriding cyan line for subnits */
 .org-subnits-wrapper .org-line-v,
 .org-subnits-wrapper .org-line-h {
@@ -1034,7 +1028,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
 .org-kasubnit-row {
     display: flex !important;
     width: 100%;
-    min-height: 160px !important;
+    min-height: 150px !important;
     align-items: stretch !important;
     gap: 2.5rem;
 }
@@ -1049,7 +1043,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
 .org-line-v-full {
     width: 2px;
     height: 100%;
-    min-height: 160px;
+    min-height: 150px;
     background: linear-gradient(to bottom, rgba(6,182,212,0.5), rgba(6,182,212,0.15));
 }
 
