@@ -139,13 +139,14 @@ router.post('/generate', adminAuth, async (req, res) => {
 
         // Get all active personnel
         const [personel] = await db.query(`
-            SELECT u.id, u.nama_lengkap, u.pangkat, u.role, u.subnit_id, u.regu_id,
-                   r.nama AS regu_nama, s.nama AS subnit_nama
+            SELECT u.id, u.nama_lengkap, u.pangkat, u.role, 
+                   COALESCE(u.subnit_id, r.subnit_id) AS subnit_id, 
+                   u.regu_id, r.nama AS regu_nama, s.nama AS subnit_nama
             FROM users u 
             LEFT JOIN regu r ON u.regu_id = r.id
-            LEFT JOIN subnit s ON u.subnit_id = s.id
-            WHERE u.is_active = TRUE AND (u.subnit_id IS NOT NULL OR u.role IN ('kanit', 'kasubnit'))
-            ORDER BY u.subnit_id, u.regu_id, u.id
+            LEFT JOIN subnit s ON COALESCE(u.subnit_id, r.subnit_id) = s.id
+            WHERE u.is_active = TRUE
+            ORDER BY subnit_id, u.regu_id, u.id
         `);
 
         // Get subnits
@@ -224,8 +225,8 @@ router.post('/generate', adminAuth, async (req, res) => {
         });
 
         // Generate schedule for each date
-        let currentDate = new Date(tanggal_mulai);
-        const endDate = new Date(tanggal_selesai);
+        let currentDate = new Date(tanggal_mulai + 'T00:00:00');
+        const endDate = new Date(tanggal_selesai + 'T23:59:59');
         let dayCounter = 0;
 
         // Track regu member rotation indices
