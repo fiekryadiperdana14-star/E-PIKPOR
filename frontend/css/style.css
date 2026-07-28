@@ -5,12 +5,12 @@
 
 /* --- CSS Variables / Design Tokens --- */
 :root {
-    --bg-primary: #0a0a0a;
-    --bg-secondary: #141414;
-    --bg-tertiary: #1a1a1a;
-    --card-bg: rgba(20, 20, 20, 0.85);
-    --card-bg-solid: #1a1a1a;
-    --card-bg-hover: rgba(30, 30, 30, 0.95);
+    --bg-primary: #f8fafc;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #ffffff;
+    --card-bg: rgba(255, 255, 255, 0.85);
+    --card-bg-solid: #ffffff;
+    --card-bg-hover: rgba(255, 255, 255, 0.95);
 
     --primary: #f97316;
     --primary-light: #fb923c;
@@ -30,23 +30,23 @@
     --info: #06b6d4;
     --info-light: #22d3ee;
 
-    --text-primary: #ffffff;
-    --text-secondary: #e5e5e5;
-    --text-muted: #b3b3b3;
-    --text-dark: #0a0a0a;
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --text-dark: #020617;
 
     --white: #ffffff;
-    --white-soft: #f5f5f5;
+    --white-soft: #f8fafc;
 
-    --border-color: rgba(255, 255, 255, 0.08);
-    --border-color-hover: rgba(249, 115, 22, 0.3);
-    --border-orange: rgba(249, 115, 22, 0.2);
+    --border-color: rgba(249, 115, 22, 0.25);
+    --border-color-hover: rgba(249, 115, 22, 0.5);
+    --border-orange: rgba(249, 115, 22, 0.35);
 
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.5);
-    --shadow-orange: 0 4px 20px rgba(249, 115, 22, 0.15);
-    --shadow-orange-lg: 0 8px 30px rgba(249, 115, 22, 0.25);
+    --shadow-sm: 0 1px 3px rgba(249, 115, 22, 0.1);
+    --shadow-md: 0 4px 16px rgba(249, 115, 22, 0.15);
+    --shadow-lg: 0 12px 40px rgba(249, 115, 22, 0.2);
+    --shadow-orange: 0 4px 20px rgba(249, 115, 22, 0.25);
+    --shadow-orange-lg: 0 8px 30px rgba(249, 115, 22, 0.35);
 
     --radius-sm: 8px;
     --radius-md: 12px;
@@ -152,8 +152,8 @@ body {
     transition: all var(--transition-fast);
 }
 .app-sidebar .nav-link:hover {
-    color: var(--white);
-    background: rgba(249, 115, 22, 0.08);
+    color: var(--primary-dark);
+    background: rgba(249, 115, 22, 0.1);
 }
 .app-sidebar .nav-link:hover i {
     color: var(--primary);
@@ -208,7 +208,9 @@ body {
    Cards
    ============================================ */
 .glass-card {
-    background: var(--card-bg);
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
@@ -217,7 +219,8 @@ body {
 }
 .glass-card:hover {
     border-color: var(--border-color-hover);
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-orange);
+    background: rgba(255, 255, 255, 0.8);
 }
 .glass-card-static {
     background: var(--bg-tertiary);
@@ -297,20 +300,20 @@ body {
 .form-control, .form-select {
     background: var(--bg-secondary);
     border: 1px solid var(--border-color);
-    color: var(--white) !important;
+    color: var(--text-primary) !important;
     border-radius: var(--radius-sm);
     padding: 0.65rem 0.85rem;
     font-size: 0.875rem;
     transition: all var(--transition-fast);
 }
 .form-control:focus, .form-select:focus {
-    background: var(--bg-tertiary);
+    background: var(--bg-primary);
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
-    color: var(--white) !important;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+    color: var(--text-primary) !important;
 }
-.form-select option { background: var(--bg-secondary); color: var(--white); }
-.form-control::placeholder { color: rgba(255, 255, 255, 0.4) !important; }
+.form-select option { background: var(--bg-secondary); color: var(--text-primary); }
+.form-control::placeholder { color: var(--text-muted) !important; }
 .form-label {
     font-size: 0.82rem;
     font-weight: 500;
@@ -414,7 +417,8 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
     animation: fadeInUp 0.8s ease forwards;
 }
 .login-box .glass-card {
-    background: rgba(14, 14, 14, 0.9);
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
     border: 1px solid var(--border-orange);
     box-shadow: var(--shadow-lg), var(--shadow-orange);
 }
@@ -430,8 +434,8 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
 .login-title {
     font-size: 1.5rem;
     font-weight: 800;
-    color: var(--white);
-    -webkit-text-fill-color: var(--white);
+    color: var(--text-primary);
+    -webkit-text-fill-color: var(--text-primary);
     letter-spacing: -0.03em;
 }
 .login-subtitle { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.3rem; }
@@ -450,12 +454,12 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
     align-items: center;
     gap: 0.3rem;
 }
-.badge-pending { background: rgba(255,255,255,0.1); color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.2); }
-.badge-dilimpahkan { background: rgba(255,255,255,0.15); color: var(--white); border: 1px solid rgba(255,255,255,0.3); }
-.badge-selesai { background: rgba(249,115,22,0.15); color: var(--primary); border: 1px solid var(--primary); }
-.badge-menunggu { background: rgba(255,255,255,0.1); color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.2); }
-.badge-diterima { background: rgba(249,115,22,0.15); color: var(--primary); border: 1px solid var(--primary); }
-.badge-ditolak { background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.1); }
+.badge-pending { background: rgba(249,115,22,0.1); color: var(--primary-dark); border: 1px solid rgba(249,115,22,0.3); }
+.badge-dilimpahkan { background: rgba(249,115,22,0.15); color: var(--primary-darker); border: 1px solid rgba(249,115,22,0.4); }
+.badge-selesai { background: var(--primary); color: var(--white); border: 1px solid var(--primary-dark); }
+.badge-menunggu { background: rgba(249,115,22,0.1); color: var(--primary-dark); border: 1px solid rgba(249,115,22,0.3); }
+.badge-diterima { background: var(--primary); color: var(--white); border: 1px solid var(--primary-dark); }
+.badge-ditolak { background: rgba(249,115,22,0.05); color: var(--text-muted); border: 1px solid rgba(249,115,22,0.2); }
 
 /* Unified Kategori Badges (Orange & Monochrome) */
 .badge-kategori {

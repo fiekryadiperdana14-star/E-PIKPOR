@@ -70,7 +70,7 @@
         <div class="modal-content glass-modal">
             <div class="modal-header">
                 <h5 class="modal-title"><i class="bi bi-journal-check text-primary me-2"></i>{{ selectedSOP.judul }}</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3 d-flex gap-2">
@@ -99,7 +99,7 @@
                     <i class="bi me-2" ng-class="isEditingSOP ? 'bi-pencil-square text-warning' : 'bi-plus-circle text-primary'"></i>
                     {{ isEditingSOP ? 'Edit SOP' : 'Tambah SOP Baru' }}
                 </h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form ng-submit="saveSOP()" id="formSOP">

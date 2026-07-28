@@ -120,14 +120,14 @@
                     <tr ng-repeat="r in reports | startFrom:(currentPage-1)*pageSize | limitTo:pageSize track by r.id">
                         <td data-label="No">{{ (currentPage-1)*pageSize + $index + 1 }}</td>
                         <td data-label="Waktu" style="white-space:nowrap;">
-                            <small class="text-light">{{ r.waktu_kejadian | date:'dd MMM yyyy' }}</small><br>
-                            <small class="text-light">{{ r.waktu_kejadian | date:'HH:mm' }} WIB</small>
+                            <small class="text-secondary">{{ r.waktu_kejadian | date:'dd MMM yyyy' }}</small><br>
+                            <small class="text-secondary">{{ r.waktu_kejadian | date:'HH:mm' }} WIB</small>
                         </td>
                         <td data-label="Judul">
                             <strong>{{ r.judul }}</strong><br>
                             <small class="text-muted"><i class="bi bi-geo-alt-fill"></i> {{ r.lokasi }}</small><br>
-                            <span class="badge bg-secondary bg-opacity-25 text-light mt-1 me-1"><i class="bi bi-compass"></i> {{ r.zona }}</span>
-                            <span class="badge bg-secondary bg-opacity-25 text-light mt-1"><i class="bi bi-clock-history"></i> {{ r.shift }}</span>
+                            <span class="badge bg-secondary bg-opacity-25 text-secondary mt-1 me-1"><i class="bi bi-compass"></i> {{ r.zona }}</span>
+                            <span class="badge bg-secondary bg-opacity-25 text-secondary mt-1"><i class="bi bi-clock-history"></i> {{ r.shift }}</span>
                             <span class="badge bg-warning bg-opacity-15 text-warning mt-1 ms-1" ng-if="r.is_wiken"><i class="bi bi-shield-exclamation"></i> Wiken</span>
                         </td>
                         <td data-label="Kategori">
@@ -138,7 +138,7 @@
                         <td data-label="Foto">
                             <div ng-if="r.foto && r.foto.startsWith('[')" class="photo-thumb-group" ng-click="openPhoto(r.foto)" style="cursor: pointer;">
                                 <div class="photo-thumb d-flex align-items-center justify-content-center bg-dark" style="border: 2px solid var(--primary);">
-                                    <i class="bi bi-images text-light"></i>
+                                    <i class="bi bi-images text-secondary"></i>
                                 </div>
                                 <small class="d-block text-center mt-1 text-primary" style="font-size:0.7rem;">Lihat</small>
                             </div>
@@ -200,7 +200,7 @@
         <div class="modal-content glass-modal">
             <div class="modal-header">
                 <h5 class="modal-title"><i class="bi bi-send-check text-primary me-2"></i>Limpahkan Laporan</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3 p-3 rounded" style="background: rgba(59,130,246,0.08); border: 1px solid rgba(59,130,246,0.15);">
@@ -234,7 +234,7 @@
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content glass-modal p-2">
             <div class="modal-header border-0 pb-0">
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body text-center pt-0">
                 <div class="d-flex align-items-center justify-content-center">
@@ -260,7 +260,7 @@
         <div class="modal-content glass-modal">
             <div class="modal-header border-bottom-0">
                 <h5 class="modal-title"><i class="bi bi-file-text me-2"></i>{{ isEditingReport ? 'Edit Laporan' : 'Detail Laporan' }}</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body pt-0">
                 <!-- View Mode -->
@@ -359,7 +359,7 @@
                             <small class="text-primary"><strong>{{ h.editor_nama }}</strong></small>
                             <small class="text-muted" style="font-size:0.75rem;">{{ h.waktu_edit | date:'medium' }}</small>
                         </div>
-                        <small class="d-block text-light">{{ h.editor_pangkat || '-' }} / NRP: {{ h.editor_nrp || '-' }}</small>
+                        <small class="d-block text-secondary">{{ h.editor_pangkat || '-' }} / NRP: {{ h.editor_nrp || '-' }}</small>
                     </div>
                 </div>
             </div>
