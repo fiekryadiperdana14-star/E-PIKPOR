@@ -949,47 +949,98 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
     background: var(--bg-tertiary);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-lg);
-    padding: 1rem 1.5rem;
-    min-width: 220px;
+    padding: 1.25rem 1.5rem;
+    min-width: 240px;
+    text-align: center;
     transition: all var(--transition-med);
+    position: relative;
 }
-.org-card:hover { border-color: var(--border-orange); box-shadow: var(--shadow-orange); }
+.org-card:hover { border-color: var(--border-orange); box-shadow: var(--shadow-orange); transform: translateY(-2px); }
 .org-card-top {
-    border-color: rgba(249,115,22,0.3);
-    background: linear-gradient(135deg, rgba(249,115,22,0.06), var(--bg-tertiary));
+    border-color: rgba(249,115,22,0.4);
+    background: linear-gradient(135deg, rgba(249,115,22,0.08), rgba(249,115,22,0.02), var(--bg-tertiary));
+    box-shadow: 0 4px 20px rgba(249,115,22,0.1);
 }
 .org-card-secondary {
-    border-color: rgba(249,115,22,0.15);
+    border-color: rgba(249,115,22,0.2);
+    background: linear-gradient(135deg, rgba(249,115,22,0.04), var(--bg-tertiary));
 }
 .org-card-kanit {
-    border-color: rgba(249,115,22,0.25);
-    background: linear-gradient(135deg, rgba(249,115,22,0.05), var(--bg-tertiary));
+    border-color: rgba(249,115,22,0.35);
+    background: linear-gradient(135deg, rgba(249,115,22,0.08), rgba(249,115,22,0.02), var(--bg-tertiary));
+    box-shadow: 0 4px 16px rgba(249,115,22,0.08);
+    min-width: 260px;
 }
 .org-card-kasubnit {
-    border-color: rgba(6,182,212,0.2);
-    min-width: 200px;
+    border-color: rgba(6,182,212,0.25);
+    background: linear-gradient(135deg, rgba(6,182,212,0.04), var(--bg-tertiary));
+    min-width: 220px;
 }
+.org-card-kasubnit:hover { border-color: rgba(6,182,212,0.5); box-shadow: 0 4px 16px rgba(6,182,212,0.1); }
 .org-card-bamin {
     border-color: rgba(115,115,115,0.2);
-    min-width: 180px;
+    min-width: 260px;
+    text-align: left;
+    background: linear-gradient(135deg, rgba(115,115,115,0.03), var(--bg-tertiary));
 }
 .org-card-badge {
-    font-size: 0.63rem;
+    font-size: 0.65rem;
     font-weight: 700;
-    color: var(--text-muted);
+    color: #f97316;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 0.3rem;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+    padding: 0.2rem 0.6rem;
+    background: rgba(249,115,22,0.08);
+    border-radius: 20px;
+    display: inline-block;
 }
 .org-card-name {
-    font-size: 0.85rem;
-    font-weight: 600;
+    font-size: 0.88rem;
+    font-weight: 700;
     color: var(--text-primary);
+    line-height: 1.3;
+    margin-bottom: 0.15rem;
 }
 .org-card-rank {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: var(--text-secondary);
+    font-weight: 500;
 }
+.org-card-actions {
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 0.6rem;
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+.org-card:hover .org-card-actions { opacity: 1; }
+.org-card-actions .btn { font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 6px; }
+.subnit-label {
+    display: inline-block;
+    margin-top: 0.4rem;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    background: rgba(6,182,212,0.08);
+    padding: 0.15rem 0.5rem;
+    border-radius: 12px;
+}
+.bamin-members {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+.bamin-member {
+    font-size: 0.75rem;
+    color: var(--text-primary);
+    padding: 0.25rem 0.4rem;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    background: rgba(115,115,115,0.04);
+}
+.bamin-member i { color: var(--text-muted); font-size: 0.7rem; }
 
 /* Subnit Org Card */
 .subnit-org-card {
@@ -998,10 +1049,11 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
     border-radius: var(--radius-lg);
     overflow: hidden;
     transition: all var(--transition-med);
+    height: 100%;
 }
-.subnit-org-card:hover { border-color: var(--border-color-hover); box-shadow: var(--shadow-md); }
+.subnit-org-card:hover { border-color: var(--border-color-hover); box-shadow: var(--shadow-md); transform: translateY(-2px); }
 .subnit-org-header {
-    padding: 0.7rem 1rem;
+    padding: 0.75rem 1rem;
     font-weight: 700;
     font-size: 0.85rem;
     display: flex;
@@ -1011,9 +1063,9 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
 .subnit-org-timur .subnit-org-header { background: rgba(34,197,94,0.08); color: var(--success-light); border-bottom: 2px solid var(--success); }
 .subnit-org-tengah .subnit-org-header { background: rgba(249,115,22,0.08); color: var(--primary-light); border-bottom: 2px solid var(--primary); }
 .subnit-org-barat .subnit-org-header { background: rgba(234,179,8,0.08); color: var(--warning-light); border-bottom: 2px solid var(--warning); }
-.subnit-org-body { padding: 0.75rem; }
+.subnit-org-body { padding: 0.85rem; }
 
-.regu-section { margin-bottom: 0.75rem; }
+.regu-section { margin-bottom: 0.85rem; }
 .regu-section:last-child { margin-bottom: 0; }
 .regu-header {
     font-size: 0.72rem;
@@ -1021,23 +1073,24 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
     color: var(--text-muted);
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    padding: 0.3rem 0.5rem;
-    background: rgba(249,115,22,0.04);
+    padding: 0.35rem 0.6rem;
+    background: rgba(249,115,22,0.05);
     border-radius: 6px;
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.5rem;
+    border-left: 3px solid rgba(249,115,22,0.3);
 }
 .regu-members { padding-left: 0.25rem; }
 .member-row {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.35rem 0.4rem;
-    border-radius: 6px;
+    padding: 0.4rem 0.5rem;
+    border-radius: 8px;
     transition: background var(--transition-fast);
 }
 .member-row:hover { background: rgba(249,115,22,0.04); }
 .member-role-badge {
-    width: 24px; height: 24px;
+    width: 26px; height: 26px;
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     font-size: 0.65rem;
@@ -1045,7 +1098,7 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
 }
 .mrb-danregu { background: rgba(249,115,22,0.15); color: var(--primary-light); }
 .mrb-anggota { background: rgba(115,115,115,0.12); color: var(--text-secondary); }
-.member-name { font-size: 0.8rem; color: var(--text-primary); }
+.member-name { font-size: 0.8rem; color: var(--text-primary); font-weight: 500; }
 
 /* ============================================
    Holiday Page
@@ -1294,8 +1347,11 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
     .cal-day { min-height: 50px; padding: 0.25rem; }
     .cal-date { font-size: 0.75rem; }
     .cal-holiday-name { display: none; }
-    .org-card { min-width: 160px; padding: 0.75rem; }
+    .org-card { min-width: 160px; padding: 0.85rem; }
     .org-card-name { font-size: 0.75rem; }
+    .org-card-actions { opacity: 1; }
+    .org-level-kanit { flex-direction: column; gap: 1rem; }
+    .org-level-kasubnit { gap: 0.75rem; }
     .siaga-content { flex-direction: column; text-align: center; }
 }
 

@@ -123,7 +123,7 @@ app.get('/api/org-chart', async (req, res) => {
             FROM users u
             LEFT JOIN subnit s ON u.subnit_id = s.id
             LEFT JOIN regu r ON u.regu_id = r.id
-            WHERE u.role != 'admin'
+            WHERE u.role != 'admin' AND u.is_active = TRUE
             ORDER BY 
                 CASE u.role 
                     WHEN 'kanit' THEN 1 
