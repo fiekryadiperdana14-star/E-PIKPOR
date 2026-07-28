@@ -9,7 +9,7 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
         .when('/login', { templateUrl: 'views/login.html', controller: 'LoginCtrl' })
         .when('/dashboard', { templateUrl: 'views/dashboard.html?v=36', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=15', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=40', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=42', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=39', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=41', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/sop', { templateUrl: 'views/sop.html?v=14', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
@@ -377,9 +377,35 @@ function($scope, ApiService, $location, $rootScope) {
 // ============================================================
 app.controller('HandoverCtrl', ['$scope', 'ApiService', '$rootScope',
 function($scope, ApiService, $rootScope) {
-    $scope.handovers = []; $scope.currentPage = 1; $scope.pageSize = 10;
-    function load() { ApiService.getHandoversPenerima($rootScope.user.id).then(function(r) { $scope.handovers = r.data; }); }
+    $scope.handovers = [];
+    $scope.currentPage = 1;
+    $scope.pageSize = 10;
+    $scope.searchQuery = '';
+    $scope.sortOption = '-waktu_pelimpahan';
+
+    function load() {
+        ApiService.getHandoversPenerima($rootScope.user.id).then(function(r) {
+            $scope.handovers = r.data;
+        });
+    }
     load();
+
+    $scope.getFilteredHandovers = function() {
+        if (!$scope.handovers) return [];
+        var filtered = $scope.handovers;
+        if ($scope.searchQuery) {
+            var q = $scope.searchQuery.toLowerCase();
+            filtered = filtered.filter(function(h) {
+                return (h.judul && h.judul.toLowerCase().includes(q)) ||
+                       (h.lokasi && h.lokasi.toLowerCase().includes(q)) ||
+                       (h.pengirim && h.pengirim.toLowerCase().includes(q)) ||
+                       (h.kategori && h.kategori.toLowerCase().includes(q)) ||
+                       (h.status_terima && h.status_terima.toLowerCase().includes(q));
+            });
+        }
+        return filtered;
+    };
+
     $scope.updateStatus = function(h, status) {
         var actionText = status === 'diterima' ? 'ACC & Menerima' : 'Menolak';
         Swal.fire({

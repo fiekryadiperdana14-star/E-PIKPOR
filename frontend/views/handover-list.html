@@ -4,95 +4,135 @@
     </div>
     
     <div class="glass-card-static animate-fade-in-up p-4" style="background: #ffffff; border-radius: 16px;">
-        <div class="section-title fw-extrabold mb-4 pb-2 border-bottom" style="font-size: 1.1rem; color: #0f172a;">
-            <i class="bi bi-inbox-fill text-warning me-2 fs-5"></i> Daftar Pelimpahan Masuk (Memerlukan ACC Kasubnit)
-        </div>
-        
-        <div class="row g-4">
-            <div class="col-12 col-md-6 col-xl-4" ng-repeat="h in handovers | startFrom:(currentPage-1)*pageSize | limitTo:pageSize track by h.id">
-                <div class="handover-card animate-fade-in-up h-100 p-4 d-flex flex-column rounded-4 border shadow-sm" style="background: #ffffff; border-color: rgba(249, 115, 22, 0.25) !important;">
-                    <!-- Header Badges -->
-                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
-                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-bold px-2.5 py-1.5 rounded-pill" style="font-size: 0.75rem;">
-                            <i class="bi bi-tag-fill me-1"></i>{{ h.kategori || 'Estafet Laporan' }}
-                        </span>
-                        <span class="badge" ng-class="{
-                            'bg-warning-subtle text-warning-emphasis border border-warning-subtle': h.status_terima === 'menunggu',
-                            'bg-success-subtle text-success border border-success-subtle': h.status_terima === 'diterima',
-                            'bg-danger-subtle text-danger border border-danger-subtle': h.status_terima === 'ditolak'
-                        }" style="font-size: 0.78rem; padding: 0.35rem 0.75rem; border-radius: 20px;">
-                            <i class="bi" ng-class="{
-                                'bi-hourglass-split me-1': h.status_terima === 'menunggu',
-                                'bi-check-circle-fill me-1': h.status_terima === 'diterima',
-                                'bi-x-circle-fill me-1': h.status_terima === 'ditolak'
-                            }"></i> {{ h.status_terima === 'menunggu' ? 'MENUNGGU ACC KASUBNIT' : (h.status_terima | uppercase) }}
-                        </span>
-                    </div>
-
-                    <!-- Title -->
-                    <h5 class="fw-extrabold mb-3" style="color: #0f172a; font-size: 1.05rem; line-height: 1.4;">{{ h.judul }}</h5>
-
-                    <!-- Info Box -->
-                    <div class="p-3 mb-3 rounded-3" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 0.85rem;">
-                        <div class="mb-2 text-secondary d-flex align-items-center">
-                            <i class="bi bi-clock-history text-primary me-2 fs-6"></i>
-                            <span><strong>Waktu Kejadian:</strong> {{ h.waktu_kejadian | date:'dd MMM yyyy, HH:mm' }} WIB</span>
-                        </div>
-                        <div class="text-secondary d-flex align-items-center">
-                            <i class="bi bi-geo-alt-fill text-danger me-2 fs-6"></i>
-                            <span><strong>Lokasi:</strong> {{ h.lokasi }}</span>
-                        </div>
-                    </div>
-
-                    <!-- Sender & Notes Container -->
-                    <div class="p-3 mb-3 rounded-3" style="background: #fff7ed; border: 1px solid #fed7aa; font-size: 0.85rem;">
-                        <div class="mb-2 text-dark">
-                            <i class="bi bi-person-circle text-primary me-1"></i><strong>Dari (Pengirim):</strong> 
-                            <span class="fw-bold text-dark ms-1">{{ h.pengirim }}</span>
-                        </div>
-                        <div class="pt-2 border-top border-warning-subtle text-dark">
-                            <i class="bi bi-chat-quote-fill text-warning me-1"></i><strong>Catatan Estafet:</strong>
-                            <p class="mb-0 mt-1 fst-italic text-secondary" style="font-size: 0.88rem; line-height: 1.5;">"{{ h.catatan || 'Tidak ada catatan tambahan.' }}"</p>
-                        </div>
-                    </div>
-                    
-                    <!-- Actions: ACC restrict to Kasubnit / Kanit / Admin -->
-                    <div class="mt-auto pt-3 border-top">
-                        <div class="d-flex gap-2" ng-if="h.status_terima === 'menunggu' && (user.role === 'kasubnit' || user.role === 'kanit' || user.role === 'admin')">
-                            <button class="btn btn-outline-danger btn-sm flex-fill fw-bold py-2 shadow-sm rounded-3" ng-click="updateStatus(h, 'ditolak')">
-                                <i class="bi bi-x-circle me-1"></i>Tolak
-                            </button>
-                            <button class="btn btn-primary btn-sm flex-fill fw-bold py-2 shadow-sm rounded-3" ng-click="updateStatus(h, 'diterima')">
-                                <i class="bi bi-check-circle-fill me-1"></i>ACC (Terima)
-                            </button>
-                        </div>
-
-                        <!-- Restrict Notice for Regular Anggota / Danregu -->
-                        <div class="text-center p-2 rounded-3 bg-light text-muted fw-semibold" style="font-size: 0.78rem;" ng-if="h.status_terima === 'menunggu' && user.role !== 'kasubnit' && user.role !== 'kanit' && user.role !== 'admin'">
-                            <i class="bi bi-shield-lock-fill text-warning me-1"></i>Menunggu ACC dari Kasubnit / Kanit
-                        </div>
-
-                        <div class="text-center p-2 rounded-3" ng-class="{'bg-success-subtle text-success border border-success-subtle': h.status_terima === 'diterima', 'bg-danger-subtle text-danger border border-danger-subtle': h.status_terima === 'ditolak'}" ng-if="h.status_terima !== 'menunggu'" style="font-size: 0.82rem; font-weight: 600;">
-                            <i class="bi" ng-class="{'bi-check-all me-1': h.status_terima === 'diterima', 'bi-x-octagon me-1': h.status_terima === 'ditolak'}"></i>
-                            Telah {{ h.status_terima === 'diterima' ? 'di-ACC & Diterima' : 'Ditolak' }}
-                        </div>
-                    </div>
+        <!-- Header & Filter / Sort Controls Bar -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4 pb-3 border-bottom">
+            <div>
+                <div class="section-title fw-extrabold mb-1" style="font-size: 1.1rem; color: #0f172a;">
+                    <i class="bi bi-inbox-fill text-warning me-2 fs-5"></i> Daftar Pelimpahan Masuk (Memerlukan ACC Kasubnit)
                 </div>
+                <small class="text-muted">Kelola estafet penanganan laporan antar-regu / subnit</small>
+            </div>
+            
+            <div class="d-flex flex-wrap gap-2 w-100 w-md-auto">
+                <!-- Search Box -->
+                <div class="input-group input-group-sm" style="max-width: 220px;">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" class="form-control border-start-0 ps-0" placeholder="Cari pelimpahan..." ng-model="searchQuery">
+                </div>
+
+                <!-- Sort Control -->
+                <select class="form-select form-select-sm fw-semibold text-dark" style="width: auto;" ng-model="sortOption">
+                    <option value="-waktu_pelimpahan">Urutkan: Terbaru</option>
+                    <option value="waktu_pelimpahan">Urutkan: Terlama</option>
+                    <option value="status_terima">Urutkan: Status ACC</option>
+                    <option value="judul">Urutkan: Judul Laporan</option>
+                </select>
+
+                <!-- Page Size Control -->
+                <select class="form-select form-select-sm fw-semibold text-dark" style="width: auto;" ng-model="pageSize">
+                    <option ng-value="5">5 per hal</option>
+                    <option ng-value="10">10 per hal</option>
+                    <option ng-value="25">25 per hal</option>
+                </select>
             </div>
         </div>
+        
+        <!-- List / Table View -->
+        <div class="table-responsive">
+            <table class="table table-hover align-middle custom-table mb-0">
+                <thead>
+                    <tr style="background: #fff7ed; color: #9a3412; border-bottom: 2px solid #fed7aa;">
+                        <th style="width: 50px;" class="text-center">#</th>
+                        <th>Laporan & Kategori</th>
+                        <th>Waktu & Lokasi</th>
+                        <th>Pengirim & Catatan Estafet</th>
+                        <th>Status Terima</th>
+                        <th class="text-center" style="min-width: 180px;">Aksi / Persetujuan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="h in getFilteredHandovers() | orderBy:sortOption | startFrom:(currentPage-1)*pageSize | limitTo:pageSize track by h.id">
+                        <td class="text-center fw-bold text-muted" style="font-size: 0.85rem;">
+                            {{ (currentPage-1)*pageSize + $index + 1 }}
+                        </td>
+                        <td>
+                            <div class="fw-extrabold text-dark" style="font-size: 0.95rem; line-height: 1.3;">{{ h.judul }}</div>
+                            <div class="mt-1">
+                                <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-bold px-2 py-0.5 rounded-pill" style="font-size: 0.72rem;">
+                                    <i class="bi bi-tag-fill me-1"></i>{{ h.kategori || 'Estafet Laporan' }}
+                                </span>
+                            </div>
+                        </td>
+                        <td style="font-size: 0.85rem;">
+                            <div class="text-dark fw-semibold"><i class="bi bi-clock-history text-primary me-1"></i>{{ h.waktu_kejadian | date:'dd MMM yyyy, HH:mm' }} WIB</div>
+                            <div class="text-secondary small mt-0.5"><i class="bi bi-geo-alt-fill text-danger me-1"></i>{{ h.lokasi }}</div>
+                        </td>
+                        <td style="font-size: 0.85rem;">
+                            <div class="fw-bold text-dark"><i class="bi bi-person-circle text-primary me-1"></i>{{ h.pengirim }}</div>
+                            <div class="text-muted small fst-italic mt-1" style="max-width: 280px; white-space: normal;">
+                                "<span class="text-dark">{{ h.catatan || 'Tidak ada catatan' }}</span>"
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge px-3 py-1.5 rounded-pill fw-bold" ng-class="{
+                                'bg-warning-subtle text-warning-emphasis border border-warning-subtle': h.status_terima === 'menunggu',
+                                'bg-success-subtle text-success border border-success-subtle': h.status_terima === 'diterima',
+                                'bg-danger-subtle text-danger border border-danger-subtle': h.status_terima === 'ditolak'
+                            }" style="font-size: 0.78rem;">
+                                <i class="bi" ng-class="{
+                                    'bi-hourglass-split me-1': h.status_terima === 'menunggu',
+                                    'bi-check-circle-fill me-1': h.status_terima === 'diterima',
+                                    'bi-x-circle-fill me-1': h.status_terima === 'ditolak'
+                                }"></i> {{ h.status_terima === 'menunggu' ? 'MENUNGGU ACC' : (h.status_terima | uppercase) }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <!-- Actions for Kasubnit / Kanit / Admin -->
+                            <div class="d-flex justify-content-center gap-1" ng-if="h.status_terima === 'menunggu' && (user.role === 'kasubnit' || user.role === 'kanit' || user.role === 'admin')">
+                                <button class="btn btn-outline-danger btn-sm fw-bold px-2.5 py-1 rounded-2 shadow-sm" ng-click="updateStatus(h, 'ditolak')" title="Tolak Pelimpahan">
+                                    <i class="bi bi-x-circle me-1"></i>Tolak
+                                </button>
+                                <button class="btn btn-primary btn-sm fw-bold px-3 py-1 rounded-2 shadow-sm" ng-click="updateStatus(h, 'diterima')" title="ACC & Terima Laporan">
+                                    <i class="bi bi-check-circle-fill me-1"></i>ACC
+                                </button>
+                            </div>
 
-        <div class="empty-state py-5" ng-if="handovers.length === 0">
+                            <!-- Restrict Notice for Regular Anggota -->
+                            <span class="text-muted small fw-semibold" ng-if="h.status_terima === 'menunggu' && user.role !== 'kasubnit' && user.role !== 'kanit' && user.role !== 'admin'">
+                                <i class="bi bi-shield-lock text-warning me-1"></i>Menunggu Kasubnit
+                            </span>
+
+                            <!-- Status Done Badge -->
+                            <span class="badge px-3 py-1.5 rounded-pill" ng-class="{'bg-success-subtle text-success border border-success-subtle': h.status_terima === 'diterima', 'bg-danger-subtle text-danger border border-danger-subtle': h.status_terima === 'ditolak'}" ng-if="h.status_terima !== 'menunggu'" style="font-size: 0.8rem; font-weight: 600;">
+                                <i class="bi" ng-class="{'bi-check-all me-1': h.status_terima === 'diterima', 'bi-x-octagon me-1': h.status_terima === 'ditolak'}"></i>
+                                {{ h.status_terima === 'diterima' ? 'Di-ACC' : 'Ditolak' }}
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state py-5 text-center" ng-if="getFilteredHandovers().length === 0">
             <i class="bi bi-inbox fs-1 text-muted opacity-50 mb-3 d-block"></i>
-            <h6 class="fw-bold text-dark mb-1">Belum Ada Pelimpahan Masuk</h6>
-            <p class="text-muted fs-7">Laporan yang dilimpahkan (estafet) oleh unit lain akan muncul di sini untuk di-ACC oleh Kasubnit.</p>
+            <h6 class="fw-bold text-dark mb-1">Tidak Ada Pelimpahan Masuk</h6>
+            <p class="text-muted fs-7">Tidak ditemukan data pelimpahan laporan yang sesuai.</p>
         </div>
 
         <!-- Pagination Controls -->
-        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top" ng-if="handovers.length > pageSize">
-            <small class="text-muted fw-medium">Menampilkan {{ (currentPage-1)*pageSize + 1 }} - {{ (currentPage*pageSize) > handovers.length ? handovers.length : (currentPage*pageSize) }} dari {{ handovers.length }} entri</small>
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-4 pt-3 border-top gap-3" ng-if="getFilteredHandovers().length > 0">
+            <small class="text-muted fw-medium">
+                Menampilkan {{ (currentPage-1)*pageSize + 1 }} - {{ (currentPage*pageSize) > getFilteredHandovers().length ? getFilteredHandovers().length : (currentPage*pageSize) }} dari {{ getFilteredHandovers().length }} entri
+            </small>
+
             <div class="btn-group">
-                <button class="btn btn-sm btn-outline-secondary" ng-disabled="currentPage == 1" ng-click="currentPage = currentPage - 1"><i class="bi bi-chevron-left"></i> Prev</button>
-                <button class="btn btn-sm btn-outline-secondary" ng-disabled="currentPage >= handovers.length/pageSize" ng-click="currentPage = currentPage + 1">Next <i class="bi bi-chevron-right"></i></button>
+                <button class="btn btn-sm btn-outline-secondary px-3" ng-disabled="currentPage === 1" ng-click="currentPage = currentPage - 1">
+                    <i class="bi bi-chevron-left me-1"></i> Prev
+                </button>
+                <button class="btn btn-sm btn-outline-secondary px-3" ng-disabled="currentPage >= getFilteredHandovers().length/pageSize" ng-click="currentPage = currentPage + 1">
+                    Next <i class="bi bi-chevron-right ms-1"></i>
+                </button>
             </div>
         </div>
     </div>
