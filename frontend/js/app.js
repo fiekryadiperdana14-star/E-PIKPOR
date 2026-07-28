@@ -10,7 +10,7 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
         .when('/dashboard', { templateUrl: 'views/dashboard.html?v=14', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=15', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=14', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=19', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=20', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=14', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/sop', { templateUrl: 'views/sop.html?v=14', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/struktur', { templateUrl: 'views/org-chart.html?v=14', controller: 'OrgChartCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
@@ -379,10 +379,52 @@ function($scope, ApiService, $rootScope) {
     $scope.scheduleViewMode = 'table'; // 'table' or 'calendar'
     $scope.monthlyWeeks = [];
 
+    // Quick View: Today / Yesterday / Tomorrow
+    $scope.todaySchedules = { Pagi: [], Sore: [], Malam: [] };
+    $scope.yesterdaySchedules = { Pagi: [], Sore: [], Malam: [] };
+    $scope.tomorrowSchedules = { Pagi: [], Sore: [], Malam: [] };
+    $scope.todayStr = '';
+    $scope.yesterdayStr = '';
+    $scope.tomorrowStr = '';
+
+    function formatDateKey(dt) {
+        return dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0') + '-' + String(dt.getDate()).padStart(2,'0');
+    }
+    var dayNamesFull = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    function formatDateLabel(dt) {
+        return dayNamesFull[dt.getDay()] + ', ' + dt.getDate() + ' ' + $scope.monthNames[dt.getMonth()] + ' ' + dt.getFullYear();
+    }
+
+    function buildQuickView(allSchedules) {
+        var today = new Date(); today.setHours(0,0,0,0);
+        var yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
+        var tomorrow = new Date(today); tomorrow.setDate(tomorrow.getDate() + 1);
+        var todayKey = formatDateKey(today);
+        var yesterdayKey = formatDateKey(yesterday);
+        var tomorrowKey = formatDateKey(tomorrow);
+
+        $scope.todayStr = formatDateLabel(today);
+        $scope.yesterdayStr = formatDateLabel(yesterday);
+        $scope.tomorrowStr = formatDateLabel(tomorrow);
+
+        $scope.todaySchedules = { Pagi: [], Sore: [], Malam: [] };
+        $scope.yesterdaySchedules = { Pagi: [], Sore: [], Malam: [] };
+        $scope.tomorrowSchedules = { Pagi: [], Sore: [], Malam: [] };
+
+        (allSchedules || []).forEach(function(s) {
+            var d = new Date(s.tanggal);
+            var key = formatDateKey(d);
+            if (key === todayKey && s.shift && $scope.todaySchedules[s.shift]) $scope.todaySchedules[s.shift].push(s);
+            if (key === yesterdayKey && s.shift && $scope.yesterdaySchedules[s.shift]) $scope.yesterdaySchedules[s.shift].push(s);
+            if (key === tomorrowKey && s.shift && $scope.tomorrowSchedules[s.shift]) $scope.tomorrowSchedules[s.shift].push(s);
+        });
+    }
+
     function loadData() {
         ApiService.getSchedules({ bulan: $scope.selectedMonth, tahun: $scope.selectedYear }).then(function(r) {
             $scope.schedules = r.data;
             buildCalendar();
+            buildQuickView(r.data);
         });
         ApiService.getHolidays({ tahun: $scope.selectedYear }).then(function(r) {
             $scope.holidays = r.data;

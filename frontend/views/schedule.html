@@ -1,91 +1,153 @@
 <style>
 /* ================================================================
-   INLINE HIGH CONTRAST SCHEDULE TABLE STYLES
+   SCHEDULE PAGE — SOLID COLOR LABELS & QUICK VIEW
+   Only 5 colors: RED, BLUE, GREEN, BLACK, YELLOW (all with WHITE text)
    ================================================================ */
-.sched-table {
-    background: #ffffff !important;
-    border-color: #cbd5e1 !important;
-}
+
+/* === Table Header === */
+.sched-table { background: #ffffff !important; border-color: #94a3b8 !important; }
 .sched-table thead th {
-    background-color: #0f172a !important;
+    background-color: #000000 !important;
     color: #ffffff !important;
     font-weight: 800 !important;
-    font-size: 0.85rem !important;
-    letter-spacing: 0.05em !important;
+    font-size: 0.82rem !important;
+    letter-spacing: 0.04em !important;
     text-transform: uppercase !important;
-    border-bottom: 2px solid #0f172a !important;
+    border-color: #000000 !important;
+    padding: 0.65rem 0.75rem !important;
 }
-.sched-table thead th i {
-    font-size: 1rem !important;
+.sched-table thead th * { color: #ffffff !important; }
+.sched-table tbody td { border-color: #cbd5e1 !important; color: #1e293b !important; }
+
+/* === Shift Badges (SOLID) === */
+.lbl-pagi {
+    background: #eab308 !important; color: #000000 !important;
+    font-weight: 800 !important; font-size: 0.78rem !important;
+    padding: 5px 12px !important; border-radius: 6px !important;
+    display: inline-flex !important; align-items: center !important; gap: 5px !important;
+}
+.lbl-sore {
+    background: #2563eb !important; color: #ffffff !important;
+    font-weight: 800 !important; font-size: 0.78rem !important;
+    padding: 5px 12px !important; border-radius: 6px !important;
+    display: inline-flex !important; align-items: center !important; gap: 5px !important;
+}
+.lbl-malam {
+    background: #000000 !important; color: #ffffff !important;
+    font-weight: 800 !important; font-size: 0.78rem !important;
+    padding: 5px 12px !important; border-radius: 6px !important;
+    display: inline-flex !important; align-items: center !important; gap: 5px !important;
 }
 
-/* Custom High Contrast Badges */
-.badge-shift-pagi {
-    background-color: #f59e0b !important;
-    color: #000000 !important;
-    font-weight: 800 !important;
-    font-size: 0.75rem !important;
-    padding: 0.35rem 0.75rem !important;
-    border-radius: 20px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 0.3rem !important;
+/* === Subnit Badges (SOLID) === */
+.lbl-timur {
+    background: #16a34a !important; color: #ffffff !important;
+    font-weight: 700 !important; font-size: 0.75rem !important;
+    padding: 4px 10px !important; border-radius: 5px !important;
 }
-.badge-shift-sore {
-    background-color: #0284c7 !important;
-    color: #ffffff !important;
-    font-weight: 800 !important;
-    font-size: 0.75rem !important;
-    padding: 0.35rem 0.75rem !important;
-    border-radius: 20px !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 0.3rem !important;
+.lbl-tengah {
+    background: #dc2626 !important; color: #ffffff !important;
+    font-weight: 700 !important; font-size: 0.75rem !important;
+    padding: 4px 10px !important; border-radius: 5px !important;
 }
-.badge-shift-malam {
-    background-color: #0f172a !important;
-    color: #ffffff !important;
-    font-weight: 800 !important;
-    font-size: 0.75rem !important;
-    padding: 0.35rem 0.75rem !important;
-    border-radius: 20px !important;
-    border: 1px solid #475569 !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 0.3rem !important;
+.lbl-barat {
+    background: #2563eb !important; color: #ffffff !important;
+    font-weight: 700 !important; font-size: 0.75rem !important;
+    padding: 4px 10px !important; border-radius: 5px !important;
 }
 
-.btn-hapus-jadwal {
-    background-color: #fee2e2 !important;
-    color: #dc2626 !important;
-    border: 1px solid #fca5a5 !important;
-    font-weight: 700 !important;
-    font-size: 0.75rem !important;
-    padding: 0.25rem 0.65rem !important;
-    border-radius: 6px !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 0.25rem !important;
+/* === Status & Tipe Badges (SOLID) === */
+.lbl-reguler {
+    background: #16a34a !important; color: #ffffff !important;
+    font-weight: 700 !important; font-size: 0.72rem !important;
+    padding: 4px 10px !important; border-radius: 5px !important; text-transform: uppercase !important;
 }
-.btn-hapus-jadwal:hover {
-    background-color: #dc2626 !important;
-    color: #ffffff !important;
-    border-color: #dc2626 !important;
+.lbl-dijadwalkan {
+    background: #eab308 !important; color: #000000 !important;
+    font-weight: 700 !important; font-size: 0.72rem !important;
+    padding: 4px 10px !important; border-radius: 5px !important; text-transform: uppercase !important;
 }
-.personnel-card {
-    background: #ffffff !important;
-    border: 1.5px solid #e2e8f0 !important;
-    border-radius: 10px !important;
-    padding: 0.75rem !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05) !important;
-    margin-bottom: 0.6rem !important;
+.lbl-hadir {
+    background: #16a34a !important; color: #ffffff !important;
+    font-weight: 700 !important; font-size: 0.72rem !important;
+    padding: 4px 10px !important; border-radius: 5px !important; text-transform: uppercase !important;
 }
-.personnel-card:hover {
-    border-color: #f97316 !important;
-    box-shadow: 0 4px 12px rgba(249,115,22,0.12) !important;
+.lbl-tidak-hadir {
+    background: #dc2626 !important; color: #ffffff !important;
+    font-weight: 700 !important; font-size: 0.72rem !important;
+    padding: 4px 10px !important; border-radius: 5px !important; text-transform: uppercase !important;
 }
+.lbl-wiken {
+    background: #dc2626 !important; color: #ffffff !important;
+    font-weight: 700 !important; font-size: 0.72rem !important;
+    padding: 4px 10px !important; border-radius: 5px !important; text-transform: uppercase !important;
+}
+.lbl-libur {
+    background: #dc2626 !important; color: #ffffff !important;
+    font-weight: 700 !important; font-size: 0.72rem !important;
+    padding: 4px 10px !important; border-radius: 5px !important; text-transform: uppercase !important;
+}
+.lbl-regu {
+    background: #000000 !important; color: #ffffff !important;
+    font-weight: 700 !important; font-size: 0.72rem !important;
+    padding: 4px 10px !important; border-radius: 5px !important;
+}
+
+/* === Hapus Button === */
+.btn-hapus {
+    background: #dc2626 !important; color: #ffffff !important;
+    font-weight: 700 !important; font-size: 0.72rem !important;
+    padding: 4px 10px !important; border-radius: 5px !important;
+    border: none !important; cursor: pointer !important;
+    display: inline-flex !important; align-items: center !important; gap: 4px !important;
+}
+.btn-hapus:hover { background: #991b1b !important; }
+
+/* === Personnel Card === */
+.p-card {
+    background: #ffffff !important; border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important; padding: 10px !important;
+    margin-bottom: 8px !important; box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+}
+
+/* === Quick View Cards === */
+.qv-card {
+    background: #ffffff; border: 2px solid #e2e8f0; border-radius: 12px;
+    padding: 0; overflow: hidden; height: 100%;
+}
+.qv-card.qv-today { border-color: #16a34a; }
+.qv-card.qv-yesterday { border-color: #94a3b8; }
+.qv-card.qv-tomorrow { border-color: #2563eb; }
+
+.qv-header {
+    padding: 12px 16px; font-weight: 800; font-size: 0.9rem;
+    display: flex; align-items: center; gap: 8px;
+}
+.qv-header.qv-h-today { background: #16a34a; color: #ffffff; }
+.qv-header.qv-h-yesterday { background: #64748b; color: #ffffff; }
+.qv-header.qv-h-tomorrow { background: #2563eb; color: #ffffff; }
+
+.qv-date { font-size: 0.78rem; font-weight: 600; color: #475569; padding: 6px 16px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
+
+.qv-body { padding: 12px 16px; }
+.qv-shift-title {
+    font-weight: 800; font-size: 0.75rem; text-transform: uppercase;
+    letter-spacing: 0.05em; margin-bottom: 6px; padding: 4px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+.qv-shift-title.st-pagi { color: #a16207; }
+.qv-shift-title.st-sore { color: #1d4ed8; }
+.qv-shift-title.st-malam { color: #000000; }
+
+.qv-person {
+    display: flex; align-items: center; gap: 8px; padding: 5px 0;
+    font-size: 0.82rem; color: #1e293b; font-weight: 600;
+}
+.qv-person-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.qv-person-dot.dot-pagi { background: #eab308; }
+.qv-person-dot.dot-sore { background: #2563eb; }
+.qv-person-dot.dot-malam { background: #000000; }
+.qv-empty { color: #94a3b8; font-style: italic; font-size: 0.8rem; padding: 4px 0; }
 </style>
 
 <div class="container-fluid px-0">
@@ -93,7 +155,7 @@
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 animate-fade-in-up">
         <div>
             <h2 class="page-title mb-1"><i class="bi bi-calendar3 text-primary"></i> Jadwal Piket Unit Gakkum</h2>
-            <small class="text-muted">Penjadwalan rotasi piket 1 bulan penuh yang dibagi perminggu</small>
+            <small style="color: #475569;">Penjadwalan rotasi piket 1 bulan penuh — dibagi perminggu</small>
         </div>
         <div class="d-flex gap-2 align-items-center" ng-if="user.role === 'admin' || user.role === 'kanit' || user.role === 'kasubnit'">
             <button class="btn btn-outline-secondary btn-sm" ng-click="generateSchedule()">
@@ -105,129 +167,235 @@
         </div>
     </div>
 
+    <!-- ============================================================
+         QUICK VIEW: SIAPA YANG PIKET HARI INI / KEMARIN / BESOK
+         ============================================================ -->
+    <div class="row g-3 mb-4 animate-fade-in-up">
+        <!-- KEMARIN -->
+        <div class="col-md-4">
+            <div class="qv-card qv-yesterday">
+                <div class="qv-header qv-h-yesterday"><i class="bi bi-arrow-left-circle-fill"></i> KEMARIN</div>
+                <div class="qv-date">{{ yesterdayStr }}</div>
+                <div class="qv-body">
+                    <div class="qv-shift-title st-pagi"><i class="bi bi-sunrise me-1"></i> Shift Pagi</div>
+                    <div ng-repeat="s in yesterdaySchedules.Pagi" class="qv-person">
+                        <span class="qv-person-dot dot-pagi"></span>
+                        <span>{{ s.pangkat }} {{ s.nama_lengkap }}</span>
+                        <span class="lbl-timur ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Timur')>=0">Timur</span>
+                        <span class="lbl-tengah ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Tengah')>=0">Tengah</span>
+                        <span class="lbl-barat ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Barat')>=0">Barat</span>
+                    </div>
+                    <div ng-if="yesterdaySchedules.Pagi.length===0" class="qv-empty">— Tidak ada —</div>
+
+                    <div class="qv-shift-title st-sore mt-2"><i class="bi bi-sun me-1"></i> Shift Sore</div>
+                    <div ng-repeat="s in yesterdaySchedules.Sore" class="qv-person">
+                        <span class="qv-person-dot dot-sore"></span>
+                        <span>{{ s.pangkat }} {{ s.nama_lengkap }}</span>
+                        <span class="lbl-timur ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Timur')>=0">Timur</span>
+                        <span class="lbl-tengah ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Tengah')>=0">Tengah</span>
+                        <span class="lbl-barat ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Barat')>=0">Barat</span>
+                    </div>
+                    <div ng-if="yesterdaySchedules.Sore.length===0" class="qv-empty">— Tidak ada —</div>
+
+                    <div class="qv-shift-title st-malam mt-2"><i class="bi bi-moon-stars me-1"></i> Shift Malam</div>
+                    <div ng-repeat="s in yesterdaySchedules.Malam" class="qv-person">
+                        <span class="qv-person-dot dot-malam"></span>
+                        <span>{{ s.pangkat }} {{ s.nama_lengkap }}</span>
+                        <span class="lbl-timur ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Timur')>=0">Timur</span>
+                        <span class="lbl-tengah ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Tengah')>=0">Tengah</span>
+                        <span class="lbl-barat ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Barat')>=0">Barat</span>
+                    </div>
+                    <div ng-if="yesterdaySchedules.Malam.length===0" class="qv-empty">— Tidak ada —</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- HARI INI -->
+        <div class="col-md-4">
+            <div class="qv-card qv-today">
+                <div class="qv-header qv-h-today"><i class="bi bi-calendar-check-fill"></i> HARI INI</div>
+                <div class="qv-date" style="background: #f0fdf4; border-color: #bbf7d0;">{{ todayStr }}</div>
+                <div class="qv-body">
+                    <div class="qv-shift-title st-pagi"><i class="bi bi-sunrise me-1"></i> Shift Pagi</div>
+                    <div ng-repeat="s in todaySchedules.Pagi" class="qv-person">
+                        <span class="qv-person-dot dot-pagi"></span>
+                        <span>{{ s.pangkat }} {{ s.nama_lengkap }}</span>
+                        <span class="lbl-timur ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Timur')>=0">Timur</span>
+                        <span class="lbl-tengah ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Tengah')>=0">Tengah</span>
+                        <span class="lbl-barat ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Barat')>=0">Barat</span>
+                    </div>
+                    <div ng-if="todaySchedules.Pagi.length===0" class="qv-empty">— Tidak ada —</div>
+
+                    <div class="qv-shift-title st-sore mt-2"><i class="bi bi-sun me-1"></i> Shift Sore</div>
+                    <div ng-repeat="s in todaySchedules.Sore" class="qv-person">
+                        <span class="qv-person-dot dot-sore"></span>
+                        <span>{{ s.pangkat }} {{ s.nama_lengkap }}</span>
+                        <span class="lbl-timur ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Timur')>=0">Timur</span>
+                        <span class="lbl-tengah ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Tengah')>=0">Tengah</span>
+                        <span class="lbl-barat ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Barat')>=0">Barat</span>
+                    </div>
+                    <div ng-if="todaySchedules.Sore.length===0" class="qv-empty">— Tidak ada —</div>
+
+                    <div class="qv-shift-title st-malam mt-2"><i class="bi bi-moon-stars me-1"></i> Shift Malam</div>
+                    <div ng-repeat="s in todaySchedules.Malam" class="qv-person">
+                        <span class="qv-person-dot dot-malam"></span>
+                        <span>{{ s.pangkat }} {{ s.nama_lengkap }}</span>
+                        <span class="lbl-timur ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Timur')>=0">Timur</span>
+                        <span class="lbl-tengah ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Tengah')>=0">Tengah</span>
+                        <span class="lbl-barat ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Barat')>=0">Barat</span>
+                    </div>
+                    <div ng-if="todaySchedules.Malam.length===0" class="qv-empty">— Tidak ada —</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BESOK -->
+        <div class="col-md-4">
+            <div class="qv-card qv-tomorrow">
+                <div class="qv-header qv-h-tomorrow"><i class="bi bi-arrow-right-circle-fill"></i> BESOK</div>
+                <div class="qv-date">{{ tomorrowStr }}</div>
+                <div class="qv-body">
+                    <div class="qv-shift-title st-pagi"><i class="bi bi-sunrise me-1"></i> Shift Pagi</div>
+                    <div ng-repeat="s in tomorrowSchedules.Pagi" class="qv-person">
+                        <span class="qv-person-dot dot-pagi"></span>
+                        <span>{{ s.pangkat }} {{ s.nama_lengkap }}</span>
+                        <span class="lbl-timur ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Timur')>=0">Timur</span>
+                        <span class="lbl-tengah ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Tengah')>=0">Tengah</span>
+                        <span class="lbl-barat ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Barat')>=0">Barat</span>
+                    </div>
+                    <div ng-if="tomorrowSchedules.Pagi.length===0" class="qv-empty">— Tidak ada —</div>
+
+                    <div class="qv-shift-title st-sore mt-2"><i class="bi bi-sun me-1"></i> Shift Sore</div>
+                    <div ng-repeat="s in tomorrowSchedules.Sore" class="qv-person">
+                        <span class="qv-person-dot dot-sore"></span>
+                        <span>{{ s.pangkat }} {{ s.nama_lengkap }}</span>
+                        <span class="lbl-timur ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Timur')>=0">Timur</span>
+                        <span class="lbl-tengah ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Tengah')>=0">Tengah</span>
+                        <span class="lbl-barat ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Barat')>=0">Barat</span>
+                    </div>
+                    <div ng-if="tomorrowSchedules.Sore.length===0" class="qv-empty">— Tidak ada —</div>
+
+                    <div class="qv-shift-title st-malam mt-2"><i class="bi bi-moon-stars me-1"></i> Shift Malam</div>
+                    <div ng-repeat="s in tomorrowSchedules.Malam" class="qv-person">
+                        <span class="qv-person-dot dot-malam"></span>
+                        <span>{{ s.pangkat }} {{ s.nama_lengkap }}</span>
+                        <span class="lbl-timur ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Timur')>=0">Timur</span>
+                        <span class="lbl-tengah ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Tengah')>=0">Tengah</span>
+                        <span class="lbl-barat ms-auto" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Barat')>=0">Barat</span>
+                    </div>
+                    <div ng-if="tomorrowSchedules.Malam.length===0" class="qv-empty">— Tidak ada —</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Month Navigator & View Switcher -->
     <div class="glass-card-static animate-fade-in-up mb-4" style="padding: 1rem 1.25rem;">
         <div class="row align-items-center g-3">
             <div class="col-md-6 d-flex align-items-center justify-content-between justify-content-md-start gap-3">
-                <button class="btn btn-outline-secondary btn-sm" ng-click="prevMonth()"><i class="bi bi-chevron-left"></i> Bulan Sebelum</button>
+                <button class="btn btn-outline-secondary btn-sm" ng-click="prevMonth()"><i class="bi bi-chevron-left"></i> Sebelum</button>
                 <h4 class="mb-0 fw-bold text-primary">{{ monthNames[selectedMonth-1] }} {{ selectedYear }}</h4>
-                <button class="btn btn-outline-secondary btn-sm" ng-click="nextMonth()">Bulan Berikut <i class="bi bi-chevron-right"></i></button>
+                <button class="btn btn-outline-secondary btn-sm" ng-click="nextMonth()">Berikut <i class="bi bi-chevron-right"></i></button>
             </div>
             <div class="col-md-6 d-flex justify-content-md-end gap-2">
                 <div class="btn-group" role="group">
                     <button type="button" class="btn btn-sm" ng-class="{'btn-primary fw-bold': scheduleViewMode === 'table', 'btn-outline-secondary': scheduleViewMode !== 'table'}" ng-click="scheduleViewMode = 'table'">
-                        <i class="bi bi-table me-1"></i>Tabel per Minggu
+                        <i class="bi bi-table me-1"></i>Tabel
                     </button>
                     <button type="button" class="btn btn-sm" ng-class="{'btn-primary fw-bold': scheduleViewMode === 'calendar', 'btn-outline-secondary': scheduleViewMode !== 'calendar'}" ng-click="scheduleViewMode = 'calendar'">
-                        <i class="bi bi-calendar-grid me-1"></i>Grid Kalender
+                        <i class="bi bi-calendar-grid me-1"></i>Kalender
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- VIEW 1: TABEL JADWAL PER MINGGU (1 BULAN FULL) -->
+    <!-- VIEW 1: TABEL JADWAL PER MINGGU -->
     <div ng-if="scheduleViewMode === 'table'">
-        
-        <div ng-repeat="week in monthlyWeeks" class="glass-card-static animate-fade-in-up mb-4" style="padding: 1.5rem; background: #ffffff; border: 1px solid #e2e8f0;">
-            <!-- Week Header -->
-            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-                <h5 class="fw-bold mb-0" style="color: #ea580c; font-size: 1.15rem;">
+        <div ng-repeat="week in monthlyWeeks" class="glass-card-static animate-fade-in-up mb-4" style="padding: 1.25rem; background: #ffffff; border: 1px solid #cbd5e1;">
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom: 2px solid #ea580c;">
+                <h5 class="fw-bold mb-0" style="color: #ea580c; font-size: 1.1rem;">
                     <i class="bi bi-calendar-range me-2"></i>{{ week.label }}
                 </h5>
-                <span class="badge bg-warning text-dark px-3 py-2 fs-7 fw-bold" style="background-color: #fbbf24 !important; color: #000000 !important;">
-                    {{ week.days.length }} Hari Pilihan
+                <span style="background: #eab308; color: #000; font-weight: 800; font-size: 0.78rem; padding: 4px 12px; border-radius: 5px;">
+                    {{ week.days.length }} Hari
                 </span>
             </div>
-
-            <!-- Week Schedule Table (High Contrast) -->
             <div class="table-responsive">
                 <table class="table table-bordered align-middle mb-0 sched-table">
                     <thead>
                         <tr>
-                            <th style="width: 16%;" class="text-center py-3">Hari & Tanggal</th>
-                            <th style="width: 25%;" class="py-3"><i class="bi bi-sunrise me-2 text-warning"></i>Shift Pagi (06:00 - 14:00)</th>
-                            <th style="width: 25%;" class="py-3"><i class="bi bi-sun me-2 text-info"></i>Shift Sore (14:00 - 22:00)</th>
-                            <th style="width: 25%;" class="py-3"><i class="bi bi-moon-stars me-2 text-warning"></i>Shift Malam (22:00 - 06:00)</th>
-                            <th style="width: 9%;" class="text-center py-3">Kelola</th>
+                            <th style="width:14%;" class="text-center">Hari & Tanggal</th>
+                            <th style="width:26%;"><i class="bi bi-sunrise me-1"></i> Shift Pagi</th>
+                            <th style="width:26%;"><i class="bi bi-sun me-1"></i> Shift Sore</th>
+                            <th style="width:26%;"><i class="bi bi-moon-stars me-1"></i> Shift Malam</th>
+                            <th style="width:8%;" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr ng-repeat="day in week.days">
-                            <!-- Hari & Tanggal -->
-                            <td class="text-center align-middle" ng-style="{'background': day.isHoliday ? '#fee2e2' : (day.isWeekend ? '#fef3c7' : '#f8fafc')}">
-                                <div class="fw-bold fs-6 text-dark">{{ day.dayName }}</div>
-                                <div class="fs-4 fw-extrabold mb-1" style="color: #ea580c;">{{ day.dayNum }} {{ monthNames[selectedMonth-1] }}</div>
-                                
-                                <span class="badge bg-danger text-white d-block mb-1 py-1" ng-if="day.isHoliday">
-                                    <i class="bi bi-flag-fill me-1"></i>{{ day.holidayName }}
-                                </span>
-                                <span class="badge text-dark d-block py-1 fw-bold" style="background-color: #f59e0b !important; color: #000000 !important;" ng-if="day.isWeekend && !day.isHoliday">
-                                    <i class="bi bi-shield-exclamation me-1"></i>Siaga Wiken
-                                </span>
+                            <td class="text-center align-middle" ng-style="{'background': day.isHoliday ? '#fee2e2' : (day.isWeekend ? '#fef9c3' : '#f8fafc')}">
+                                <div class="fw-bold" style="color: #1e293b; font-size: 0.9rem;">{{ day.dayName }}</div>
+                                <div class="fw-bold" style="color: #ea580c; font-size: 1.2rem;">{{ day.dayNum }}</div>
+                                <div style="font-size: 0.75rem; color: #475569;">{{ monthNames[selectedMonth-1] }}</div>
+                                <span class="lbl-libur d-block mt-1" ng-if="day.isHoliday">{{ day.holidayName }}</span>
+                                <span style="background: #eab308; color: #000; font-weight: 800; font-size: 0.68rem; padding: 3px 8px; border-radius: 4px; display: block; margin-top: 4px;" ng-if="day.isWeekend && !day.isHoliday">SIAGA WIKEN</span>
                             </td>
 
                             <!-- Shift Pagi -->
-                            <td class="align-top p-2" style="background: #fffbe6;">
-                                <div ng-repeat="s in day.pagi" class="personnel-card position-relative">
-                                    <div class="fw-bold text-dark fs-7 mb-1">{{ s.pangkat }} {{ s.nama_lengkap }}</div>
-                                    <div class="d-flex justify-content-between align-items-center gap-1 flex-wrap mb-2">
-                                        <span class="badge text-white fs-8 font-weight-bold" ng-style="{'background-color': (s.subnit_nama && s.subnit_nama.indexOf('Timur')>=0) ? '#16a34a' : ((s.subnit_nama && s.subnit_nama.indexOf('Tengah')>=0) ? '#ea580c' : '#7c3aed')}">
-                                            {{ s.subnit_nama || 'Subnit' }}
-                                        </span>
-                                        <span class="badge bg-light text-dark border border-secondary fs-8 fw-semibold" ng-if="s.regu_nama">{{ s.regu_nama }}</span>
+                            <td class="align-top p-2" style="background: #fefce8;">
+                                <div ng-repeat="s in day.pagi" class="p-card">
+                                    <div class="fw-bold" style="color: #1e293b; font-size: 0.82rem;">{{ s.pangkat }} {{ s.nama_lengkap }}</div>
+                                    <div class="d-flex gap-1 flex-wrap mt-1">
+                                        <span class="lbl-timur" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Timur')>=0">{{ s.subnit_nama }}</span>
+                                        <span class="lbl-tengah" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Tengah')>=0">{{ s.subnit_nama }}</span>
+                                        <span class="lbl-barat" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Barat')>=0">{{ s.subnit_nama }}</span>
+                                        <span class="lbl-regu" ng-if="s.regu_nama">{{ s.regu_nama }}</span>
                                     </div>
-                                    <div ng-if="user.role === 'admin' || user.role === 'kanit'">
-                                        <button type="button" class="btn-hapus-jadwal" ng-click="deleteSchedule(s.id)" title="Hapus Jadwal Ini">
-                                            <i class="bi bi-trash3-fill"></i> Hapus
-                                        </button>
+                                    <div class="mt-1" ng-if="user.role === 'admin' || user.role === 'kanit'">
+                                        <button class="btn-hapus" ng-click="deleteSchedule(s.id)"><i class="bi bi-trash3-fill"></i> Hapus</button>
                                     </div>
                                 </div>
-                                <div ng-if="day.pagi.length === 0" class="fst-italic fs-8 py-3 text-center" style="color: #64748b; font-weight: 500;">— Tidak ada jadwal —</div>
+                                <div ng-if="day.pagi.length===0" style="color: #94a3b8; font-style: italic; font-size: 0.8rem; text-align: center; padding: 16px 0;">— Kosong —</div>
                             </td>
 
                             <!-- Shift Sore -->
-                            <td class="align-top p-2" style="background: #f0f9ff;">
-                                <div ng-repeat="s in day.sore" class="personnel-card position-relative">
-                                    <div class="fw-bold text-dark fs-7 mb-1">{{ s.pangkat }} {{ s.nama_lengkap }}</div>
-                                    <div class="d-flex justify-content-between align-items-center gap-1 flex-wrap mb-2">
-                                        <span class="badge text-white fs-8 font-weight-bold" ng-style="{'background-color': (s.subnit_nama && s.subnit_nama.indexOf('Timur')>=0) ? '#16a34a' : ((s.subnit_nama && s.subnit_nama.indexOf('Tengah')>=0) ? '#ea580c' : '#7c3aed')}">
-                                            {{ s.subnit_nama || 'Subnit' }}
-                                        </span>
-                                        <span class="badge bg-light text-dark border border-secondary fs-8 fw-semibold" ng-if="s.regu_nama">{{ s.regu_nama }}</span>
+                            <td class="align-top p-2" style="background: #eff6ff;">
+                                <div ng-repeat="s in day.sore" class="p-card">
+                                    <div class="fw-bold" style="color: #1e293b; font-size: 0.82rem;">{{ s.pangkat }} {{ s.nama_lengkap }}</div>
+                                    <div class="d-flex gap-1 flex-wrap mt-1">
+                                        <span class="lbl-timur" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Timur')>=0">{{ s.subnit_nama }}</span>
+                                        <span class="lbl-tengah" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Tengah')>=0">{{ s.subnit_nama }}</span>
+                                        <span class="lbl-barat" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Barat')>=0">{{ s.subnit_nama }}</span>
+                                        <span class="lbl-regu" ng-if="s.regu_nama">{{ s.regu_nama }}</span>
                                     </div>
-                                    <div ng-if="user.role === 'admin' || user.role === 'kanit'">
-                                        <button type="button" class="btn-hapus-jadwal" ng-click="deleteSchedule(s.id)" title="Hapus Jadwal Ini">
-                                            <i class="bi bi-trash3-fill"></i> Hapus
-                                        </button>
+                                    <div class="mt-1" ng-if="user.role === 'admin' || user.role === 'kanit'">
+                                        <button class="btn-hapus" ng-click="deleteSchedule(s.id)"><i class="bi bi-trash3-fill"></i> Hapus</button>
                                     </div>
                                 </div>
-                                <div ng-if="day.sore.length === 0" class="fst-italic fs-8 py-3 text-center" style="color: #64748b; font-weight: 500;">— Tidak ada jadwal —</div>
+                                <div ng-if="day.sore.length===0" style="color: #94a3b8; font-style: italic; font-size: 0.8rem; text-align: center; padding: 16px 0;">— Kosong —</div>
                             </td>
 
                             <!-- Shift Malam -->
-                            <td class="align-top p-2" style="background: #f8fafc;">
-                                <div ng-repeat="s in day.malam" class="personnel-card position-relative">
-                                    <div class="fw-bold text-dark fs-7 mb-1">{{ s.pangkat }} {{ s.nama_lengkap }}</div>
-                                    <div class="d-flex justify-content-between align-items-center gap-1 flex-wrap mb-2">
-                                        <span class="badge text-white fs-8 font-weight-bold" ng-style="{'background-color': (s.subnit_nama && s.subnit_nama.indexOf('Timur')>=0) ? '#16a34a' : ((s.subnit_nama && s.subnit_nama.indexOf('Tengah')>=0) ? '#ea580c' : '#7c3aed')}">
-                                            {{ s.subnit_nama || 'Subnit' }}
-                                        </span>
-                                        <span class="badge bg-light text-dark border border-secondary fs-8 fw-semibold" ng-if="s.regu_nama">{{ s.regu_nama }}</span>
+                            <td class="align-top p-2" style="background: #f1f5f9;">
+                                <div ng-repeat="s in day.malam" class="p-card">
+                                    <div class="fw-bold" style="color: #1e293b; font-size: 0.82rem;">{{ s.pangkat }} {{ s.nama_lengkap }}</div>
+                                    <div class="d-flex gap-1 flex-wrap mt-1">
+                                        <span class="lbl-timur" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Timur')>=0">{{ s.subnit_nama }}</span>
+                                        <span class="lbl-tengah" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Tengah')>=0">{{ s.subnit_nama }}</span>
+                                        <span class="lbl-barat" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Barat')>=0">{{ s.subnit_nama }}</span>
+                                        <span class="lbl-regu" ng-if="s.regu_nama">{{ s.regu_nama }}</span>
                                     </div>
-                                    <div ng-if="user.role === 'admin' || user.role === 'kanit'">
-                                        <button type="button" class="btn-hapus-jadwal" ng-click="deleteSchedule(s.id)" title="Hapus Jadwal Ini">
-                                            <i class="bi bi-trash3-fill"></i> Hapus
-                                        </button>
+                                    <div class="mt-1" ng-if="user.role === 'admin' || user.role === 'kanit'">
+                                        <button class="btn-hapus" ng-click="deleteSchedule(s.id)"><i class="bi bi-trash3-fill"></i> Hapus</button>
                                     </div>
                                 </div>
-                                <div ng-if="day.malam.length === 0" class="fst-italic fs-8 py-3 text-center" style="color: #64748b; font-weight: 500;">— Tidak ada jadwal —</div>
+                                <div ng-if="day.malam.length===0" style="color: #94a3b8; font-style: italic; font-size: 0.8rem; text-align: center; padding: 16px 0;">— Kosong —</div>
                             </td>
 
-                            <!-- Kelola / Aksi -->
                             <td class="text-center align-middle" style="background: #ffffff;">
-                                <button class="btn btn-sm btn-outline-primary py-1 px-2.5 fw-semibold" ng-click="selectDate(day)">
-                                    <i class="bi bi-pencil-square me-1"></i>Detail
+                                <button class="btn btn-sm btn-outline-primary fw-bold" ng-click="selectDate(day)">
+                                    <i class="bi bi-eye me-1"></i>Detail
                                 </button>
                             </td>
                         </tr>
@@ -235,26 +403,19 @@
                 </table>
             </div>
         </div>
-
     </div>
 
-    <!-- VIEW 2: GRID KALENDER OVERVIEW -->
+    <!-- VIEW 2: GRID KALENDER -->
     <div ng-if="scheduleViewMode === 'calendar'">
         <div class="glass-card-static animate-fade-in-up mb-4">
             <div class="calendar-grid">
                 <div class="cal-header" ng-repeat="d in dayNames">{{ d }}</div>
-                <div class="cal-day" ng-repeat="day in calendarDays" 
-                     ng-class="{
-                        'cal-today': day.isToday, 
-                        'cal-weekend': day.isWeekend, 
-                        'cal-holiday': day.isHoliday,
-                        'cal-empty': !day.date,
-                        'cal-has-schedule': day.scheduleCount > 0
-                     }"
+                <div class="cal-day" ng-repeat="day in calendarDays"
+                     ng-class="{'cal-today': day.isToday, 'cal-weekend': day.isWeekend, 'cal-holiday': day.isHoliday, 'cal-empty': !day.date, 'cal-has-schedule': day.scheduleCount > 0}"
                      ng-click="day.date && selectDate(day)">
                     <span class="cal-date" ng-if="day.date">{{ day.day }}</span>
                     <div class="cal-badges" ng-if="day.date">
-                        <span class="cal-badge cal-badge-siaga" ng-if="day.isWeekend || day.isHoliday" title="Siaga Wiken">SW</span>
+                        <span class="cal-badge cal-badge-siaga" ng-if="day.isWeekend || day.isHoliday">SW</span>
                         <span class="cal-badge cal-badge-count" ng-if="day.scheduleCount > 0">{{ day.scheduleCount }}</span>
                     </div>
                     <small class="cal-holiday-name" ng-if="day.holidayName">{{ day.holidayName | limitTo:12 }}</small>
@@ -263,62 +424,51 @@
         </div>
     </div>
 
-    <!-- Selected Date Detail Modal / Box (High Contrast Labels) -->
-    <div class="glass-card-static animate-fade-in-up mt-4" ng-if="selectedDateSchedules.length > 0" style="background: #ffffff; border: 1px solid #cbd5e1;">
-        <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
-            <div class="section-title mb-0 fs-6 fw-bold text-primary"><i class="bi bi-calendar-day me-2"></i>Rincian Jadwal Piket — {{ selectedDateStr }}</div>
+    <!-- RINCIAN DETAIL JADWAL TANGGAL TERPILIH -->
+    <div class="glass-card-static animate-fade-in-up mt-4" ng-if="selectedDateSchedules.length > 0" style="background: #ffffff; border: 2px solid #ea580c;">
+        <div class="d-flex justify-content-between align-items-center mb-3 pb-2" style="border-bottom: 2px solid #ea580c;">
+            <h5 class="fw-bold mb-0" style="color: #ea580c;"><i class="bi bi-calendar-day me-2"></i>Rincian Jadwal — {{ selectedDateStr }}</h5>
             <button class="btn btn-sm btn-outline-secondary" ng-click="selectedDateSchedules = []"><i class="bi bi-x-lg me-1"></i>Tutup</button>
         </div>
         <div class="table-responsive">
             <table class="table table-bordered table-hover align-middle mb-0 sched-table">
                 <thead>
                     <tr>
-                        <th style="width: 12%;">Shift</th>
-                        <th style="width: 25%;">Personel</th>
-                        <th style="width: 18%;">Subnit</th>
-                        <th style="width: 12%;">Regu</th>
-                        <th style="width: 13%;">Tipe</th>
-                        <th style="width: 12%;">Status</th>
-                        <th style="width: 8%;" ng-if="user.role === 'admin' || user.role === 'kanit'" class="text-center">Aksi</th>
+                        <th>Shift</th>
+                        <th>Personel</th>
+                        <th>Subnit</th>
+                        <th>Regu</th>
+                        <th>Tipe</th>
+                        <th>Status</th>
+                        <th ng-if="user.role === 'admin' || user.role === 'kanit'" class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr ng-repeat="s in selectedDateSchedules">
-                        <!-- Shift -->
-                        <td data-label="Shift">
-                            <span class="badge-shift-pagi" ng-if="s.shift==='Pagi'"><i class="bi bi-sunrise"></i> Pagi</span>
-                            <span class="badge-shift-sore" ng-if="s.shift==='Sore'"><i class="bi bi-sun"></i> Sore</span>
-                            <span class="badge-shift-malam" ng-if="s.shift==='Malam'"><i class="bi bi-moon-stars"></i> Malam</span>
+                        <td>
+                            <span class="lbl-pagi" ng-if="s.shift==='Pagi'"><i class="bi bi-sunrise"></i> Pagi</span>
+                            <span class="lbl-sore" ng-if="s.shift==='Sore'"><i class="bi bi-sun"></i> Sore</span>
+                            <span class="lbl-malam" ng-if="s.shift==='Malam'"><i class="bi bi-moon-stars"></i> Malam</span>
                         </td>
-                        <!-- Personel -->
-                        <td data-label="Personel">
-                            <strong class="text-dark">{{ s.pangkat }}</strong> <span class="text-dark fw-bold">{{ s.nama_lengkap }}</span>
+                        <td><strong style="color: #000;">{{ s.pangkat }}</strong> <span style="color: #1e293b; font-weight: 600;">{{ s.nama_lengkap }}</span></td>
+                        <td>
+                            <span class="lbl-timur" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Timur')>=0">{{ s.subnit_nama }}</span>
+                            <span class="lbl-tengah" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Tengah')>=0">{{ s.subnit_nama }}</span>
+                            <span class="lbl-barat" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Barat')>=0">{{ s.subnit_nama }}</span>
                         </td>
-                        <!-- Subnit -->
-                        <td data-label="Subnit">
-                            <span class="badge text-white font-weight-bold px-3 py-1.5 fs-7" ng-style="{'background-color': (s.subnit_nama && s.subnit_nama.indexOf('Timur')>=0) ? '#16a34a' : ((s.subnit_nama && s.subnit_nama.indexOf('Tengah')>=0) ? '#ea580c' : '#7c3aed')}">
-                                {{ s.subnit_nama || 'Subnit' }}
-                            </span>
+                        <td><span class="lbl-regu">{{ s.regu_nama || '-' }}</span></td>
+                        <td>
+                            <span class="lbl-reguler" ng-if="s.tipe==='reguler'">Reguler</span>
+                            <span class="lbl-wiken" ng-if="s.tipe==='wiken'">Wiken</span>
+                            <span class="lbl-libur" ng-if="s.tipe==='libur_nasional'">Libur</span>
                         </td>
-                        <!-- Regu -->
-                        <td data-label="Regu">
-                            <span class="badge bg-light text-dark border border-secondary px-2.5 py-1 fs-7 fw-bold">{{ s.regu_nama || '-' }}</span>
+                        <td>
+                            <span class="lbl-dijadwalkan" ng-if="s.status==='dijadwalkan'">Dijadwalkan</span>
+                            <span class="lbl-hadir" ng-if="s.status==='hadir'">Hadir</span>
+                            <span class="lbl-tidak-hadir" ng-if="s.status==='tidak_hadir'">Tidak Hadir</span>
                         </td>
-                        <!-- Tipe -->
-                        <td data-label="Tipe">
-                            <span class="badge px-3 py-1.5 fs-8 text-uppercase fw-bold" style="background: #e0f2fe; color: #0369a1; border: 1px solid #7dd3fc;">{{ s.tipe | uppercase }}</span>
-                        </td>
-                        <!-- Status -->
-                        <td data-label="Status">
-                            <span class="badge px-3 py-1.5 fs-8 text-uppercase fw-bold" style="background: #fef3c7; color: #b45309; border: 1px solid #fde047;" ng-if="s.status==='dijadwalkan'">{{ s.status | uppercase }}</span>
-                            <span class="badge px-3 py-1.5 fs-8 text-uppercase fw-bold" style="background: #dcfce7; color: #15803d; border: 1px solid #86efac;" ng-if="s.status==='hadir'">{{ s.status | uppercase }}</span>
-                            <span class="badge px-3 py-1.5 fs-8 text-uppercase fw-bold" style="background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5;" ng-if="s.status==='tidak_hadir'">{{ s.status | uppercase }}</span>
-                        </td>
-                        <!-- Aksi -->
                         <td ng-if="user.role === 'admin' || user.role === 'kanit'" class="text-center">
-                            <button type="button" class="btn-hapus-jadwal" ng-click="deleteSchedule(s.id)" title="Hapus Jadwal">
-                                <i class="bi bi-trash3-fill"></i> Hapus
-                            </button>
+                            <button class="btn-hapus" ng-click="deleteSchedule(s.id)"><i class="bi bi-trash3-fill"></i> Hapus</button>
                         </td>
                     </tr>
                 </tbody>
@@ -340,13 +490,13 @@
         <div class="modal-content glass-modal">
             <div class="modal-header">
                 <h5 class="modal-title"><i class="bi bi-calendar-plus text-primary me-2"></i>Tambah Jadwal Piket</h5>
-                <button type="button" class="btn-close btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form ng-submit="saveSchedule()" id="formSchedule">
                     <div class="mb-3">
                         <label class="form-label">Tanggal</label>
-                        <input type="date" class="form-control" id="schedTanggal" ng-model="schedForm.tanggal" required>
+                        <input type="date" class="form-control" ng-model="schedForm.tanggal" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Shift</label>
@@ -396,10 +546,10 @@
         <div class="modal-content glass-modal">
             <div class="modal-header">
                 <h5 class="modal-title"><i class="bi bi-magic text-primary me-2"></i>Generate Jadwal Otomatis</h5>
-                <button type="button" class="btn-close btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p class="text-muted small">Sistem akan otomatis membuat jadwal piket berdasarkan rotasi regu yang tersedia.</p>
+                <p class="text-muted small">Sistem akan otomatis membuat jadwal piket berdasarkan rotasi regu.</p>
                 <form ng-submit="submitGenerate()" id="formGenerate">
                     <div class="mb-3">
                         <label class="form-label">Tanggal Mulai</label>
