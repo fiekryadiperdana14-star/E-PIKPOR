@@ -10,7 +10,7 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
         .when('/dashboard', { templateUrl: 'views/dashboard.html?v=14', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=15', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=14', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=29', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=30', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=14', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/sop', { templateUrl: 'views/sop.html?v=14', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/struktur', { templateUrl: 'views/org-chart.html?v=14', controller: 'OrgChartCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
@@ -398,6 +398,53 @@ function($scope, ApiService, $rootScope) {
         return dayNamesFull[dt.getDay()] + ', ' + dt.getDate() + ' ' + $scope.monthNames[dt.getMonth()] + ' ' + dt.getFullYear();
     }
 
+    function groupByReguAndLeadership(arr) {
+        var map = {};
+        (arr || []).forEach(function(s) {
+            var groupKey = '';
+            var type = 'regu';
+
+            if (s.role === 'kanit' || (s.nama_lengkap && s.nama_lengkap.toLowerCase().indexOf('fiekry') >= 0)) {
+                groupKey = 'Kanit Gakkum';
+                type = 'kanit';
+            } else if (s.role === 'kasubnit' || (s.nama_lengkap && s.nama_lengkap.toLowerCase().indexOf('sucipto') >= 0)) {
+                groupKey = 'Kasubnit I';
+                type = 'kasubnit_1';
+            } else if (s.role === 'kasubnit' || (s.nama_lengkap && s.nama_lengkap.toLowerCase().indexOf('sari') >= 0)) {
+                groupKey = 'Kasubnit II';
+                type = 'kasubnit_2';
+            } else if (s.regu_nama) {
+                groupKey = s.regu_nama;
+            } else if (s.subnit_nama) {
+                groupKey = s.subnit_nama;
+            } else {
+                groupKey = 'Piket';
+            }
+
+            if (!map[groupKey]) {
+                map[groupKey] = {
+                    name: groupKey,
+                    type: type,
+                    subnitName: s.subnit_nama || '',
+                    list: []
+                };
+            }
+            map[groupKey].list.push(s);
+        });
+
+        var res = [];
+        for (var k in map) {
+            res.push({
+                name: map[k].name,
+                type: map[k].type,
+                subnitName: map[k].subnitName,
+                count: map[k].list.length,
+                list: map[k].list
+            });
+        }
+        return res;
+    }
+
     function buildQuickView(allSchedules) {
         var today = new Date(); today.setHours(0,0,0,0);
         var yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
@@ -410,17 +457,45 @@ function($scope, ApiService, $rootScope) {
         $scope.yesterdayStr = formatDateLabel(yesterday);
         $scope.tomorrowStr = formatDateLabel(tomorrow);
 
-        $scope.todaySchedules = { Pagi: [], Sore: [], Malam: [] };
-        $scope.yesterdaySchedules = { Pagi: [], Sore: [], Malam: [] };
-        $scope.tomorrowSchedules = { Pagi: [], Sore: [], Malam: [] };
+        var rawToday = { Pagi: [], Sore: [], Malam: [] };
+        var rawYesterday = { Pagi: [], Sore: [], Malam: [] };
+        var rawTomorrow = { Pagi: [], Sore: [], Malam: [] };
 
         (allSchedules || []).forEach(function(s) {
             var d = new Date(s.tanggal);
             var key = formatDateKey(d);
-            if (key === todayKey && s.shift && $scope.todaySchedules[s.shift]) $scope.todaySchedules[s.shift].push(s);
-            if (key === yesterdayKey && s.shift && $scope.yesterdaySchedules[s.shift]) $scope.yesterdaySchedules[s.shift].push(s);
-            if (key === tomorrowKey && s.shift && $scope.tomorrowSchedules[s.shift]) $scope.tomorrowSchedules[s.shift].push(s);
+            if (key === todayKey && s.shift && rawToday[s.shift]) rawToday[s.shift].push(s);
+            if (key === yesterdayKey && s.shift && rawYesterday[s.shift]) rawYesterday[s.shift].push(s);
+            if (key === tomorrowKey && s.shift && rawTomorrow[s.shift]) rawTomorrow[s.shift].push(s);
         });
+
+        $scope.todaySchedules = {
+            Pagi: groupByReguAndLeadership(rawToday.Pagi),
+            Sore: groupByReguAndLeadership(rawToday.Sore),
+            Malam: groupByReguAndLeadership(rawToday.Malam),
+            rawDate: todayKey,
+            dateLabel: $scope.todayStr,
+            dayName: dayNamesFull[today.getDay()],
+            dayNum: today.getDate()
+        };
+        $scope.yesterdaySchedules = {
+            Pagi: groupByReguAndLeadership(rawYesterday.Pagi),
+            Sore: groupByReguAndLeadership(rawYesterday.Sore),
+            Malam: groupByReguAndLeadership(rawYesterday.Malam),
+            rawDate: yesterdayKey,
+            dateLabel: $scope.yesterdayStr,
+            dayName: dayNamesFull[yesterday.getDay()],
+            dayNum: yesterday.getDate()
+        };
+        $scope.tomorrowSchedules = {
+            Pagi: groupByReguAndLeadership(rawTomorrow.Pagi),
+            Sore: groupByReguAndLeadership(rawTomorrow.Sore),
+            Malam: groupByReguAndLeadership(rawTomorrow.Malam),
+            rawDate: tomorrowKey,
+            dateLabel: $scope.tomorrowStr,
+            dayName: dayNamesFull[tomorrow.getDay()],
+            dayNum: tomorrow.getDate()
+        };
     }
 
     function loadData() {
@@ -498,53 +573,6 @@ function($scope, ApiService, $rootScope) {
         var weeks = [];
         var weekNum = 1;
         var weekDays = [];
-
-        function groupByReguAndLeadership(arr) {
-            var map = {};
-            (arr || []).forEach(function(s) {
-                var groupKey = '';
-                var type = 'regu';
-
-                if (s.role === 'kanit' || (s.nama_lengkap && s.nama_lengkap.toLowerCase().indexOf('fiekry') >= 0)) {
-                    groupKey = 'Kanit Gakkum';
-                    type = 'kanit';
-                } else if (s.role === 'kasubnit' || (s.nama_lengkap && s.nama_lengkap.toLowerCase().indexOf('sucipto') >= 0)) {
-                    groupKey = 'Kasubnit I';
-                    type = 'kasubnit_1';
-                } else if (s.role === 'kasubnit' || (s.nama_lengkap && s.nama_lengkap.toLowerCase().indexOf('sari') >= 0)) {
-                    groupKey = 'Kasubnit II';
-                    type = 'kasubnit_2';
-                } else if (s.regu_nama) {
-                    groupKey = s.regu_nama;
-                } else if (s.subnit_nama) {
-                    groupKey = s.subnit_nama;
-                } else {
-                    groupKey = 'Piket';
-                }
-
-                if (!map[groupKey]) {
-                    map[groupKey] = {
-                        name: groupKey,
-                        type: type,
-                        subnitName: s.subnit_nama || '',
-                        list: []
-                    };
-                }
-                map[groupKey].list.push(s);
-            });
-
-            var res = [];
-            for (var k in map) {
-                res.push({
-                    name: map[k].name,
-                    type: map[k].type,
-                    subnitName: map[k].subnitName,
-                    count: map[k].list.length,
-                    list: map[k].list
-                });
-            }
-            return res;
-        }
 
         for (var d = 1; d <= totalDays; d++) {
             var dateObj = new Date($scope.selectedYear, $scope.selectedMonth - 1, d);

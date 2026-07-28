@@ -111,53 +111,154 @@
 
     <!-- ============== QUICK VIEW: KEMARIN / HARI INI / BESOK ============== -->
     <div class="row g-3 mb-4 animate-fade-in-up">
+        <!-- KEMARIN -->
         <div class="col-md-4">
             <div class="qv-card qv-yesterday">
                 <div class="qv-header qv-h-yesterday"><i class="bi bi-arrow-left-circle-fill"></i> KEMARIN</div>
                 <div class="qv-date">{{ yesterdayStr }}</div>
                 <div class="qv-body">
+                    <!-- PAGI -->
                     <div class="qv-shift-title st-pagi"><i class="bi bi-sunrise me-1"></i> Pagi</div>
-                    <div ng-repeat="s in yesterdaySchedules.Pagi" class="qv-person"><span class="qv-dot dot-pagi"></span>{{ s.pangkat }} {{ s.nama_lengkap }}</div>
+                    <div class="d-flex flex-wrap gap-1 my-1">
+                        <span class="subnit-clickable" ng-repeat="sub in yesterdaySchedules.Pagi"
+                              ng-class="{'lbl-kanit': sub.type==='kanit', 'lbl-kasubnit-1': sub.type==='kasubnit_1', 'lbl-kasubnit-2': sub.type==='kasubnit_2', 'lbl-timur': sub.type==='regu' && (sub.subnitName.indexOf('Timur')>=0 || sub.name.indexOf('Regu 1')>=0 || sub.name.indexOf('Regu 2')>=0 || sub.name.indexOf('Regu 3')>=0), 'lbl-tengah': sub.type==='regu' && (sub.subnitName.indexOf('Tengah')>=0 || sub.name.indexOf('Regu 4')>=0 || sub.name.indexOf('Regu 5')>=0 || sub.name.indexOf('Regu 6')>=0), 'lbl-barat': sub.type==='regu' && (sub.subnitName.indexOf('Barat')>=0 || sub.name.indexOf('Regu 7')>=0 || sub.name.indexOf('Regu 8')>=0 || sub.name.indexOf('Regu 9')>=0), 'lbl-default': sub.type==='regu' && !sub.subnitName}"
+                              ng-click="showSubnitDetail({dayName: yesterdaySchedules.dayName, dayNum: yesterdaySchedules.dayNum, dateStr: yesterdaySchedules.rawDate}, 'Pagi', sub)">
+                            <i class="bi bi-star-fill text-warning me-1" ng-if="sub.type==='kanit'"></i>
+                            <i class="bi bi-award-fill me-1" ng-if="sub.type==='kasubnit_1' || sub.type==='kasubnit_2'"></i>
+                            <i class="bi bi-diagram-3-fill me-1" ng-if="sub.type==='regu'"></i>
+                            {{ sub.name }} <span ng-if="sub.type==='regu'">({{ sub.count }})</span>
+                        </span>
+                    </div>
                     <div ng-if="yesterdaySchedules.Pagi.length===0" class="qv-empty">— Kosong —</div>
+
+                    <!-- SORE -->
                     <div class="qv-shift-title st-sore mt-2"><i class="bi bi-sun me-1"></i> Sore</div>
-                    <div ng-repeat="s in yesterdaySchedules.Sore" class="qv-person"><span class="qv-dot dot-sore"></span>{{ s.pangkat }} {{ s.nama_lengkap }}</div>
+                    <div class="d-flex flex-wrap gap-1 my-1">
+                        <span class="subnit-clickable" ng-repeat="sub in yesterdaySchedules.Sore"
+                              ng-class="{'lbl-kanit': sub.type==='kanit', 'lbl-kasubnit-1': sub.type==='kasubnit_1', 'lbl-kasubnit-2': sub.type==='kasubnit_2', 'lbl-timur': sub.type==='regu' && (sub.subnitName.indexOf('Timur')>=0 || sub.name.indexOf('Regu 1')>=0 || sub.name.indexOf('Regu 2')>=0 || sub.name.indexOf('Regu 3')>=0), 'lbl-tengah': sub.type==='regu' && (sub.subnitName.indexOf('Tengah')>=0 || sub.name.indexOf('Regu 4')>=0 || sub.name.indexOf('Regu 5')>=0 || sub.name.indexOf('Regu 6')>=0), 'lbl-barat': sub.type==='regu' && (sub.subnitName.indexOf('Barat')>=0 || sub.name.indexOf('Regu 7')>=0 || sub.name.indexOf('Regu 8')>=0 || sub.name.indexOf('Regu 9')>=0), 'lbl-default': sub.type==='regu' && !sub.subnitName}"
+                              ng-click="showSubnitDetail({dayName: yesterdaySchedules.dayName, dayNum: yesterdaySchedules.dayNum, dateStr: yesterdaySchedules.rawDate}, 'Sore', sub)">
+                            <i class="bi bi-star-fill text-warning me-1" ng-if="sub.type==='kanit'"></i>
+                            <i class="bi bi-award-fill me-1" ng-if="sub.type==='kasubnit_1' || sub.type==='kasubnit_2'"></i>
+                            <i class="bi bi-diagram-3-fill me-1" ng-if="sub.type==='regu'"></i>
+                            {{ sub.name }} <span ng-if="sub.type==='regu'">({{ sub.count }})</span>
+                        </span>
+                    </div>
                     <div ng-if="yesterdaySchedules.Sore.length===0" class="qv-empty">— Kosong —</div>
+
+                    <!-- MALAM -->
                     <div class="qv-shift-title st-malam mt-2"><i class="bi bi-moon-stars me-1"></i> Malam</div>
-                    <div ng-repeat="s in yesterdaySchedules.Malam" class="qv-person"><span class="qv-dot dot-malam"></span>{{ s.pangkat }} {{ s.nama_lengkap }}</div>
+                    <div class="d-flex flex-wrap gap-1 my-1">
+                        <span class="subnit-clickable" ng-repeat="sub in yesterdaySchedules.Malam"
+                              ng-class="{'lbl-kanit': sub.type==='kanit', 'lbl-kasubnit-1': sub.type==='kasubnit_1', 'lbl-kasubnit-2': sub.type==='kasubnit_2', 'lbl-timur': sub.type==='regu' && (sub.subnitName.indexOf('Timur')>=0 || sub.name.indexOf('Regu 1')>=0 || sub.name.indexOf('Regu 2')>=0 || sub.name.indexOf('Regu 3')>=0), 'lbl-tengah': sub.type==='regu' && (sub.subnitName.indexOf('Tengah')>=0 || sub.name.indexOf('Regu 4')>=0 || sub.name.indexOf('Regu 5')>=0 || sub.name.indexOf('Regu 6')>=0), 'lbl-barat': sub.type==='regu' && (sub.subnitName.indexOf('Barat')>=0 || sub.name.indexOf('Regu 7')>=0 || sub.name.indexOf('Regu 8')>=0 || sub.name.indexOf('Regu 9')>=0), 'lbl-default': sub.type==='regu' && !sub.subnitName}"
+                              ng-click="showSubnitDetail({dayName: yesterdaySchedules.dayName, dayNum: yesterdaySchedules.dayNum, dateStr: yesterdaySchedules.rawDate}, 'Malam', sub)">
+                            <i class="bi bi-star-fill text-warning me-1" ng-if="sub.type==='kanit'"></i>
+                            <i class="bi bi-award-fill me-1" ng-if="sub.type==='kasubnit_1' || sub.type==='kasubnit_2'"></i>
+                            <i class="bi bi-diagram-3-fill me-1" ng-if="sub.type==='regu'"></i>
+                            {{ sub.name }} <span ng-if="sub.type==='regu'">({{ sub.count }})</span>
+                        </span>
+                    </div>
                     <div ng-if="yesterdaySchedules.Malam.length===0" class="qv-empty">— Kosong —</div>
                 </div>
             </div>
         </div>
+
+        <!-- HARI INI -->
         <div class="col-md-4">
             <div class="qv-card qv-today">
                 <div class="qv-header qv-h-today"><i class="bi bi-calendar-check-fill"></i> HARI INI</div>
                 <div class="qv-date" style="background:#f0fdf4; border-color:#bbf7d0;">{{ todayStr }}</div>
                 <div class="qv-body">
+                    <!-- PAGI -->
                     <div class="qv-shift-title st-pagi"><i class="bi bi-sunrise me-1"></i> Pagi</div>
-                    <div ng-repeat="s in todaySchedules.Pagi" class="qv-person"><span class="qv-dot dot-pagi"></span>{{ s.pangkat }} {{ s.nama_lengkap }}</div>
+                    <div class="d-flex flex-wrap gap-1 my-1">
+                        <span class="subnit-clickable" ng-repeat="sub in todaySchedules.Pagi"
+                              ng-class="{'lbl-kanit': sub.type==='kanit', 'lbl-kasubnit-1': sub.type==='kasubnit_1', 'lbl-kasubnit-2': sub.type==='kasubnit_2', 'lbl-timur': sub.type==='regu' && (sub.subnitName.indexOf('Timur')>=0 || sub.name.indexOf('Regu 1')>=0 || sub.name.indexOf('Regu 2')>=0 || sub.name.indexOf('Regu 3')>=0), 'lbl-tengah': sub.type==='regu' && (sub.subnitName.indexOf('Tengah')>=0 || sub.name.indexOf('Regu 4')>=0 || sub.name.indexOf('Regu 5')>=0 || sub.name.indexOf('Regu 6')>=0), 'lbl-barat': sub.type==='regu' && (sub.subnitName.indexOf('Barat')>=0 || sub.name.indexOf('Regu 7')>=0 || sub.name.indexOf('Regu 8')>=0 || sub.name.indexOf('Regu 9')>=0), 'lbl-default': sub.type==='regu' && !sub.subnitName}"
+                              ng-click="showSubnitDetail({dayName: todaySchedules.dayName, dayNum: todaySchedules.dayNum, dateStr: todaySchedules.rawDate}, 'Pagi', sub)">
+                            <i class="bi bi-star-fill text-warning me-1" ng-if="sub.type==='kanit'"></i>
+                            <i class="bi bi-award-fill me-1" ng-if="sub.type==='kasubnit_1' || sub.type==='kasubnit_2'"></i>
+                            <i class="bi bi-diagram-3-fill me-1" ng-if="sub.type==='regu'"></i>
+                            {{ sub.name }} <span ng-if="sub.type==='regu'">({{ sub.count }})</span>
+                        </span>
+                    </div>
                     <div ng-if="todaySchedules.Pagi.length===0" class="qv-empty">— Kosong —</div>
+
+                    <!-- SORE -->
                     <div class="qv-shift-title st-sore mt-2"><i class="bi bi-sun me-1"></i> Sore</div>
-                    <div ng-repeat="s in todaySchedules.Sore" class="qv-person"><span class="qv-dot dot-sore"></span>{{ s.pangkat }} {{ s.nama_lengkap }}</div>
+                    <div class="d-flex flex-wrap gap-1 my-1">
+                        <span class="subnit-clickable" ng-repeat="sub in todaySchedules.Sore"
+                              ng-class="{'lbl-kanit': sub.type==='kanit', 'lbl-kasubnit-1': sub.type==='kasubnit_1', 'lbl-kasubnit-2': sub.type==='kasubnit_2', 'lbl-timur': sub.type==='regu' && (sub.subnitName.indexOf('Timur')>=0 || sub.name.indexOf('Regu 1')>=0 || sub.name.indexOf('Regu 2')>=0 || sub.name.indexOf('Regu 3')>=0), 'lbl-tengah': sub.type==='regu' && (sub.subnitName.indexOf('Tengah')>=0 || sub.name.indexOf('Regu 4')>=0 || sub.name.indexOf('Regu 5')>=0 || sub.name.indexOf('Regu 6')>=0), 'lbl-barat': sub.type==='regu' && (sub.subnitName.indexOf('Barat')>=0 || sub.name.indexOf('Regu 7')>=0 || sub.name.indexOf('Regu 8')>=0 || sub.name.indexOf('Regu 9')>=0), 'lbl-default': sub.type==='regu' && !sub.subnitName}"
+                              ng-click="showSubnitDetail({dayName: todaySchedules.dayName, dayNum: todaySchedules.dayNum, dateStr: todaySchedules.rawDate}, 'Sore', sub)">
+                            <i class="bi bi-star-fill text-warning me-1" ng-if="sub.type==='kanit'"></i>
+                            <i class="bi bi-award-fill me-1" ng-if="sub.type==='kasubnit_1' || sub.type==='kasubnit_2'"></i>
+                            <i class="bi bi-diagram-3-fill me-1" ng-if="sub.type==='regu'"></i>
+                            {{ sub.name }} <span ng-if="sub.type==='regu'">({{ sub.count }})</span>
+                        </span>
+                    </div>
                     <div ng-if="todaySchedules.Sore.length===0" class="qv-empty">— Kosong —</div>
+
+                    <!-- MALAM -->
                     <div class="qv-shift-title st-malam mt-2"><i class="bi bi-moon-stars me-1"></i> Malam</div>
-                    <div ng-repeat="s in todaySchedules.Malam" class="qv-person"><span class="qv-dot dot-malam"></span>{{ s.pangkat }} {{ s.nama_lengkap }}</div>
+                    <div class="d-flex flex-wrap gap-1 my-1">
+                        <span class="subnit-clickable" ng-repeat="sub in todaySchedules.Malam"
+                              ng-class="{'lbl-kanit': sub.type==='kanit', 'lbl-kasubnit-1': sub.type==='kasubnit_1', 'lbl-kasubnit-2': sub.type==='kasubnit_2', 'lbl-timur': sub.type==='regu' && (sub.subnitName.indexOf('Timur')>=0 || sub.name.indexOf('Regu 1')>=0 || sub.name.indexOf('Regu 2')>=0 || sub.name.indexOf('Regu 3')>=0), 'lbl-tengah': sub.type==='regu' && (sub.subnitName.indexOf('Tengah')>=0 || sub.name.indexOf('Regu 4')>=0 || sub.name.indexOf('Regu 5')>=0 || sub.name.indexOf('Regu 6')>=0), 'lbl-barat': sub.type==='regu' && (sub.subnitName.indexOf('Barat')>=0 || sub.name.indexOf('Regu 7')>=0 || sub.name.indexOf('Regu 8')>=0 || sub.name.indexOf('Regu 9')>=0), 'lbl-default': sub.type==='regu' && !sub.subnitName}"
+                              ng-click="showSubnitDetail({dayName: todaySchedules.dayName, dayNum: todaySchedules.dayNum, dateStr: todaySchedules.rawDate}, 'Malam', sub)">
+                            <i class="bi bi-star-fill text-warning me-1" ng-if="sub.type==='kanit'"></i>
+                            <i class="bi bi-award-fill me-1" ng-if="sub.type==='kasubnit_1' || sub.type==='kasubnit_2'"></i>
+                            <i class="bi bi-diagram-3-fill me-1" ng-if="sub.type==='regu'"></i>
+                            {{ sub.name }} <span ng-if="sub.type==='regu'">({{ sub.count }})</span>
+                        </span>
+                    </div>
                     <div ng-if="todaySchedules.Malam.length===0" class="qv-empty">— Kosong —</div>
                 </div>
             </div>
         </div>
+
+        <!-- BESOK -->
         <div class="col-md-4">
             <div class="qv-card qv-tomorrow">
                 <div class="qv-header qv-h-tomorrow"><i class="bi bi-arrow-right-circle-fill"></i> BESOK</div>
                 <div class="qv-date">{{ tomorrowStr }}</div>
                 <div class="qv-body">
+                    <!-- PAGI -->
                     <div class="qv-shift-title st-pagi"><i class="bi bi-sunrise me-1"></i> Pagi</div>
-                    <div ng-repeat="s in tomorrowSchedules.Pagi" class="qv-person"><span class="qv-dot dot-pagi"></span>{{ s.pangkat }} {{ s.nama_lengkap }}</div>
+                    <div class="d-flex flex-wrap gap-1 my-1">
+                        <span class="subnit-clickable" ng-repeat="sub in tomorrowSchedules.Pagi"
+                              ng-class="{'lbl-kanit': sub.type==='kanit', 'lbl-kasubnit-1': sub.type==='kasubnit_1', 'lbl-kasubnit-2': sub.type==='kasubnit_2', 'lbl-timur': sub.type==='regu' && (sub.subnitName.indexOf('Timur')>=0 || sub.name.indexOf('Regu 1')>=0 || sub.name.indexOf('Regu 2')>=0 || sub.name.indexOf('Regu 3')>=0), 'lbl-tengah': sub.type==='regu' && (sub.subnitName.indexOf('Tengah')>=0 || sub.name.indexOf('Regu 4')>=0 || sub.name.indexOf('Regu 5')>=0 || sub.name.indexOf('Regu 6')>=0), 'lbl-barat': sub.type==='regu' && (sub.subnitName.indexOf('Barat')>=0 || sub.name.indexOf('Regu 7')>=0 || sub.name.indexOf('Regu 8')>=0 || sub.name.indexOf('Regu 9')>=0), 'lbl-default': sub.type==='regu' && !sub.subnitName}"
+                              ng-click="showSubnitDetail({dayName: tomorrowSchedules.dayName, dayNum: tomorrowSchedules.dayNum, dateStr: tomorrowSchedules.rawDate}, 'Pagi', sub)">
+                            <i class="bi bi-star-fill text-warning me-1" ng-if="sub.type==='kanit'"></i>
+                            <i class="bi bi-award-fill me-1" ng-if="sub.type==='kasubnit_1' || sub.type==='kasubnit_2'"></i>
+                            <i class="bi bi-diagram-3-fill me-1" ng-if="sub.type==='regu'"></i>
+                            {{ sub.name }} <span ng-if="sub.type==='regu'">({{ sub.count }})</span>
+                        </span>
+                    </div>
                     <div ng-if="tomorrowSchedules.Pagi.length===0" class="qv-empty">— Kosong —</div>
+
+                    <!-- SORE -->
                     <div class="qv-shift-title st-sore mt-2"><i class="bi bi-sun me-1"></i> Sore</div>
-                    <div ng-repeat="s in tomorrowSchedules.Sore" class="qv-person"><span class="qv-dot dot-sore"></span>{{ s.pangkat }} {{ s.nama_lengkap }}</div>
+                    <div class="d-flex flex-wrap gap-1 my-1">
+                        <span class="subnit-clickable" ng-repeat="sub in tomorrowSchedules.Sore"
+                              ng-class="{'lbl-kanit': sub.type==='kanit', 'lbl-kasubnit-1': sub.type==='kasubnit_1', 'lbl-kasubnit-2': sub.type==='kasubnit_2', 'lbl-timur': sub.type==='regu' && (sub.subnitName.indexOf('Timur')>=0 || sub.name.indexOf('Regu 1')>=0 || sub.name.indexOf('Regu 2')>=0 || sub.name.indexOf('Regu 3')>=0), 'lbl-tengah': sub.type==='regu' && (sub.subnitName.indexOf('Tengah')>=0 || sub.name.indexOf('Regu 4')>=0 || sub.name.indexOf('Regu 5')>=0 || sub.name.indexOf('Regu 6')>=0), 'lbl-barat': sub.type==='regu' && (sub.subnitName.indexOf('Barat')>=0 || sub.name.indexOf('Regu 7')>=0 || sub.name.indexOf('Regu 8')>=0 || sub.name.indexOf('Regu 9')>=0), 'lbl-default': sub.type==='regu' && !sub.subnitName}"
+                              ng-click="showSubnitDetail({dayName: tomorrowSchedules.dayName, dayNum: tomorrowSchedules.dayNum, dateStr: tomorrowSchedules.rawDate}, 'Sore', sub)">
+                            <i class="bi bi-star-fill text-warning me-1" ng-if="sub.type==='kanit'"></i>
+                            <i class="bi bi-award-fill me-1" ng-if="sub.type==='kasubnit_1' || sub.type==='kasubnit_2'"></i>
+                            <i class="bi bi-diagram-3-fill me-1" ng-if="sub.type==='regu'"></i>
+                            {{ sub.name }} <span ng-if="sub.type==='regu'">({{ sub.count }})</span>
+                        </span>
+                    </div>
                     <div ng-if="tomorrowSchedules.Sore.length===0" class="qv-empty">— Kosong —</div>
+
+                    <!-- MALAM -->
                     <div class="qv-shift-title st-malam mt-2"><i class="bi bi-moon-stars me-1"></i> Malam</div>
-                    <div ng-repeat="s in tomorrowSchedules.Malam" class="qv-person"><span class="qv-dot dot-malam"></span>{{ s.pangkat }} {{ s.nama_lengkap }}</div>
+                    <div class="d-flex flex-wrap gap-1 my-1">
+                        <span class="subnit-clickable" ng-repeat="sub in tomorrowSchedules.Malam"
+                              ng-class="{'lbl-kanit': sub.type==='kanit', 'lbl-kasubnit-1': sub.type==='kasubnit_1', 'lbl-kasubnit-2': sub.type==='kasubnit_2', 'lbl-timur': sub.type==='regu' && (sub.subnitName.indexOf('Timur')>=0 || sub.name.indexOf('Regu 1')>=0 || sub.name.indexOf('Regu 2')>=0 || sub.name.indexOf('Regu 3')>=0), 'lbl-tengah': sub.type==='regu' && (sub.subnitName.indexOf('Tengah')>=0 || sub.name.indexOf('Regu 4')>=0 || sub.name.indexOf('Regu 5')>=0 || sub.name.indexOf('Regu 6')>=0), 'lbl-barat': sub.type==='regu' && (sub.subnitName.indexOf('Barat')>=0 || sub.name.indexOf('Regu 7')>=0 || sub.name.indexOf('Regu 8')>=0 || sub.name.indexOf('Regu 9')>=0), 'lbl-default': sub.type==='regu' && !sub.subnitName}"
+                              ng-click="showSubnitDetail({dayName: tomorrowSchedules.dayName, dayNum: tomorrowSchedules.dayNum, dateStr: tomorrowSchedules.rawDate}, 'Malam', sub)">
+                            <i class="bi bi-star-fill text-warning me-1" ng-if="sub.type==='kanit'"></i>
+                            <i class="bi bi-award-fill me-1" ng-if="sub.type==='kasubnit_1' || sub.type==='kasubnit_2'"></i>
+                            <i class="bi bi-diagram-3-fill me-1" ng-if="sub.type==='regu'"></i>
+                            {{ sub.name }} <span ng-if="sub.type==='regu'">({{ sub.count }})</span>
+                        </span>
+                    </div>
                     <div ng-if="tomorrowSchedules.Malam.length===0" class="qv-empty">— Kosong —</div>
                 </div>
             </div>
