@@ -2,7 +2,7 @@
     <!-- Header -->
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 animate-fade-in-up">
         <div>
-            <h2 class="page-title mb-1"><i class="bi bi-calendar3"></i> Jadwal Piket Unit Gakkum</h2>
+            <h2 class="page-title mb-1"><i class="bi bi-calendar3 text-primary"></i> Jadwal Piket Unit Gakkum</h2>
             <small class="text-muted">Penjadwalan rotasi piket 1 bulan penuh yang dibagi perminggu</small>
         </div>
         <div class="d-flex gap-2 align-items-center" ng-if="user.role === 'admin' || user.role === 'kanit' || user.role === 'kasubnit'">
@@ -25,10 +25,10 @@
             </div>
             <div class="col-md-6 d-flex justify-content-md-end gap-2">
                 <div class="btn-group" role="group">
-                    <button type="button" class="btn btn-sm" ng-class="{'btn-primary': scheduleViewMode === 'table', 'btn-outline-secondary': scheduleViewMode !== 'table'}" ng-click="scheduleViewMode = 'table'">
+                    <button type="button" class="btn btn-sm" ng-class="{'btn-primary fw-bold': scheduleViewMode === 'table', 'btn-outline-secondary': scheduleViewMode !== 'table'}" ng-click="scheduleViewMode = 'table'">
                         <i class="bi bi-table me-1"></i>Tabel per Minggu
                     </button>
-                    <button type="button" class="btn btn-sm" ng-class="{'btn-primary': scheduleViewMode === 'calendar', 'btn-outline-secondary': scheduleViewMode !== 'calendar'}" ng-click="scheduleViewMode = 'calendar'">
+                    <button type="button" class="btn btn-sm" ng-class="{'btn-primary fw-bold': scheduleViewMode === 'calendar', 'btn-outline-secondary': scheduleViewMode !== 'calendar'}" ng-click="scheduleViewMode = 'calendar'">
                         <i class="bi bi-calendar-grid me-1"></i>Grid Kalender
                     </button>
                 </div>
@@ -39,50 +39,47 @@
     <!-- VIEW 1: TABEL JADWAL PER MINGGU (1 BULAN FULL) -->
     <div ng-if="scheduleViewMode === 'table'">
         
-        <div ng-repeat="week in monthlyWeeks" class="glass-card-static animate-fade-in-up mb-4" style="padding: 1.5rem;">
+        <div ng-repeat="week in monthlyWeeks" class="glass-card-static animate-fade-in-up mb-4" style="padding: 1.5rem; background: #ffffff; border: 1px solid #e2e8f0;">
             <!-- Week Header -->
-            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary border-opacity-25">
-                <h5 class="fw-bold mb-0 text-primary">
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                <h5 class="fw-bold mb-0" style="color: #ea580c; font-size: 1.1rem;">
                     <i class="bi bi-calendar-range me-2"></i>{{ week.label }}
                 </h5>
-                <span class="badge bg-warning text-dark px-3 py-2 fs-7 fw-bold">
+                <span class="badge bg-warning text-dark px-3 py-2 fs-7 fw-bold" style="background-color: #fbbf24 !important; color: #000000 !important;">
                     {{ week.days.length }} Hari Pilihan
                 </span>
             </div>
 
-            <!-- Week Schedule Table -->
+            <!-- Week Schedule Table (High Contrast) -->
             <div class="table-responsive">
-                <table class="table table-bordered align-middle mb-0" style="background: #ffffff;">
-                    <thead class="table-dark" style="background: #1e293b; color: #ffffff;">
-                        <tr>
-                            <th style="width: 16%;" class="text-center">Hari & Tanggal</th>
-                            <th style="width: 25%;"><i class="bi bi-sunrise me-1 text-warning"></i>Shift Pagi (06:00 - 14:00)</th>
-                            <th style="width: 25%;"><i class="bi bi-sun me-1 text-info"></i>Shift Sore (14:00 - 22:00)</th>
-                            <th style="width: 25%;"><i class="bi bi-moon-stars me-1 text-primary"></i>Shift Malam (22:00 - 06:00)</th>
-                            <th style="width: 9%;" class="text-center">Kelola</th>
+                <table class="table table-bordered align-middle mb-0" style="background: #ffffff; border-color: #cbd5e1 !important;">
+                    <thead>
+                        <tr style="background: #0f172a !important; color: #ffffff !important;">
+                            <th style="width: 16%; background: #0f172a !important; color: #ffffff !important; font-weight: 700; font-size: 0.85rem;" class="text-center py-3">Hari & Tanggal</th>
+                            <th style="width: 25%; background: #0f172a !important; color: #ffffff !important; font-weight: 700; font-size: 0.85rem;" class="py-3"><i class="bi bi-sunrise me-1 text-warning"></i>Shift Pagi (06:00 - 14:00)</th>
+                            <th style="width: 25%; background: #0f172a !important; color: #ffffff !important; font-weight: 700; font-size: 0.85rem;" class="py-3"><i class="bi bi-sun me-1 text-info"></i>Shift Sore (14:00 - 22:00)</th>
+                            <th style="width: 25%; background: #0f172a !important; color: #ffffff !important; font-weight: 700; font-size: 0.85rem;" class="py-3"><i class="bi bi-moon-stars me-1 text-warning"></i>Shift Malam (22:00 - 06:00)</th>
+                            <th style="width: 9%; background: #0f172a !important; color: #ffffff !important; font-weight: 700; font-size: 0.85rem;" class="text-center py-3">Kelola</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr ng-repeat="day in week.days" ng-class="{
-                            'table-warning': day.isWeekend && !day.isHoliday,
-                            'table-danger': day.isHoliday
-                        }">
+                        <tr ng-repeat="day in week.days">
                             <!-- Hari & Tanggal -->
-                            <td class="text-center align-middle">
+                            <td class="text-center align-middle" style="background: #f8fafc;" ng-style="{'background': day.isHoliday ? '#fee2e2' : (day.isWeekend ? '#fef3c7' : '#f8fafc')}">
                                 <div class="fw-bold fs-6 text-dark">{{ day.dayName }}</div>
-                                <div class="fs-5 fw-extrabold text-primary mb-1">{{ day.dayNum }} {{ monthNames[selectedMonth-1] }}</div>
+                                <div class="fs-5 fw-extrabold mb-1" style="color: #ea580c;">{{ day.dayNum }} {{ monthNames[selectedMonth-1] }}</div>
                                 
-                                <span class="badge bg-danger text-white d-block mb-1" ng-if="day.isHoliday">
+                                <span class="badge bg-danger text-white d-block mb-1 py-1" ng-if="day.isHoliday">
                                     <i class="bi bi-flag-fill me-1"></i>{{ day.holidayName }}
                                 </span>
-                                <span class="badge bg-warning text-dark d-block" ng-if="day.isWeekend && !day.isHoliday">
+                                <span class="badge text-dark d-block py-1 fw-bold" style="background-color: #f59e0b !important; color: #000000 !important;" ng-if="day.isWeekend && !day.isHoliday">
                                     <i class="bi bi-shield-exclamation me-1"></i>Siaga Wiken
                                 </span>
                             </td>
 
                             <!-- Shift Pagi -->
-                            <td class="align-top p-2" style="background: rgba(254, 240, 138, 0.15);">
-                                <div ng-repeat="s in day.pagi" class="p-2 mb-2 rounded border bg-white shadow-sm position-relative">
+                            <td class="align-top p-2" style="background: #fffbe6;">
+                                <div ng-repeat="s in day.pagi" class="p-2 mb-2 rounded border shadow-sm position-relative" style="background: #ffffff; border-color: #fde047 !important;">
                                     <div class="fw-bold text-dark fs-7">{{ s.pangkat }} {{ s.nama_lengkap }}</div>
                                     <div class="d-flex justify-content-between align-items-center mt-1">
                                         <span class="badge bg-secondary fs-8">{{ s.subnit_nama || 'Subnit' }}</span>
@@ -94,12 +91,12 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div ng-if="day.pagi.length === 0" class="text-muted fst-italic fs-8 py-2 text-center">— Tidak ada jadwal —</div>
+                                <div ng-if="day.pagi.length === 0" class="fst-italic fs-8 py-3 text-center" style="color: #64748b;">— Tidak ada jadwal —</div>
                             </td>
 
                             <!-- Shift Sore -->
-                            <td class="align-top p-2" style="background: rgba(224, 242, 254, 0.15);">
-                                <div ng-repeat="s in day.sore" class="p-2 mb-2 rounded border bg-white shadow-sm position-relative">
+                            <td class="align-top p-2" style="background: #f0f9ff;">
+                                <div ng-repeat="s in day.sore" class="p-2 mb-2 rounded border shadow-sm position-relative" style="background: #ffffff; border-color: #bae6fd !important;">
                                     <div class="fw-bold text-dark fs-7">{{ s.pangkat }} {{ s.nama_lengkap }}</div>
                                     <div class="d-flex justify-content-between align-items-center mt-1">
                                         <span class="badge bg-info text-dark fs-8">{{ s.subnit_nama || 'Subnit' }}</span>
@@ -111,12 +108,12 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div ng-if="day.sore.length === 0" class="text-muted fst-italic fs-8 py-2 text-center">— Tidak ada jadwal —</div>
+                                <div ng-if="day.sore.length === 0" class="fst-italic fs-8 py-3 text-center" style="color: #64748b;">— Tidak ada jadwal —</div>
                             </td>
 
                             <!-- Shift Malam -->
-                            <td class="align-top p-2" style="background: rgba(241, 245, 249, 0.3);">
-                                <div ng-repeat="s in day.malam" class="p-2 mb-2 rounded border bg-white shadow-sm position-relative">
+                            <td class="align-top p-2" style="background: #f8fafc;">
+                                <div ng-repeat="s in day.malam" class="p-2 mb-2 rounded border shadow-sm position-relative" style="background: #ffffff; border-color: #cbd5e1 !important;">
                                     <div class="fw-bold text-dark fs-7">{{ s.pangkat }} {{ s.nama_lengkap }}</div>
                                     <div class="d-flex justify-content-between align-items-center mt-1">
                                         <span class="badge bg-dark text-white fs-8">{{ s.subnit_nama || 'Subnit' }}</span>
@@ -128,12 +125,12 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div ng-if="day.malam.length === 0" class="text-muted fst-italic fs-8 py-2 text-center">— Tidak ada jadwal —</div>
+                                <div ng-if="day.malam.length === 0" class="fst-italic fs-8 py-3 text-center" style="color: #64748b;">— Tidak ada jadwal —</div>
                             </td>
 
                             <!-- Kelola / Aksi -->
-                            <td class="text-center align-middle">
-                                <button class="btn btn-sm btn-outline-primary py-1 px-2" ng-click="selectDate(day)">
+                            <td class="text-center align-middle" style="background: #ffffff;">
+                                <button class="btn btn-sm btn-outline-primary py-1 px-2 fw-semibold" ng-click="selectDate(day)">
                                     <i class="bi bi-pencil-square me-1"></i>Detail
                                 </button>
                             </td>
