@@ -10,7 +10,7 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
         .when('/dashboard', { templateUrl: 'views/dashboard.html?v=14', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=15', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=14', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=14', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=16', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=14', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/sop', { templateUrl: 'views/sop.html?v=14', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/struktur', { templateUrl: 'views/org-chart.html?v=14', controller: 'OrgChartCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
@@ -376,6 +376,9 @@ function($scope, ApiService, $rootScope) {
     $scope.subnitList = [];
     $scope.schedForm = { tipe: 'reguler' };
 
+    $scope.scheduleViewMode = 'table'; // 'table' or 'calendar'
+    $scope.monthlyWeeks = [];
+
     function loadData() {
         ApiService.getSchedules({ bulan: $scope.selectedMonth, tahun: $scope.selectedYear }).then(function(r) {
             $scope.schedules = r.data;
@@ -422,6 +425,69 @@ function($scope, ApiService, $rootScope) {
             });
         }
         $scope.calendarDays = days;
+        buildMonthlyWeeks();
+    }
+
+    function buildMonthlyWeeks() {
+        var totalDays = new Date($scope.selectedYear, $scope.selectedMonth, 0).getDate();
+        var dayNamesFull = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+        var schedByDate = {};
+        ($scope.schedules || []).forEach(function(s) {
+            var d = new Date(s.tanggal);
+            var key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+            if (!schedByDate[key]) schedByDate[key] = { Pagi: [], Sore: [], Malam: [], all: [] };
+            if (s.shift && schedByDate[key][s.shift]) {
+                schedByDate[key][s.shift].push(s);
+            }
+            schedByDate[key].all.push(s);
+        });
+
+        var holidayMap = {};
+        ($scope.holidays || []).forEach(function(h) {
+            var d = new Date(h.tanggal);
+            var key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+            holidayMap[key] = h.nama;
+        });
+
+        var weeks = [];
+        var weekNum = 1;
+        var weekDays = [];
+
+        for (var d = 1; d <= totalDays; d++) {
+            var dateObj = new Date($scope.selectedYear, $scope.selectedMonth - 1, d);
+            var dow = dateObj.getDay();
+            var key = $scope.selectedYear + '-' + String($scope.selectedMonth).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+
+            var dayItem = {
+                dayNum: d,
+                dateStr: key,
+                dateObj: dateObj,
+                dayName: dayNamesFull[dow],
+                isWeekend: dow === 0 || dow === 6,
+                isHoliday: !!holidayMap[key],
+                holidayName: holidayMap[key] || null,
+                pagi: (schedByDate[key] && schedByDate[key].Pagi) || [],
+                sore: (schedByDate[key] && schedByDate[key].Sore) || [],
+                malam: (schedByDate[key] && schedByDate[key].Malam) || [],
+                all: (schedByDate[key] && schedByDate[key].all) || []
+            };
+
+            weekDays.push(dayItem);
+
+            if (dow === 0 || d === totalDays) {
+                var startDay = weekDays[0].dayNum;
+                var endDay = weekDays[weekDays.length - 1].dayNum;
+                weeks.push({
+                    weekNum: weekNum,
+                    label: 'Minggu Ke-' + weekNum + ' (' + startDay + ' - ' + endDay + ' ' + $scope.monthNames[$scope.selectedMonth - 1] + ' ' + $scope.selectedYear + ')',
+                    days: weekDays
+                });
+                weekNum++;
+                weekDays = [];
+            }
+        }
+        $scope.monthlyWeeks = weeks;
     }
 
     $scope.selectDate = function(day) {

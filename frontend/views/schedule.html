@@ -1,10 +1,11 @@
 <div class="container-fluid px-0">
+    <!-- Header -->
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 animate-fade-in-up">
         <div>
-            <h2 class="page-title mb-1"><i class="bi bi-calendar3"></i> Jadwal Piket</h2>
-            <small class="text-muted">Penjadwalan rotasi piket Unit Gakkum</small>
+            <h2 class="page-title mb-1"><i class="bi bi-calendar3"></i> Jadwal Piket Unit Gakkum</h2>
+            <small class="text-muted">Penjadwalan rotasi piket 1 bulan penuh yang dibagi perminggu</small>
         </div>
-        <div class="d-flex gap-2" ng-if="user.role === 'admin' || user.role === 'kanit' || user.role === 'kasubnit'">
+        <div class="d-flex gap-2 align-items-center" ng-if="user.role === 'admin' || user.role === 'kanit' || user.role === 'kasubnit'">
             <button class="btn btn-outline-secondary btn-sm" ng-click="generateSchedule()">
                 <i class="bi bi-magic me-1"></i>Auto Generate
             </button>
@@ -14,43 +15,169 @@
         </div>
     </div>
 
-    <!-- Month Navigator -->
+    <!-- Month Navigator & View Switcher -->
     <div class="glass-card-static animate-fade-in-up mb-4" style="padding: 1rem 1.25rem;">
-        <div class="d-flex justify-content-between align-items-center">
-            <button class="btn btn-outline-secondary btn-sm" ng-click="prevMonth()"><i class="bi bi-chevron-left"></i></button>
-            <h5 class="mb-0 fw-bold">{{ monthNames[selectedMonth-1] }} {{ selectedYear }}</h5>
-            <button class="btn btn-outline-secondary btn-sm" ng-click="nextMonth()"><i class="bi bi-chevron-right"></i></button>
-        </div>
-    </div>
-
-    <!-- Calendar Grid -->
-    <div class="glass-card-static animate-fade-in-up mb-4">
-        <div class="calendar-grid">
-            <div class="cal-header" ng-repeat="d in dayNames">{{ d }}</div>
-            <div class="cal-day" ng-repeat="day in calendarDays" 
-                 ng-class="{
-                    'cal-today': day.isToday, 
-                    'cal-weekend': day.isWeekend, 
-                    'cal-holiday': day.isHoliday,
-                    'cal-empty': !day.date,
-                    'cal-has-schedule': day.scheduleCount > 0
-                 }"
-                 ng-click="day.date && selectDate(day)">
-                <span class="cal-date" ng-if="day.date">{{ day.day }}</span>
-                <div class="cal-badges" ng-if="day.date">
-                    <span class="cal-badge cal-badge-siaga" ng-if="day.isWeekend || day.isHoliday" title="Siaga Wiken">SW</span>
-                    <span class="cal-badge cal-badge-count" ng-if="day.scheduleCount > 0">{{ day.scheduleCount }}</span>
+        <div class="row align-items-center g-3">
+            <div class="col-md-6 d-flex align-items-center justify-content-between justify-content-md-start gap-3">
+                <button class="btn btn-outline-secondary btn-sm" ng-click="prevMonth()"><i class="bi bi-chevron-left"></i> Bulan Sebelum</button>
+                <h4 class="mb-0 fw-bold text-primary">{{ monthNames[selectedMonth-1] }} {{ selectedYear }}</h4>
+                <button class="btn btn-outline-secondary btn-sm" ng-click="nextMonth()">Bulan Berikut <i class="bi bi-chevron-right"></i></button>
+            </div>
+            <div class="col-md-6 d-flex justify-content-md-end gap-2">
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-sm" ng-class="{'btn-primary': scheduleViewMode === 'table', 'btn-outline-secondary': scheduleViewMode !== 'table'}" ng-click="scheduleViewMode = 'table'">
+                        <i class="bi bi-table me-1"></i>Tabel per Minggu
+                    </button>
+                    <button type="button" class="btn btn-sm" ng-class="{'btn-primary': scheduleViewMode === 'calendar', 'btn-outline-secondary': scheduleViewMode !== 'calendar'}" ng-click="scheduleViewMode = 'calendar'">
+                        <i class="bi bi-calendar-grid me-1"></i>Grid Kalender
+                    </button>
                 </div>
-                <small class="cal-holiday-name" ng-if="day.holidayName">{{ day.holidayName | limitTo:12 }}</small>
             </div>
         </div>
     </div>
 
-    <!-- Selected Date Detail -->
-    <div class="glass-card-static animate-fade-in-up" ng-if="selectedDateSchedules.length > 0">
-        <div class="section-title"><i class="bi bi-calendar-day"></i> Jadwal — {{ selectedDateStr }}</div>
+    <!-- VIEW 1: TABEL JADWAL PER MINGGU (1 BULAN FULL) -->
+    <div ng-if="scheduleViewMode === 'table'">
+        
+        <div ng-repeat="week in monthlyWeeks" class="glass-card-static animate-fade-in-up mb-4" style="padding: 1.5rem;">
+            <!-- Week Header -->
+            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary border-opacity-25">
+                <h5 class="fw-bold mb-0 text-primary">
+                    <i class="bi bi-calendar-range me-2"></i>{{ week.label }}
+                </h5>
+                <span class="badge bg-warning text-dark px-3 py-2 fs-7 fw-bold">
+                    {{ week.days.length }} Hari Pilihan
+                </span>
+            </div>
+
+            <!-- Week Schedule Table -->
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle mb-0" style="background: #ffffff;">
+                    <thead class="table-dark" style="background: #1e293b; color: #ffffff;">
+                        <tr>
+                            <th style="width: 16%;" class="text-center">Hari & Tanggal</th>
+                            <th style="width: 25%;"><i class="bi bi-sunrise me-1 text-warning"></i>Shift Pagi (06:00 - 14:00)</th>
+                            <th style="width: 25%;"><i class="bi bi-sun me-1 text-info"></i>Shift Sore (14:00 - 22:00)</th>
+                            <th style="width: 25%;"><i class="bi bi-moon-stars me-1 text-primary"></i>Shift Malam (22:00 - 06:00)</th>
+                            <th style="width: 9%;" class="text-center">Kelola</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="day in week.days" ng-class="{
+                            'table-warning': day.isWeekend && !day.isHoliday,
+                            'table-danger': day.isHoliday
+                        }">
+                            <!-- Hari & Tanggal -->
+                            <td class="text-center align-middle">
+                                <div class="fw-bold fs-6 text-dark">{{ day.dayName }}</div>
+                                <div class="fs-5 fw-extrabold text-primary mb-1">{{ day.dayNum }} {{ monthNames[selectedMonth-1] }}</div>
+                                
+                                <span class="badge bg-danger text-white d-block mb-1" ng-if="day.isHoliday">
+                                    <i class="bi bi-flag-fill me-1"></i>{{ day.holidayName }}
+                                </span>
+                                <span class="badge bg-warning text-dark d-block" ng-if="day.isWeekend && !day.isHoliday">
+                                    <i class="bi bi-shield-exclamation me-1"></i>Siaga Wiken
+                                </span>
+                            </td>
+
+                            <!-- Shift Pagi -->
+                            <td class="align-top p-2" style="background: rgba(254, 240, 138, 0.15);">
+                                <div ng-repeat="s in day.pagi" class="p-2 mb-2 rounded border bg-white shadow-sm position-relative">
+                                    <div class="fw-bold text-dark fs-7">{{ s.pangkat }} {{ s.nama_lengkap }}</div>
+                                    <div class="d-flex justify-content-between align-items-center mt-1">
+                                        <span class="badge bg-secondary fs-8">{{ s.subnit_nama || 'Subnit' }}</span>
+                                        <span class="badge bg-light text-dark border fs-8" ng-if="s.regu_nama">{{ s.regu_nama }}</span>
+                                    </div>
+                                    <div class="mt-1" ng-if="user.role === 'admin' || user.role === 'kanit'">
+                                        <button class="btn btn-xs btn-outline-danger py-0 px-1 fs-8" ng-click="deleteSchedule(s.id)" title="Hapus">
+                                            <i class="bi bi-trash"></i> Hapus
+                                        </button>
+                                    </div>
+                                </div>
+                                <div ng-if="day.pagi.length === 0" class="text-muted fst-italic fs-8 py-2 text-center">— Tidak ada jadwal —</div>
+                            </td>
+
+                            <!-- Shift Sore -->
+                            <td class="align-top p-2" style="background: rgba(224, 242, 254, 0.15);">
+                                <div ng-repeat="s in day.sore" class="p-2 mb-2 rounded border bg-white shadow-sm position-relative">
+                                    <div class="fw-bold text-dark fs-7">{{ s.pangkat }} {{ s.nama_lengkap }}</div>
+                                    <div class="d-flex justify-content-between align-items-center mt-1">
+                                        <span class="badge bg-info text-dark fs-8">{{ s.subnit_nama || 'Subnit' }}</span>
+                                        <span class="badge bg-light text-dark border fs-8" ng-if="s.regu_nama">{{ s.regu_nama }}</span>
+                                    </div>
+                                    <div class="mt-1" ng-if="user.role === 'admin' || user.role === 'kanit'">
+                                        <button class="btn btn-xs btn-outline-danger py-0 px-1 fs-8" ng-click="deleteSchedule(s.id)" title="Hapus">
+                                            <i class="bi bi-trash"></i> Hapus
+                                        </button>
+                                    </div>
+                                </div>
+                                <div ng-if="day.sore.length === 0" class="text-muted fst-italic fs-8 py-2 text-center">— Tidak ada jadwal —</div>
+                            </td>
+
+                            <!-- Shift Malam -->
+                            <td class="align-top p-2" style="background: rgba(241, 245, 249, 0.3);">
+                                <div ng-repeat="s in day.malam" class="p-2 mb-2 rounded border bg-white shadow-sm position-relative">
+                                    <div class="fw-bold text-dark fs-7">{{ s.pangkat }} {{ s.nama_lengkap }}</div>
+                                    <div class="d-flex justify-content-between align-items-center mt-1">
+                                        <span class="badge bg-dark text-white fs-8">{{ s.subnit_nama || 'Subnit' }}</span>
+                                        <span class="badge bg-light text-dark border fs-8" ng-if="s.regu_nama">{{ s.regu_nama }}</span>
+                                    </div>
+                                    <div class="mt-1" ng-if="user.role === 'admin' || user.role === 'kanit'">
+                                        <button class="btn btn-xs btn-outline-danger py-0 px-1 fs-8" ng-click="deleteSchedule(s.id)" title="Hapus">
+                                            <i class="bi bi-trash"></i> Hapus
+                                        </button>
+                                    </div>
+                                </div>
+                                <div ng-if="day.malam.length === 0" class="text-muted fst-italic fs-8 py-2 text-center">— Tidak ada jadwal —</div>
+                            </td>
+
+                            <!-- Kelola / Aksi -->
+                            <td class="text-center align-middle">
+                                <button class="btn btn-sm btn-outline-primary py-1 px-2" ng-click="selectDate(day)">
+                                    <i class="bi bi-pencil-square me-1"></i>Detail
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- VIEW 2: GRID KALENDER OVERVIEW -->
+    <div ng-if="scheduleViewMode === 'calendar'">
+        <div class="glass-card-static animate-fade-in-up mb-4">
+            <div class="calendar-grid">
+                <div class="cal-header" ng-repeat="d in dayNames">{{ d }}</div>
+                <div class="cal-day" ng-repeat="day in calendarDays" 
+                     ng-class="{
+                        'cal-today': day.isToday, 
+                        'cal-weekend': day.isWeekend, 
+                        'cal-holiday': day.isHoliday,
+                        'cal-empty': !day.date,
+                        'cal-has-schedule': day.scheduleCount > 0
+                     }"
+                     ng-click="day.date && selectDate(day)">
+                    <span class="cal-date" ng-if="day.date">{{ day.day }}</span>
+                    <div class="cal-badges" ng-if="day.date">
+                        <span class="cal-badge cal-badge-siaga" ng-if="day.isWeekend || day.isHoliday" title="Siaga Wiken">SW</span>
+                        <span class="cal-badge cal-badge-count" ng-if="day.scheduleCount > 0">{{ day.scheduleCount }}</span>
+                    </div>
+                    <small class="cal-holiday-name" ng-if="day.holidayName">{{ day.holidayName | limitTo:12 }}</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Selected Date Detail Modal / Box -->
+    <div class="glass-card-static animate-fade-in-up mt-4" ng-if="selectedDateSchedules.length > 0">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="section-title mb-0"><i class="bi bi-calendar-day"></i> Rincian Jadwal Piket — {{ selectedDateStr }}</div>
+            <button class="btn btn-sm btn-outline-secondary" ng-click="selectedDateSchedules = []"><i class="bi bi-x-lg me-1"></i>Tutup</button>
+        </div>
         <div class="table-responsive">
-            <table class="table table-hover mb-0">
+            <table class="table table-hover align-middle mb-0">
                 <thead>
                     <tr>
                         <th>Shift</th>
@@ -89,7 +216,7 @@
                         </td>
                         <td ng-if="user.role === 'admin' || user.role === 'kanit'">
                             <button class="btn btn-sm btn-outline-danger" ng-click="deleteSchedule(s.id)">
-                                <i class="bi bi-trash3"></i>
+                                <i class="bi bi-trash3"></i> Hapus
                             </button>
                         </td>
                     </tr>
@@ -98,7 +225,7 @@
         </div>
     </div>
 
-    <div class="glass-card-static animate-fade-in-up" ng-if="selectedDateStr && selectedDateSchedules.length === 0">
+    <div class="glass-card-static animate-fade-in-up mt-4" ng-if="selectedDateStr && selectedDateSchedules.length === 0">
         <div class="empty-state" style="padding: 2rem;">
             <i class="bi bi-calendar-x" style="font-size:2.5rem;"></i>
             <p>Belum ada jadwal piket untuk tanggal {{ selectedDateStr }}.</p>
@@ -124,9 +251,9 @@
                         <label class="form-label">Shift</label>
                         <select class="form-select" ng-model="schedForm.shift" required>
                             <option value="">— Pilih Shift —</option>
-                            <option value="Pagi">Pagi (06:00-14:00)</option>
-                            <option value="Sore">Sore (14:00-22:00)</option>
-                            <option value="Malam">Malam (22:00-06:00)</option>
+                            <option value="Pagi">Pagi (06:00 - 14:00)</option>
+                            <option value="Sore">Sore (14:00 - 22:00)</option>
+                            <option value="Malam">Malam (22:00 - 06:00)</option>
                         </select>
                     </div>
                     <div class="mb-3">
