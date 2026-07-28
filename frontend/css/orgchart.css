@@ -1,4 +1,10 @@
-/* ========== ORG CHART (Standalone) ========== */
+/* ================================================================
+   ORGCHART.CSS — Standalone Org Chart Styles (v12)
+   All classes needed for the org-chart view, fully self-contained.
+   NO dependency on style.css for any orgchart class.
+   ================================================================ */
+
+/* === Container === */
 .orgchart {
     display: block;
     width: 100%;
@@ -15,7 +21,7 @@
     padding: 0 1.5rem;
 }
 
-/* Structural */
+/* === Structural Wrappers === */
 .org-stack {
     display: flex;
     flex-direction: column;
@@ -47,18 +53,20 @@
     margin-bottom: 3rem;
 }
 
-/* Connecting Lines */
+/* === Connecting Lines === */
 .org-line-v {
-    width: 2px;
-    height: 30px;
-    background: linear-gradient(to bottom, rgba(249,115,22,0.5), rgba(249,115,22,0.15));
+    width: 3px;
+    height: 32px;
+    background: linear-gradient(to bottom, rgba(249,115,22,0.6), rgba(249,115,22,0.2));
+    border-radius: 2px;
 }
 
 .org-line-h {
-    height: 2px;
-    background: rgba(249,115,22,0.3);
+    height: 3px;
+    background: rgba(249,115,22,0.35);
     position: absolute;
     top: 0;
+    border-radius: 2px;
 }
 
 .bamin-h-line {
@@ -71,40 +79,16 @@
     width: 66.666%;
 }
 
-/* Cyan lines for subnits */
-.org-subnits-wrapper .org-line-v,
-.org-subnits-wrapper .org-line-h {
-    background: linear-gradient(to bottom, rgba(6,182,212,0.5), rgba(6,182,212,0.15));
+/* Cyan lines inside subnits */
+.org-subnits-wrapper .org-line-v {
+    background: linear-gradient(to bottom, rgba(6,182,212,0.6), rgba(6,182,212,0.2));
 }
 
 .org-subnits-wrapper .org-line-h {
-    background: rgba(6,182,212,0.3);
+    background: rgba(6,182,212,0.4);
 }
 
-/* Kasubnit Row */
-.org-kasubnit-row {
-    display: flex !important;
-    width: 100%;
-    min-height: 150px !important;
-    align-items: stretch !important;
-    gap: 2.5rem;
-}
-
-.org-kasubnit-row .org-col {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.org-line-v-full {
-    width: 2px;
-    flex: 1;
-    min-height: 30px;
-    background: linear-gradient(to bottom, rgba(6,182,212,0.5), rgba(6,182,212,0.15));
-}
-
-/* Row & Column */
+/* === Row & Column Grid === */
 .org-row-3 {
     display: flex;
     width: 100%;
@@ -121,10 +105,31 @@
     align-items: center;
 }
 
-/* Cards */
+/* Kasubnit row — force all 3 columns to same height */
+.org-kasubnit-row {
+    min-height: 160px;
+    align-items: stretch;
+}
+
+.org-kasubnit-row > .org-col {
+    justify-content: center;
+}
+
+/* Full-height cyan line in center column (Tengah has no Kasubnit card) */
+.org-line-v-full {
+    width: 3px;
+    flex: 1;
+    min-height: 40px;
+    background: linear-gradient(to bottom, rgba(6,182,212,0.6), rgba(6,182,212,0.2));
+    border-radius: 2px;
+}
+
+/* ================================================================
+   CARDS
+   ================================================================ */
 .orgchart__card {
-    background: var(--bg-tertiary, #fff);
-    border: 1px solid var(--border-color, #e2e8f0);
+    background: #ffffff;
+    border: 1.5px solid rgba(249,115,22,0.25);
     border-radius: 16px;
     padding: 1.25rem 1.75rem;
     width: 100%;
@@ -133,22 +138,25 @@
     position: relative;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 2;
+    box-shadow: 0 2px 12px rgba(249,115,22,0.06);
 }
 
 .orgchart__card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(249,115,22,0.12);
-    border-color: rgba(249,115,22,0.35);
+    box-shadow: 0 12px 32px rgba(249,115,22,0.14);
+    border-color: rgba(249,115,22,0.4);
 }
 
+/* --- Leader (center stack) --- */
 .orgchart__card--leader {
-    border-color: rgba(249,115,22,0.25);
-    background: linear-gradient(145deg, rgba(249,115,22,0.06), var(--bg-tertiary, #fff));
+    border-color: rgba(249,115,22,0.3);
+    background: linear-gradient(145deg, rgba(249,115,22,0.04), #ffffff);
 }
 
+/* --- Top Leader (Kasat) --- */
 .orgchart__card--top {
     border-color: rgba(249,115,22,0.5);
-    background: linear-gradient(145deg, rgba(249,115,22,0.12), rgba(249,115,22,0.02) 50%, var(--bg-tertiary, #fff));
+    background: linear-gradient(145deg, rgba(249,115,22,0.1), rgba(249,115,22,0.02) 50%, #ffffff);
     box-shadow: 0 6px 24px rgba(249,115,22,0.15);
 }
 
@@ -163,10 +171,11 @@
     border-radius: 16px 16px 0 0;
 }
 
+/* --- Kanit --- */
 .orgchart__card--kanit {
-    border-color: rgba(249,115,22,0.4);
-    background: linear-gradient(145deg, rgba(249,115,22,0.1), rgba(249,115,22,0.02) 50%, var(--bg-tertiary, #fff));
-    box-shadow: 0 4px 20px rgba(249,115,22,0.1);
+    border-color: rgba(249,115,22,0.45);
+    background: linear-gradient(145deg, rgba(249,115,22,0.1), rgba(249,115,22,0.02) 50%, #ffffff);
+    box-shadow: 0 4px 20px rgba(249,115,22,0.12);
     min-width: 300px;
 }
 
@@ -181,9 +190,10 @@
     border-radius: 16px 16px 0 0;
 }
 
+/* --- Kasubnit --- */
 .orgchart__card--kasubnit {
-    border-color: rgba(6,182,212,0.3);
-    background: linear-gradient(145deg, rgba(6,182,212,0.06), var(--bg-tertiary, #fff));
+    border-color: rgba(6,182,212,0.35);
+    background: linear-gradient(145deg, rgba(6,182,212,0.06), #ffffff);
 }
 
 .orgchart__card--kasubnit::before {
@@ -197,60 +207,85 @@
     border-radius: 16px 16px 0 0;
 }
 
+.orgchart__card--kasubnit:hover {
+    border-color: rgba(6,182,212,0.5);
+    box-shadow: 0 12px 32px rgba(6,182,212,0.15);
+}
+
+/* --- Bamin --- */
 .orgchart__card--bamin {
     border-color: rgba(249,115,22,0.2);
-    background: var(--bg-tertiary, #fff);
+    background: #ffffff;
     text-align: left;
     max-width: 380px;
 }
 
-/* Badge */
+/* ================================================================
+   BADGES
+   ================================================================ */
 .orgchart__badge {
     display: inline-block;
-    padding: 0.2rem 0.75rem;
-    border-radius: 8px;
+    padding: 0.25rem 0.8rem;
+    border-radius: 20px;
     font-size: 0.65rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
+    font-weight: 800;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     background: rgba(249,115,22,0.1);
-    color: #f97316;
-    margin-bottom: 0.5rem;
+    color: #ea580c;
+    margin-bottom: 0.65rem;
 }
 
 .orgchart__badge--accent {
     background: linear-gradient(135deg, #f97316, #fb923c);
-    color: #fff;
+    color: #ffffff;
 }
 
 .orgchart__badge--cyan {
     background: linear-gradient(135deg, #06b6d4, #22d3ee);
-    color: #fff;
+    color: #ffffff;
 }
 
-/* Name & Rank */
+/* ================================================================
+   TEXT
+   ================================================================ */
 .orgchart__name {
     font-weight: 700;
     font-size: 0.95rem;
-    color: var(--text-primary, #1e293b);
+    color: #1e293b;
     margin-bottom: 0.15rem;
+    line-height: 1.4;
 }
 
 .orgchart__rank {
     font-size: 0.75rem;
-    color: var(--text-muted, #94a3b8);
+    color: #64748b;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    font-weight: 600;
 }
 
-/* Edit Buttons */
+.orgchart__tag {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #f97316;
+    background: rgba(249,115,22,0.1);
+    padding: 0.15rem 0.5rem;
+    border-radius: 12px;
+    margin-top: 0.35rem;
+}
+
+/* ================================================================
+   EDIT BUTTONS
+   ================================================================ */
 .orgchart__btns {
     display: flex;
     justify-content: center;
-    gap: 0.35rem;
-    margin-top: 0.5rem;
+    gap: 0.4rem;
+    margin-top: 0.6rem;
     opacity: 0;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s ease;
 }
 
 .orgchart__card:hover .orgchart__btns {
@@ -258,53 +293,66 @@
 }
 
 .orgchart__btn {
-    border: none;
-    background: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: transparent;
     cursor: pointer;
-    padding: 0.2rem;
-    border-radius: 6px;
-    transition: background 0.2s;
+    transition: all 0.2s ease;
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.orgchart__btn:hover {
+    background: rgba(249,115,22,0.1);
 }
 
 .orgchart__btn--edit {
+    border-color: rgba(249,115,22,0.25);
     color: #f97316;
 }
 
 .orgchart__btn--edit:hover {
-    background: rgba(249,115,22,0.1);
+    background: rgba(249,115,22,0.15);
 }
 
 .orgchart__btn--del {
+    border-color: rgba(239,68,68,0.25);
     color: #ef4444;
 }
 
 .orgchart__btn--del:hover {
-    background: rgba(239,68,68,0.1);
+    background: rgba(239,68,68,0.15);
 }
 
 .orgchart__btn--sm {
-    font-size: 0.8rem;
-    padding: 0.15rem 0.35rem;
-    opacity: 0;
-    transition: opacity 0.2s;
-}
-
-.orgchart__bamin-item:hover .orgchart__btn--sm {
-    opacity: 1;
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+    border-radius: 6px;
 }
 
 .orgchart__btn--xs {
-    font-size: 0.7rem;
-    padding: 0.1rem 0.3rem;
+    width: 24px;
+    height: 24px;
+    font-size: 0.65rem;
+    border-radius: 5px;
     opacity: 0;
-    transition: opacity 0.2s;
+    transition: opacity 0.2s ease;
 }
 
+.orgchart__bamin-item:hover .orgchart__btn--xs,
 .orgchart__member:hover .orgchart__btn--xs {
     opacity: 1;
 }
 
-/* Bamin List */
+/* ================================================================
+   BAMIN LIST
+   ================================================================ */
 .orgchart__bamin-list {
     display: flex;
     flex-direction: column;
@@ -317,89 +365,85 @@
     align-items: center;
     padding: 0.5rem 0.75rem;
     border-radius: 10px;
-    background: var(--bg-secondary, #f8fafc);
-    border: 1px solid var(--border-color, #e2e8f0);
-    transition: all 0.2s;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    transition: all 0.2s ease;
 }
 
 .orgchart__bamin-item:hover {
     border-color: rgba(249,115,22,0.3);
+    background: rgba(249,115,22,0.04);
 }
 
 .orgchart__bamin-name {
-    font-weight: 600;
+    font-weight: 700;
     font-size: 0.8rem;
-    color: var(--text-primary, #1e293b);
+    color: #1e293b;
 }
 
 .orgchart__bamin-rank {
     font-size: 0.7rem;
-    color: var(--text-muted, #94a3b8);
+    color: #64748b;
     text-transform: uppercase;
 }
 
-/* Subnit Cards */
+/* ================================================================
+   SUBNIT CARDS
+   ================================================================ */
 .orgchart__subnit-card {
     border-radius: 16px;
     overflow: hidden;
-    border: 1px solid var(--border-color, #e2e8f0);
-    background: var(--bg-tertiary, #fff);
+    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.orgchart__subnit-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* --- Timur variant --- */
 .orgchart__subnit-card--timur {
-    border-color: rgba(249,115,22,0.2);
-}
-
-.orgchart__subnit-card--tengah {
-    border-color: rgba(6,182,212,0.2);
-}
-
-.orgchart__subnit-card--barat {
-    border-color: rgba(168,85,247,0.2);
-}
-
-.orgchart__subnit-hdr {
-    padding: 0.75rem 1rem;
-    font-weight: 700;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    border-color: rgba(34,197,94,0.3);
 }
 
 .orgchart__subnit-card--timur .orgchart__subnit-hdr {
-    background: linear-gradient(135deg, rgba(249,115,22,0.08), rgba(249,115,22,0.02));
-    color: #ea580c;
+    background: linear-gradient(135deg, rgba(34,197,94,0.08), rgba(34,197,94,0.02));
+    color: #16a34a;
+    border-bottom: 2px solid #22c55e;
+}
+
+.orgchart__subnit-card--timur .orgchart__subnit-icon {
+    background: rgba(34,197,94,0.15);
+    color: #16a34a;
+}
+
+/* --- Tengah variant --- */
+.orgchart__subnit-card--tengah {
+    border-color: rgba(249,115,22,0.3);
 }
 
 .orgchart__subnit-card--tengah .orgchart__subnit-hdr {
-    background: linear-gradient(135deg, rgba(6,182,212,0.08), rgba(6,182,212,0.02));
-    color: #0891b2;
+    background: linear-gradient(135deg, rgba(249,115,22,0.08), rgba(249,115,22,0.02));
+    color: #ea580c;
+    border-bottom: 2px solid #f97316;
+}
+
+.orgchart__subnit-card--tengah .orgchart__subnit-icon {
+    background: rgba(249,115,22,0.15);
+    color: #ea580c;
+}
+
+/* --- Barat variant --- */
+.orgchart__subnit-card--barat {
+    border-color: rgba(168,85,247,0.3);
 }
 
 .orgchart__subnit-card--barat .orgchart__subnit-hdr {
     background: linear-gradient(135deg, rgba(168,85,247,0.08), rgba(168,85,247,0.02));
     color: #7c3aed;
-}
-
-.orgchart__subnit-icon {
-    width: 24px;
-    height: 24px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
-}
-
-.orgchart__subnit-card--timur .orgchart__subnit-icon {
-    background: rgba(249,115,22,0.15);
-    color: #ea580c;
-}
-
-.orgchart__subnit-card--tengah .orgchart__subnit-icon {
-    background: rgba(6,182,212,0.15);
-    color: #0891b2;
+    border-bottom: 2px solid #a855f7;
 }
 
 .orgchart__subnit-card--barat .orgchart__subnit-icon {
@@ -407,51 +451,92 @@
     color: #7c3aed;
 }
 
-.orgchart__subnit-body {
-    padding: 0.75rem 1rem;
+/* --- Subnit header --- */
+.orgchart__subnit-hdr {
+    padding: 0.85rem 1.15rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
-/* Regu */
+.orgchart__subnit-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+}
+
+/* --- Subnit body --- */
+.orgchart__subnit-body {
+    padding: 1rem 1.15rem;
+}
+
+/* ================================================================
+   REGU
+   ================================================================ */
 .orgchart__regu {
-    margin-bottom: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.orgchart__regu:last-child {
+    margin-bottom: 0;
 }
 
 .orgchart__regu-title {
-    font-weight: 700;
-    font-size: 0.75rem;
-    color: var(--text-secondary, #475569);
-    margin-bottom: 0.5rem;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 800;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.3rem 0.65rem;
+    background: rgba(249,115,22,0.05);
+    border-left: 3px solid rgba(249,115,22,0.4);
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 0.6rem;
 }
 
-/* Members */
+.orgchart__regu-title i {
+    font-size: 0.72rem;
+    color: rgba(249,115,22,0.6);
+}
+
+/* ================================================================
+   MEMBERS
+   ================================================================ */
 .orgchart__member {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.4rem 0.5rem;
+    padding: 0.35rem 0.5rem;
     border-radius: 8px;
-    margin-bottom: 0.25rem;
-    transition: background 0.2s;
+    transition: background 0.15s ease;
+    margin-bottom: 0.2rem;
 }
 
 .orgchart__member:hover {
-    background: var(--bg-secondary, #f8fafc);
+    background: rgba(249,115,22,0.04);
 }
 
 .orgchart__member-icon {
-    width: 22px;
-    height: 22px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.65rem;
-    background: var(--bg-secondary, #f1f5f9);
-    color: var(--text-muted, #94a3b8);
     flex-shrink: 0;
+    background: #f1f5f9;
+    color: #64748b;
 }
 
 .orgchart__member-icon--dan {
@@ -465,9 +550,9 @@
 }
 
 .orgchart__member-name {
-    font-size: 0.78rem;
-    font-weight: 500;
-    color: var(--text-primary, #1e293b);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #1e293b;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -476,13 +561,16 @@
 .orgchart__member-role {
     font-size: 0.65rem;
     color: #f97316;
-    font-weight: 600;
+    font-weight: 700;
+    margin-top: 0.1rem;
 }
 
-/* Glass Modal */
+/* ================================================================
+   GLASS MODAL (used by orgchart modals)
+   ================================================================ */
 .glass-modal {
-    background: var(--bg-primary, #fff);
-    border: 1px solid var(--border-color, #e2e8f0);
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
     border-radius: 20px;
     box-shadow: 0 25px 50px rgba(0,0,0,0.15);
 }
