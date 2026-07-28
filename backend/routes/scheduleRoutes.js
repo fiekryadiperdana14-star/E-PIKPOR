@@ -210,12 +210,21 @@ router.post('/generate', adminAuth, async (req, res) => {
     }
 });
 
-// PUT /api/schedules/:id — Update schedule
+// PUT /api/schedules/:id — Update schedule (full edit)
 router.put('/:id', adminAuth, async (req, res) => {
     try {
-        const { status, catatan } = req.body;
-        await db.query('UPDATE duty_schedules SET status = ?, catatan = ? WHERE id = ?',
-            [status, catatan, req.params.id]);
+        const { shift, tanggal, user_id, subnit_id, status, catatan } = req.body;
+        const fields = [];
+        const values = [];
+        if (shift !== undefined) { fields.push('shift = ?'); values.push(shift); }
+        if (tanggal !== undefined) { fields.push('tanggal = ?'); values.push(tanggal); }
+        if (user_id !== undefined) { fields.push('user_id = ?'); values.push(user_id); }
+        if (subnit_id !== undefined) { fields.push('subnit_id = ?'); values.push(subnit_id); }
+        if (status !== undefined) { fields.push('status = ?'); values.push(status); }
+        if (catatan !== undefined) { fields.push('catatan = ?'); values.push(catatan); }
+        if (fields.length === 0) return res.status(400).json({ message: 'Tidak ada data yang diupdate.' });
+        values.push(req.params.id);
+        await db.query('UPDATE duty_schedules SET ' + fields.join(', ') + ' WHERE id = ?', values);
         res.json({ message: 'Jadwal berhasil diupdate.' });
     } catch (error) {
         res.status(500).json({ message: error.message });

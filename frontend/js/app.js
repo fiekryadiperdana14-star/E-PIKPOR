@@ -10,7 +10,7 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
         .when('/dashboard', { templateUrl: 'views/dashboard.html?v=14', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=15', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=14', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=20', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=21', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=14', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/sop', { templateUrl: 'views/sop.html?v=14', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/struktur', { templateUrl: 'views/org-chart.html?v=14', controller: 'OrgChartCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
@@ -102,6 +102,7 @@ app.factory('ApiService', ['$http', function($http) {
         createSchedule: function(d) { return $http.post(b + '/schedules', d); },
         generateSchedule: function(d) { return $http.post(b + '/schedules/generate', d); },
         deleteSchedule: function(id) { return $http.delete(b + '/schedules/' + id); },
+        updateSchedule: function(id, d) { return $http.put(b + '/schedules/' + id, d); },
         getSiagaWiken: function() { return $http.get(b + '/siaga-wiken'); },
         getActiveSiaga: function() { return $http.get(b + '/siaga-wiken/active'); },
         createSiagaWiken: function(d) { return $http.post(b + '/siaga-wiken', d); },
@@ -585,6 +586,42 @@ function($scope, ApiService, $rootScope) {
         }).catch(function(err) {
             Swal.fire({ icon: 'error', title: 'Gagal', text: (err.data && err.data.message) || 'Gagal.', background: '#1e293b', color: '#fff' });
         }).finally(function() { $scope.isGenerating = false; });
+    };
+
+    // Edit Schedule
+    $scope.editForm = {};
+    $scope.openEditSchedule = function(s) {
+        $scope.editForm = {
+            id: s.id,
+            tanggal: s.tanggal ? new Date(s.tanggal) : null,
+            shift: s.shift,
+            user_id: String(s.user_id),
+            subnit_id: String(s.subnit_id || ''),
+            status: s.status || 'dijadwalkan',
+            catatan: s.catatan || ''
+        };
+        new bootstrap.Modal(document.getElementById('editScheduleModal')).show();
+    };
+    $scope.saveEditSchedule = function() {
+        var payload = {
+            shift: $scope.editForm.shift,
+            user_id: $scope.editForm.user_id,
+            subnit_id: $scope.editForm.subnit_id,
+            status: $scope.editForm.status,
+            catatan: $scope.editForm.catatan
+        };
+        if ($scope.editForm.tanggal) {
+            var dt = new Date($scope.editForm.tanggal);
+            payload.tanggal = dt.getFullYear() + '-' + String(dt.getMonth()+1).padStart(2,'0') + '-' + String(dt.getDate()).padStart(2,'0');
+        }
+        ApiService.updateSchedule($scope.editForm.id, payload).then(function(r) {
+            Swal.fire({ icon: 'success', title: 'Berhasil!', text: r.data.message, background: '#1e293b', color: '#fff', timer: 1500, showConfirmButton: false });
+            var m = bootstrap.Modal.getInstance(document.getElementById('editScheduleModal')); if(m) m.hide();
+            loadData();
+            $scope.selectedDateSchedules = [];
+        }).catch(function(err) {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: (err.data && err.data.message) || 'Gagal update.', background: '#1e293b', color: '#fff' });
+        });
     };
 
     loadData();
