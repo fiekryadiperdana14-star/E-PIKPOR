@@ -270,23 +270,23 @@ body {
 }
 
 /* Stat card color variants — Orange dominant */
-.stat-card.stat-blue::before { background: linear-gradient(90deg, var(--primary), var(--primary-light)); }
-.stat-card.stat-blue .stat-icon { background: rgba(249,115,22,0.12); color: var(--primary); }
-.stat-card.stat-blue .stat-value { color: var(--primary-light); }
+.stat-card.stat-blue::before { background: var(--primary); }
+.stat-card.stat-blue .stat-icon { background: rgba(249,115,22,0.1); color: var(--primary); }
+.stat-card.stat-blue .stat-value { color: var(--white); }
 
-.stat-card.stat-yellow::before { background: linear-gradient(90deg, var(--warning), var(--warning-light)); }
-.stat-card.stat-yellow .stat-icon { background: rgba(234,179,8,0.12); color: var(--warning); }
-.stat-card.stat-yellow .stat-value { color: var(--warning-light); }
+.stat-card.stat-yellow::before { background: var(--text-secondary); }
+.stat-card.stat-yellow .stat-icon { background: rgba(255,255,255,0.05); color: var(--text-secondary); }
+.stat-card.stat-yellow .stat-value { color: var(--white); }
 
-.stat-card.stat-purple::before { background: linear-gradient(90deg, var(--primary-dark), var(--primary)); }
-.stat-card.stat-purple .stat-icon { background: rgba(249,115,22,0.12); color: var(--primary-dark); }
-.stat-card.stat-purple .stat-value { color: var(--primary); }
+.stat-card.stat-purple::before { background: var(--primary-dark); }
+.stat-card.stat-purple .stat-icon { background: rgba(249,115,22,0.15); color: var(--primary-dark); }
+.stat-card.stat-purple .stat-value { color: var(--white); }
 
-.stat-card.stat-green::before { background: linear-gradient(90deg, var(--success), var(--success-light)); }
-.stat-card.stat-green .stat-icon { background: rgba(34,197,94,0.12); color: var(--success); }
-.stat-card.stat-green .stat-value { color: var(--success-light); }
+.stat-card.stat-green::before { background: var(--white); }
+.stat-card.stat-green .stat-icon { background: rgba(255,255,255,0.1); color: var(--white); }
+.stat-card.stat-green .stat-value { color: var(--white); }
 
-.stat-card.stat-red::before { background: linear-gradient(90deg, var(--danger), var(--danger-light)); }
+.stat-card.stat-red::before { background: var(--primary-darker); }
 
 /* ============================================
    Form Controls
@@ -678,9 +678,9 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
     font-weight: 600;
     font-size: 0.85rem;
 }
-.zona-h-timur { background: rgba(34,197,94,0.08); color: var(--success-light); border-bottom: 2px solid var(--success); }
-.zona-h-tengah { background: rgba(249,115,22,0.08); color: var(--primary-light); border-bottom: 2px solid var(--primary); }
-.zona-h-barat { background: rgba(234,179,8,0.08); color: var(--warning-light); border-bottom: 2px solid var(--warning); }
+.zona-h-timur { background: rgba(255,255,255,0.03); color: var(--white); border-bottom: 2px solid var(--text-muted); }
+.zona-h-tengah { background: rgba(249,115,22,0.08); color: var(--primary); border-bottom: 2px solid var(--primary); }
+.zona-h-barat { background: rgba(255,255,255,0.05); color: var(--white); border-bottom: 2px solid var(--text-secondary); }
 .zona-body { padding: 1rem; text-align: center; }
 .zona-stat-val { font-size: 2rem; font-weight: 800; color: var(--text-primary); display: block; }
 .zona-stat-lbl { font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }

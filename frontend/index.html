@@ -36,38 +36,38 @@
             <div class="offcanvas-body d-flex flex-column px-3 py-4 overflow-y-auto">
                 <ul class="navbar-nav flex-column w-100 gap-2 mb-auto">
                     <li class="nav-item">
-                        <a class="nav-link w-100" href="#!/dashboard" data-bs-dismiss="offcanvas" data-bs-target="#sidebarNav"><i class="bi bi-speedometer2 me-3"></i>Dashboard</a>
+                        <a class="nav-link w-100" href="#!/dashboard" ng-class="{'active': isActive('/dashboard')}"><i class="bi bi-speedometer2 me-3"></i>Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link w-100" href="#!/buat-laporan" data-bs-dismiss="offcanvas" data-bs-target="#sidebarNav"><i class="bi bi-file-earmark-plus me-3"></i>Buat Laporan</a>
+                        <a class="nav-link w-100" href="#!/buat-laporan" ng-class="{'active': isActive('/buat-laporan')}"><i class="bi bi-file-earmark-plus me-3"></i>Buat Laporan</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link w-100" href="#!/pelimpahan" data-bs-dismiss="offcanvas" data-bs-target="#sidebarNav"><i class="bi bi-arrow-left-right me-3"></i>Estafet Laporan</a>
+                        <a class="nav-link w-100" href="#!/pelimpahan" ng-class="{'active': isActive('/pelimpahan')}"><i class="bi bi-arrow-left-right me-3"></i>Estafet Laporan</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link w-100" href="#!/jadwal-piket" data-bs-dismiss="offcanvas" data-bs-target="#sidebarNav"><i class="bi bi-calendar3 me-3"></i>Jadwal Piket</a>
+                        <a class="nav-link w-100" href="#!/jadwal-piket" ng-class="{'active': isActive('/jadwal-piket')}"><i class="bi bi-calendar3 me-3"></i>Jadwal Piket</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link w-100" href="#!/siaga-wiken" data-bs-dismiss="offcanvas" data-bs-target="#sidebarNav">
+                        <a class="nav-link w-100" href="#!/siaga-wiken" ng-class="{'active': isActive('/siaga-wiken')}">
                             <i class="bi bi-shield-exclamation me-3"></i>Siaga Wiken
                             <span class="badge bg-danger rounded-pill ms-2 pulse-anim" ng-if="globalStats.isSiagaWiken" style="font-size: 0.6rem;">AKTIF</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link w-100" href="#!/sop" data-bs-dismiss="offcanvas" data-bs-target="#sidebarNav"><i class="bi bi-journal-check me-3"></i>SOP Gakkum</a>
+                        <a class="nav-link w-100" href="#!/sop" ng-class="{'active': isActive('/sop')}"><i class="bi bi-journal-check me-3"></i>SOP Gakkum</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link w-100" href="#!/struktur" data-bs-dismiss="offcanvas" data-bs-target="#sidebarNav"><i class="bi bi-diagram-3 me-3"></i>Struktur Unit</a>
+                        <a class="nav-link w-100" href="#!/struktur" ng-class="{'active': isActive('/struktur')}"><i class="bi bi-diagram-3 me-3"></i>Struktur Unit</a>
                     </li>
                     
                     <li class="nav-item mt-3 pt-3 border-top border-secondary border-opacity-25" ng-if="user.role === 'admin' || user.role === 'kanit'">
                         <span class="nav-category d-block mb-2 text-muted fw-bold" style="font-size: 0.7rem; letter-spacing: 1px; padding-left: 1rem;">ADMINISTRATOR</span>
                     </li>
                     <li class="nav-item" ng-if="user.role === 'admin' || user.role === 'kanit'">
-                        <a class="nav-link w-100" href="#!/users" data-bs-dismiss="offcanvas" data-bs-target="#sidebarNav"><i class="bi bi-people me-3"></i>Manajemen Akun</a>
+                        <a class="nav-link w-100" href="#!/users" ng-class="{'active': isActive('/users')}"><i class="bi bi-people me-3"></i>Manajemen Akun</a>
                     </li>
                     <li class="nav-item" ng-if="user.role === 'admin' || user.role === 'kanit'">
-                        <a class="nav-link w-100" href="#!/kalender-libur" data-bs-dismiss="offcanvas" data-bs-target="#sidebarNav"><i class="bi bi-calendar-heart me-3"></i>Kalender Libur</a>
+                        <a class="nav-link w-100" href="#!/kalender-libur" ng-class="{'active': isActive('/kalender-libur')}"><i class="bi bi-calendar-heart me-3"></i>Kalender Libur</a>
                     </li>
                 </ul>
                 
@@ -82,7 +82,7 @@
                             <div class="text-muted" style="font-size: 0.75rem;">{{ user.pangkat }} - {{ user.nrp }}</div>
                         </div>
                     </div>
-                    <button class="btn btn-outline-danger w-100 d-flex justify-content-center align-items-center gap-2" ng-click="logout()" data-bs-dismiss="offcanvas" data-bs-target="#sidebarNav">
+                    <button class="btn btn-outline-danger w-100 d-flex justify-content-center align-items-center gap-2" ng-click="logout()">
                         <i class="bi bi-box-arrow-right"></i> Logout
                     </button>
                 </div>

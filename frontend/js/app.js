@@ -127,6 +127,11 @@ function($scope, $window, $location, $rootScope, ApiService) {
     if ($rootScope.isLoggedIn()) {
         ApiService.getStats().then(function(r) { $scope.globalStats = r.data; });
     }
+    
+    $scope.isActive = function(path) {
+        return $location.path() === path;
+    };
+    
     $scope.logout = function() {
         Swal.fire({ title: 'Logout', text: 'Apakah Anda yakin ingin keluar?', icon: 'question',
             showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#64748b',
