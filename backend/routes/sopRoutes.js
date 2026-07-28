@@ -7,8 +7,12 @@ const path = require('path');
 const multer = require('multer');
 
 const uploadDir = path.join(__dirname, '../uploads/sop');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
+try {
+    if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+    }
+} catch (error) {
+    console.warn('Vercel read-only FS warning:', error.message);
 }
 
 const storage = multer.diskStorage({
