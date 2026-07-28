@@ -7,15 +7,15 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
     $routeProvider
         .when('/landing', { templateUrl: 'views/landing.html' })
         .when('/login', { templateUrl: 'views/login.html', controller: 'LoginCtrl' })
-        .when('/dashboard', { templateUrl: 'views/dashboard.html?v=6', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=6', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=6', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=6', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=6', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/sop', { templateUrl: 'views/sop.html?v=6', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/struktur', { templateUrl: 'views/org-chart.html?v=6', controller: 'OrgChartCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/users', { templateUrl: 'views/user-management.html?v=6', controller: 'UserManagementCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/kalender-libur', { templateUrl: 'views/holidays.html?v=6', controller: 'HolidayCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/dashboard', { templateUrl: 'views/dashboard.html?v=7', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=7', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=7', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=7', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=7', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/sop', { templateUrl: 'views/sop.html?v=7', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/struktur', { templateUrl: 'views/org-chart.html?v=7', controller: 'OrgChartCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/users', { templateUrl: 'views/user-management.html?v=7', controller: 'UserManagementCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/kalender-libur', { templateUrl: 'views/holidays.html?v=7', controller: 'HolidayCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .otherwise({ redirectTo: '/landing' });
 
     $httpProvider.interceptors.push(['$q', '$window', '$location', function($q, $window, $location) {
@@ -669,6 +669,56 @@ function($scope, ApiService) {
             $scope.getSubnit = function(kode) {
                 return $scope.orgSubnits.find(function(s) { return s.kode === kode; });
             };
+        });
+    };
+
+    // Load subnit and regu lists for creation modal
+    $scope.subnitList = [];
+    $scope.reguList = [];
+    ApiService.getSubnit().then(function(r) { $scope.subnitList = r.data; });
+    ApiService.getRegu().then(function(r) { $scope.reguList = r.data; });
+
+    // --- Add Member Modal ---
+    $scope.memberForm = {};
+    $scope.modalTitle = 'Tambah Personel Baru';
+
+    $scope.openAddMemberModal = function(type, kode) {
+        var defaultRole = 'anggota';
+        var defaultSubnitId = '';
+        
+        if (type === 'bamin') {
+            defaultRole = 'bamin';
+            $scope.modalTitle = 'Tambah Anggota BAMIN GAKKUM';
+        } else if (type === 'subnit') {
+            $scope.modalTitle = 'Tambah Anggota Subnit ' + kode;
+            var found = $scope.subnitList.find(function(s) { return s.kode === kode; });
+            if (found) defaultSubnitId = String(found.id);
+        }
+
+        $scope.memberForm = {
+            username: '',
+            password: '123',
+            nama_lengkap: '',
+            pangkat: '',
+            nrp: '',
+            role: defaultRole,
+            subnit_id: defaultSubnitId,
+            regu_id: ''
+        };
+
+        new bootstrap.Modal(document.getElementById('orgUserCreateModal')).show();
+    };
+
+    $scope.saveNewMember = function() {
+        if (!$scope.memberForm.username) {
+            $scope.memberForm.username = 'usr_' + Date.now();
+        }
+        ApiService.createUser($scope.memberForm).then(function() {
+            var m = bootstrap.Modal.getInstance(document.getElementById('orgUserCreateModal')); if(m) m.hide();
+            Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Anggota baru berhasil ditambahkan.', timer: 1500, showConfirmButton: false });
+            $scope.loadOrgChart();
+        }).catch(function(err) {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: (err.data && err.data.message) || 'Gagal menambahkan anggota.' });
         });
     };
 
