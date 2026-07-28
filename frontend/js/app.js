@@ -9,7 +9,7 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
         .when('/login', { templateUrl: 'views/login.html', controller: 'LoginCtrl' })
         .when('/dashboard', { templateUrl: 'views/dashboard.html?v=36', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=15', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=14', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=40', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=39', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=14', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/sop', { templateUrl: 'views/sop.html?v=14', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
@@ -380,13 +380,26 @@ function($scope, ApiService, $rootScope) {
     function load() { ApiService.getHandoversPenerima($rootScope.user.id).then(function(r) { $scope.handovers = r.data; }); }
     load();
     $scope.updateStatus = function(h, status) {
-        Swal.fire({ title: 'Konfirmasi', text: 'Apakah yakin ' + (status === 'diterima' ? 'menerima' : 'menolak') + ' pelimpahan?', icon: 'warning',
-            showCancelButton: true, confirmButtonColor: status === 'diterima' ? '#3b82f6' : '#ef4444', cancelButtonColor: '#64748b',
-            confirmButtonText: status === 'diterima' ? 'Terima' : 'Tolak', cancelButtonText: 'Batal', background: '#1e293b', color: '#fff'
+        var actionText = status === 'diterima' ? 'ACC & Menerima' : 'Menolak';
+        Swal.fire({
+            title: 'Konfirmasi ACC Pelimpahan',
+            text: 'Apakah Anda yakin ingin ' + actionText + ' pelimpahan laporan "' + h.judul + '"?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: status === 'diterima' ? '#f97316' : '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: status === 'diterima' ? 'Ya, ACC (Terima)' : 'Tolak',
+            cancelButtonText: 'Batal'
         }).then(function(result) {
             if (result.isConfirmed) {
                 ApiService.updateHandoverStatus(h.id, { status_terima: status, report_id: h.report_id }).then(function(r) {
-                    Swal.fire({ icon: 'success', title: 'Berhasil', text: r.data.message, background: '#1e293b', color: '#fff', timer: 2000, showConfirmButton: false });
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil',
+                        text: r.data.message,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
                     load();
                 });
             }

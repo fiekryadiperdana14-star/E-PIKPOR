@@ -32,18 +32,35 @@ router.post('/', async (req, res) => {
     }
 });
 
-// Get handovers intended for a specific team (regu_penerima_id)
+// Get handovers intended for a specific user / subnit or all (if admin/kanit)
 router.get('/penerima/:id', async (req, res) => {
     try {
-        const [handovers] = await db.query(`
-            SELECT h.*, r.judul, r.lokasi, r.waktu_kejadian, 
+        // Find user role & subnit
+        const [u] = await db.query('SELECT role, subnit_id FROM users WHERE id = ?', [req.params.id]);
+        const user = u[0] || {};
+        
+        let query = `
+            SELECT h.*, r.judul, r.lokasi, r.waktu_kejadian, r.kategori,
                    CONCAT(u_pengirim.pangkat, ' ', u_pengirim.nama_lengkap) as pengirim 
             FROM handovers h
             JOIN reports r ON h.report_id = r.id
             JOIN users u_pengirim ON h.regu_pengirim_id = u_pengirim.id
-            WHERE h.regu_penerima_id = ?
-            ORDER BY h.waktu_pelimpahan DESC
-        `, [req.params.id]);
+        `;
+        let params = [];
+
+        if (user.role === 'admin' || user.role === 'kanit') {
+            query += ` ORDER BY h.waktu_pelimpahan DESC`;
+        } else if (user.subnit_id) {
+            query += ` JOIN users u_penerima ON h.regu_penerima_id = u_penerima.id 
+                       WHERE u_penerima.subnit_id = ? OR h.regu_penerima_id = ? 
+                       ORDER BY h.waktu_pelimpahan DESC`;
+            params = [user.subnit_id, req.params.id];
+        } else {
+            query += ` WHERE h.regu_penerima_id = ? ORDER BY h.waktu_pelimpahan DESC`;
+            params = [req.params.id];
+        }
+
+        const [handovers] = await db.query(query, params);
         res.json(handovers);
     } catch (error) {
         res.status(500).json({ message: error.message });

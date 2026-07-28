@@ -1,66 +1,98 @@
 <div class="container-fluid px-0">
-    <h2 class="page-title mb-4 animate-fade-in-up"><i class="bi bi-arrow-left-right"></i> Pelimpahan Masuk (Estafet)</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="page-title mb-0 animate-fade-in-up"><i class="bi bi-arrow-left-right text-primary me-2"></i> Pelimpahan Masuk (Estafet Laporan)</h2>
+    </div>
     
-    <div class="glass-card-static animate-fade-in-up">
-        <div class="section-title"><i class="bi bi-inbox-fill"></i> Menunggu Konfirmasi Regu Anda</div>
+    <div class="glass-card-static animate-fade-in-up p-4" style="background: #ffffff; border-radius: 16px;">
+        <div class="section-title fw-extrabold mb-4 pb-2 border-bottom" style="font-size: 1.1rem; color: #0f172a;">
+            <i class="bi bi-inbox-fill text-warning me-2 fs-5"></i> Daftar Pelimpahan Masuk (Memerlukan ACC Kasubnit)
+        </div>
         
-        <div class="row g-3">
-            <div class="col-md-6 col-lg-4" ng-repeat="h in handovers | startFrom:(currentPage-1)*pageSize | limitTo:pageSize track by h.id">
-                <div class="handover-card animate-fade-in-up">
-                    <!-- Header -->
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <h6 class="fw-bold mb-0" style="color: var(--primary-light); font-size: 0.95rem;">{{ h.judul }}</h6>
-                        <span class="badge-status" 
-                            ng-class="{
-                                'badge-menunggu': h.status_terima === 'menunggu', 
-                                'badge-diterima': h.status_terima === 'diterima', 
-                                'badge-ditolak': h.status_terima === 'ditolak'
-                            }">
-                            {{ h.status_terima | uppercase }}
+        <div class="row g-4">
+            <div class="col-12 col-md-6 col-xl-4" ng-repeat="h in handovers | startFrom:(currentPage-1)*pageSize | limitTo:pageSize track by h.id">
+                <div class="handover-card animate-fade-in-up h-100 p-4 d-flex flex-column rounded-4 border shadow-sm" style="background: #ffffff; border-color: rgba(249, 115, 22, 0.25) !important;">
+                    <!-- Header Badges -->
+                    <div class="d-flex justify-content-between align-items-center mb-3 border-bottom pb-2">
+                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-bold px-2.5 py-1.5 rounded-pill" style="font-size: 0.75rem;">
+                            <i class="bi bi-tag-fill me-1"></i>{{ h.kategori || 'Estafet Laporan' }}
+                        </span>
+                        <span class="badge" ng-class="{
+                            'bg-warning-subtle text-warning-emphasis border border-warning-subtle': h.status_terima === 'menunggu',
+                            'bg-success-subtle text-success border border-success-subtle': h.status_terima === 'diterima',
+                            'bg-danger-subtle text-danger border border-danger-subtle': h.status_terima === 'ditolak'
+                        }" style="font-size: 0.78rem; padding: 0.35rem 0.75rem; border-radius: 20px;">
+                            <i class="bi" ng-class="{
+                                'bi-hourglass-split me-1': h.status_terima === 'menunggu',
+                                'bi-check-circle-fill me-1': h.status_terima === 'diterima',
+                                'bi-x-circle-fill me-1': h.status_terima === 'ditolak'
+                            }"></i> {{ h.status_terima === 'menunggu' ? 'MENUNGGU ACC KASUBNIT' : (h.status_terima | uppercase) }}
                         </span>
                     </div>
 
-                    <!-- Info -->
-                    <div class="mb-2" style="font-size:0.8rem; color: var(--text-muted);">
-                        <div><i class="bi bi-clock me-1"></i>{{ h.waktu_kejadian | date:'dd MMM yyyy, HH:mm' }} WIB</div>
-                        <div><i class="bi bi-geo-alt me-1"></i>{{ h.lokasi }}</div>
+                    <!-- Title -->
+                    <h5 class="fw-extrabold mb-3" style="color: #0f172a; font-size: 1.05rem; line-height: 1.4;">{{ h.judul }}</h5>
+
+                    <!-- Info Box -->
+                    <div class="p-3 mb-3 rounded-3" style="background: #f8fafc; border: 1px solid #e2e8f0; font-size: 0.85rem;">
+                        <div class="mb-2 text-secondary d-flex align-items-center">
+                            <i class="bi bi-clock-history text-primary me-2 fs-6"></i>
+                            <span><strong>Waktu Kejadian:</strong> {{ h.waktu_kejadian | date:'dd MMM yyyy, HH:mm' }} WIB</span>
+                        </div>
+                        <div class="text-secondary d-flex align-items-center">
+                            <i class="bi bi-geo-alt-fill text-danger me-2 fs-6"></i>
+                            <span><strong>Lokasi:</strong> {{ h.lokasi }}</span>
+                        </div>
                     </div>
 
-                    <!-- Notes -->
-                    <div class="handover-notes">
-                        <small class="d-block" style="color: var(--text-muted); font-size: 0.7rem;">Dari: <strong style="color: var(--warning-light);">{{ h.pengirim }}</strong></small>
-                        <small class="d-block mt-1" style="color: var(--text-muted); font-size: 0.7rem;">Catatan Estafet:</small>
-                        <p class="mb-0" style="font-size: 0.85rem; font-style: italic; color: var(--text-secondary);">"{{ h.catatan || 'Tidak ada catatan tambahan.' }}"</p>
+                    <!-- Sender & Notes Container -->
+                    <div class="p-3 mb-3 rounded-3" style="background: #fff7ed; border: 1px solid #fed7aa; font-size: 0.85rem;">
+                        <div class="mb-2 text-dark">
+                            <i class="bi bi-person-circle text-primary me-1"></i><strong>Dari (Pengirim):</strong> 
+                            <span class="fw-bold text-dark ms-1">{{ h.pengirim }}</span>
+                        </div>
+                        <div class="pt-2 border-top border-warning-subtle text-dark">
+                            <i class="bi bi-chat-quote-fill text-warning me-1"></i><strong>Catatan Estafet:</strong>
+                            <p class="mb-0 mt-1 fst-italic text-secondary" style="font-size: 0.88rem; line-height: 1.5;">"{{ h.catatan || 'Tidak ada catatan tambahan.' }}"</p>
+                        </div>
                     </div>
                     
-                    <!-- Actions -->
-                    <div class="mt-auto pt-2 d-flex gap-2" ng-if="h.status_terima === 'menunggu'">
-                        <button class="btn btn-outline-danger btn-sm flex-fill" ng-click="updateStatus(h, 'ditolak')">
-                            <i class="bi bi-x-lg me-1"></i>Tolak
-                        </button>
-                        <button class="btn btn-primary btn-sm flex-fill" ng-click="updateStatus(h, 'diterima')">
-                            <i class="bi bi-check-lg me-1"></i>Terima
-                        </button>
-                    </div>
+                    <!-- Actions: ACC restrict to Kasubnit / Kanit / Admin -->
+                    <div class="mt-auto pt-3 border-top">
+                        <div class="d-flex gap-2" ng-if="h.status_terima === 'menunggu' && (user.role === 'kasubnit' || user.role === 'kanit' || user.role === 'admin')">
+                            <button class="btn btn-outline-danger btn-sm flex-fill fw-bold py-2 shadow-sm rounded-3" ng-click="updateStatus(h, 'ditolak')">
+                                <i class="bi bi-x-circle me-1"></i>Tolak
+                            </button>
+                            <button class="btn btn-primary btn-sm flex-fill fw-bold py-2 shadow-sm rounded-3" ng-click="updateStatus(h, 'diterima')">
+                                <i class="bi bi-check-circle-fill me-1"></i>ACC (Terima)
+                            </button>
+                        </div>
 
-                    <div class="mt-auto pt-2 text-center" ng-if="h.status_terima !== 'menunggu'">
-                        <small class="text-muted"><i class="bi bi-check-circle me-1"></i>Telah diproses</small>
+                        <!-- Restrict Notice for Regular Anggota / Danregu -->
+                        <div class="text-center p-2 rounded-3 bg-light text-muted fw-semibold" style="font-size: 0.78rem;" ng-if="h.status_terima === 'menunggu' && user.role !== 'kasubnit' && user.role !== 'kanit' && user.role !== 'admin'">
+                            <i class="bi bi-shield-lock-fill text-warning me-1"></i>Menunggu ACC dari Kasubnit / Kanit
+                        </div>
+
+                        <div class="text-center p-2 rounded-3" ng-class="{'bg-success-subtle text-success border border-success-subtle': h.status_terima === 'diterima', 'bg-danger-subtle text-danger border border-danger-subtle': h.status_terima === 'ditolak'}" ng-if="h.status_terima !== 'menunggu'" style="font-size: 0.82rem; font-weight: 600;">
+                            <i class="bi" ng-class="{'bi-check-all me-1': h.status_terima === 'diterima', 'bi-x-octagon me-1': h.status_terima === 'ditolak'}"></i>
+                            Telah {{ h.status_terima === 'diterima' ? 'di-ACC & Diterima' : 'Ditolak' }}
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="empty-state" ng-if="handovers.length === 0">
-            <i class="bi bi-inbox"></i>
-            <p>Belum ada laporan yang dilimpahkan ke regu Anda.<br>Laporan yang dilimpahkan oleh regu lain akan muncul di sini.</p>
+        <div class="empty-state py-5" ng-if="handovers.length === 0">
+            <i class="bi bi-inbox fs-1 text-muted opacity-50 mb-3 d-block"></i>
+            <h6 class="fw-bold text-dark mb-1">Belum Ada Pelimpahan Masuk</h6>
+            <p class="text-muted fs-7">Laporan yang dilimpahkan (estafet) oleh unit lain akan muncul di sini untuk di-ACC oleh Kasubnit.</p>
         </div>
 
-        <!-- Pagination Controls for Handovers -->
-        <div class="d-flex justify-content-between align-items-center mt-4" ng-if="handovers.length > pageSize">
-            <small class="text-muted">Menampilkan {{ (currentPage-1)*pageSize + 1 }} - {{ (currentPage*pageSize) > handovers.length ? handovers.length : (currentPage*pageSize) }} dari {{ handovers.length }}</small>
+        <!-- Pagination Controls -->
+        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top" ng-if="handovers.length > pageSize">
+            <small class="text-muted fw-medium">Menampilkan {{ (currentPage-1)*pageSize + 1 }} - {{ (currentPage*pageSize) > handovers.length ? handovers.length : (currentPage*pageSize) }} dari {{ handovers.length }} entri</small>
             <div class="btn-group">
-                <button class="btn btn-sm btn-outline-secondary" ng-disabled="currentPage == 1" ng-click="currentPage = currentPage - 1"><i class="bi bi-chevron-left"></i></button>
-                <button class="btn btn-sm btn-outline-secondary" ng-disabled="currentPage >= handovers.length/pageSize" ng-click="currentPage = currentPage + 1"><i class="bi bi-chevron-right"></i></button>
+                <button class="btn btn-sm btn-outline-secondary" ng-disabled="currentPage == 1" ng-click="currentPage = currentPage - 1"><i class="bi bi-chevron-left"></i> Prev</button>
+                <button class="btn btn-sm btn-outline-secondary" ng-disabled="currentPage >= handovers.length/pageSize" ng-click="currentPage = currentPage + 1">Next <i class="bi bi-chevron-right"></i></button>
             </div>
         </div>
     </div>
