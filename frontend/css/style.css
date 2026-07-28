@@ -536,14 +536,14 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
 /* ============================================
    Modal
    ============================================ */
-.modal-content.glass-modal {
-    background: rgba(255, 255, 255, 0.95);
+.modal-content.glass-modal, .modal-content {
+    background: rgba(255, 255, 255, 0.95) !important;
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid var(--border-orange);
+    border: 1px solid var(--border-orange) !important;
     border-radius: var(--radius-lg);
-    color: #000000;
-    box-shadow: var(--shadow-orange-lg);
+    color: #000000 !important;
+    box-shadow: var(--shadow-orange-lg) !important;
 }
 .modal-content.glass-modal .modal-header {
     border-bottom: 1px solid var(--border-color);
