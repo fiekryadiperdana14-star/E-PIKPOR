@@ -270,29 +270,31 @@ router.post('/generate', adminAuth, async (req, res) => {
                         }
                     }
 
-                    // 2. For each regu in this subnit, assign 2 members
-                    for (const regu of subnitRegus) {
-                        const reguMembers = byRegu[regu.id] ? byRegu[regu.id].members : [];
-                        if (reguMembers.length === 0) continue;
+                    // 2. Pick ONLY 1 Regu for this shift from the available regus in this subnit (rotates between regus)
+                    if (subnitRegus.length > 0) {
+                        const reguIdx = (dayCounter * shifts.length + shiftIdx) % subnitRegus.length;
+                        const selectedRegu = subnitRegus[reguIdx];
+                        const reguMembers = byRegu[selectedRegu.id] ? byRegu[selectedRegu.id].members : [];
 
-                        const membersToAssign = Math.min(2, reguMembers.length);
+                        if (reguMembers.length > 0) {
+                            const membersToAssign = Math.min(2, reguMembers.length);
+                            for (let count = 0; count < membersToAssign; count++) {
+                                const idx = reguRotation[selectedRegu.id] % reguMembers.length;
+                                const member = reguMembers[idx];
+                                reguRotation[selectedRegu.id]++;
 
-                        for (let count = 0; count < membersToAssign; count++) {
-                            const idx = reguRotation[regu.id] % reguMembers.length;
-                            const member = reguMembers[idx];
-                            reguRotation[regu.id]++;
-
-                            const [existing] = await db.query(
-                                'SELECT id FROM duty_schedules WHERE tanggal = ? AND shift = ? AND user_id = ?',
-                                [dateStr, shiftName, member.id]
-                            );
-                            if (existing.length === 0) {
-                                await db.query(
-                                    `INSERT INTO duty_schedules (tanggal, shift, user_id, subnit_id, regu_id, tipe, created_by) 
-                                     VALUES (?, ?, ?, ?, ?, ?, ?)`,
-                                    [dateStr, shiftName, member.id, subnit.id, regu.id, tipe, req.user.id]
+                                const [existing] = await db.query(
+                                    'SELECT id FROM duty_schedules WHERE tanggal = ? AND shift = ? AND user_id = ?',
+                                    [dateStr, shiftName, member.id]
                                 );
-                                inserted++;
+                                if (existing.length === 0) {
+                                    await db.query(
+                                        `INSERT INTO duty_schedules (tanggal, shift, user_id, subnit_id, regu_id, tipe, created_by) 
+                                         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                                        [dateStr, shiftName, member.id, subnit.id, selectedRegu.id, tipe, req.user.id]
+                                    );
+                                    inserted++;
+                                }
                             }
                         }
                     }
@@ -303,7 +305,7 @@ router.post('/generate', adminAuth, async (req, res) => {
             dayCounter++;
         }
 
-        res.status(201).json({ message: `Jadwal berhasil di-generate: ${inserted} entri baru. (2 orang per Regu + Kasubnit/Kanit per shift per Zona)`, count: inserted });
+        res.status(201).json({ message: `Jadwal berhasil di-generate: ${inserted} entri baru. (1 Regu per shift per Zona + Leader)`, count: inserted });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
