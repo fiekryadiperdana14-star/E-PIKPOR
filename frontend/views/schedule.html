@@ -164,65 +164,60 @@
                         <th style="width:6%;" ng-if="user.role === 'admin' || user.role === 'kanit'" class="text-center">Aksi</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Iterate each day, then each schedule entry as a flat row -->
-                    <ng-container ng-repeat="day in week.days">
-                        <tr ng-repeat="s in day.all" ng-style="{'background': day.isHoliday ? '#fee2e2' : (day.isWeekend ? '#fef9c3' : '#ffffff')}">
-                            <!-- No -->
-                            <td class="row-num">{{ $parent.$index * 100 + $index + 1 }}</td>
-                            <!-- Hari & Tanggal -->
-                            <td>
-                                <strong style="color: #1e293b;">{{ day.dayName }}</strong>, <span style="color: #ea580c; font-weight: 800;">{{ day.dayNum }}</span> {{ monthNames[selectedMonth-1] }}
-                                <div ng-if="day.isHoliday" style="margin-top: 2px;"><span class="lbl lbl-libur" style="font-size: 0.65rem !important;">{{ day.holidayName }}</span></div>
-                                <div ng-if="day.isWeekend && !day.isHoliday" style="margin-top: 2px;"><span class="lbl lbl-wiken" style="font-size: 0.65rem !important; background: #eab308 !important; color: #000 !important;">SIAGA</span></div>
-                            </td>
-                            <!-- Shift -->
-                            <td>
-                                <span class="lbl lbl-pagi" ng-if="s.shift==='Pagi'"><i class="bi bi-sunrise"></i> Pagi</span>
-                                <span class="lbl lbl-sore" ng-if="s.shift==='Sore'"><i class="bi bi-sun"></i> Sore</span>
-                                <span class="lbl lbl-malam" ng-if="s.shift==='Malam'"><i class="bi bi-moon-stars"></i> Malam</span>
-                            </td>
-                            <!-- Nama -->
-                            <td><strong style="color: #000;">{{ s.pangkat }} {{ s.nama_lengkap }}</strong></td>
-                            <!-- Subnit -->
-                            <td>
-                                <span class="lbl lbl-timur" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Timur')>=0">{{ s.subnit_nama }}</span>
-                                <span class="lbl lbl-tengah" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Tengah')>=0">{{ s.subnit_nama }}</span>
-                                <span class="lbl lbl-barat" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Barat')>=0">{{ s.subnit_nama }}</span>
-                            </td>
-                            <!-- Regu -->
-                            <td><span class="lbl lbl-regu">{{ s.regu_nama || '-' }}</span></td>
-                            <!-- Tipe -->
-                            <td>
-                                <span class="lbl lbl-reguler" ng-if="s.tipe==='reguler'">Reguler</span>
-                                <span class="lbl lbl-wiken" ng-if="s.tipe==='wiken'">Wiken</span>
-                                <span class="lbl lbl-libur" ng-if="s.tipe==='libur_nasional'">Libur</span>
-                            </td>
-                            <!-- Status -->
-                            <td>
-                                <span class="lbl lbl-dijadwalkan" ng-if="s.status==='dijadwalkan'">Dijadwalkan</span>
-                                <span class="lbl lbl-hadir" ng-if="s.status==='hadir'">Hadir</span>
-                                <span class="lbl lbl-tidak-hadir" ng-if="s.status==='tidak_hadir'">Tdk Hadir</span>
-                            </td>
-                            <!-- Aksi -->
-                            <td ng-if="user.role === 'admin' || user.role === 'kanit'" class="text-center">
-                                <div class="d-flex gap-1 justify-content-center">
-                                    <button class="btn-edit" ng-click="openEditSchedule(s)" title="Edit"><i class="bi bi-pencil-fill"></i></button>
-                                    <button class="btn-hapus" ng-click="deleteSchedule(s.id)" title="Hapus"><i class="bi bi-trash3-fill"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- If day has no schedules at all, show empty row -->
-                        <tr ng-if="day.all.length === 0" style="background: #f8fafc;">
-                            <td class="row-num">-</td>
-                            <td>
-                                <strong style="color: #1e293b;">{{ day.dayName }}</strong>, <span style="color: #ea580c; font-weight: 800;">{{ day.dayNum }}</span> {{ monthNames[selectedMonth-1] }}
-                            </td>
-                            <td colspan="6" ng-if="user.role === 'admin' || user.role === 'kanit'" class="text-center" style="color: #94a3b8; font-style: italic;">— Belum ada jadwal —</td>
-                            <td colspan="5" ng-if="user.role !== 'admin' && user.role !== 'kanit'" class="text-center" style="color: #94a3b8; font-style: italic;">— Belum ada jadwal —</td>
-                            <td ng-if="user.role === 'admin' || user.role === 'kanit'"></td>
-                        </tr>
-                    </ng-container>
+                <tbody ng-repeat="day in week.days">
+                    <tr ng-repeat="s in day.all" ng-style="{'background': day.isHoliday ? '#fee2e2' : (day.isWeekend ? '#fef9c3' : '#ffffff')}">
+                        <!-- No -->
+                        <td class="row-num">{{ day.dayNum }}</td>
+                        <!-- Hari & Tanggal -->
+                        <td>
+                            <strong style="color: #1e293b;">{{ day.dayName }}</strong>, <span style="color: #ea580c; font-weight: 800;">{{ day.dayNum }}</span> {{ monthNames[selectedMonth-1] }}
+                            <div ng-if="day.isHoliday" style="margin-top: 2px;"><span class="lbl lbl-libur" style="font-size: 0.65rem !important;">{{ day.holidayName }}</span></div>
+                            <div ng-if="day.isWeekend && !day.isHoliday" style="margin-top: 2px;"><span class="lbl lbl-wiken" style="font-size: 0.65rem !important; background: #eab308 !important; color: #000 !important;">SIAGA</span></div>
+                        </td>
+                        <!-- Shift -->
+                        <td>
+                            <span class="lbl lbl-pagi" ng-if="s.shift==='Pagi'"><i class="bi bi-sunrise"></i> Pagi</span>
+                            <span class="lbl lbl-sore" ng-if="s.shift==='Sore'"><i class="bi bi-sun"></i> Sore</span>
+                            <span class="lbl lbl-malam" ng-if="s.shift==='Malam'"><i class="bi bi-moon-stars"></i> Malam</span>
+                        </td>
+                        <!-- Nama -->
+                        <td><strong style="color: #000;">{{ s.pangkat }} {{ s.nama_lengkap }}</strong></td>
+                        <!-- Subnit -->
+                        <td>
+                            <span class="lbl lbl-timur" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Timur')>=0">{{ s.subnit_nama }}</span>
+                            <span class="lbl lbl-tengah" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Tengah')>=0">{{ s.subnit_nama }}</span>
+                            <span class="lbl lbl-barat" ng-if="s.subnit_nama && s.subnit_nama.indexOf('Barat')>=0">{{ s.subnit_nama }}</span>
+                        </td>
+                        <!-- Regu -->
+                        <td><span class="lbl lbl-regu">{{ s.regu_nama || '-' }}</span></td>
+                        <!-- Tipe -->
+                        <td>
+                            <span class="lbl lbl-reguler" ng-if="s.tipe==='reguler'">Reguler</span>
+                            <span class="lbl lbl-wiken" ng-if="s.tipe==='wiken'">Wiken</span>
+                            <span class="lbl lbl-libur" ng-if="s.tipe==='libur_nasional'">Libur</span>
+                        </td>
+                        <!-- Status -->
+                        <td>
+                            <span class="lbl lbl-dijadwalkan" ng-if="s.status==='dijadwalkan'">Dijadwalkan</span>
+                            <span class="lbl lbl-hadir" ng-if="s.status==='hadir'">Hadir</span>
+                            <span class="lbl lbl-tidak-hadir" ng-if="s.status==='tidak_hadir'">Tdk Hadir</span>
+                        </td>
+                        <!-- Aksi -->
+                        <td ng-if="user.role === 'admin' || user.role === 'kanit'" class="text-center">
+                            <div class="d-flex gap-1 justify-content-center">
+                                <button class="btn-edit" ng-click="openEditSchedule(s)" title="Edit"><i class="bi bi-pencil-fill"></i></button>
+                                <button class="btn-hapus" ng-click="deleteSchedule(s.id)" title="Hapus"><i class="bi bi-trash3-fill"></i></button>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- If day has no schedules at all, show empty row -->
+                    <tr ng-if="day.all.length === 0" style="background: #f8fafc;">
+                        <td class="row-num">{{ day.dayNum }}</td>
+                        <td>
+                            <strong style="color: #1e293b;">{{ day.dayName }}</strong>, <span style="color: #ea580c; font-weight: 800;">{{ day.dayNum }}</span> {{ monthNames[selectedMonth-1] }}
+                        </td>
+                        <td colspan="7" class="text-center" style="color: #94a3b8; font-style: italic;">— Belum ada jadwal —</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
