@@ -523,9 +523,9 @@ function($scope, ApiService, $rootScope) {
                 var endDay = weekDays[weekDays.length - 1].dayNum;
                 weeks.push({
                     weekNum: weekNum,
+                    collapsed: false,
                     label: 'Minggu Ke-' + weekNum + ' (' + startDay + ' - ' + endDay + ' ' + $scope.monthNames[$scope.selectedMonth - 1] + ' ' + $scope.selectedYear + ')',
-                    days: weekDays,
-                    collapsed: false
+                    days: weekDays
                 });
                 weekNum++;
                 weekDays = [];
@@ -534,11 +534,10 @@ function($scope, ApiService, $rootScope) {
         $scope.monthlyWeeks = weeks;
     }
 
-    $scope.expandAllWeeks = function() {
-        ($scope.monthlyWeeks || []).forEach(function(w) { w.collapsed = false; });
-    };
-    $scope.collapseAllWeeks = function() {
-        ($scope.monthlyWeeks || []).forEach(function(w) { w.collapsed = true; });
+    $scope.toggleAllWeeks = function(collapsedState) {
+        ($scope.monthlyWeeks || []).forEach(function(w) {
+            w.collapsed = collapsedState;
+        });
     };
 
     $scope.selectDate = function(day) {

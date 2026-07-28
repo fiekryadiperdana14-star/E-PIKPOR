@@ -133,38 +133,50 @@
         </div>
     </div>
 
-    <!-- Month Navigator & Expand/Collapse Controls -->
+    <!-- Month Navigator & Global Expand/Collapse -->
     <div class="glass-card-static animate-fade-in-up mb-4" style="padding: 1rem 1.25rem;">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
             <div class="d-flex align-items-center gap-2">
                 <button class="btn btn-outline-secondary btn-sm" ng-click="prevMonth()"><i class="bi bi-chevron-left"></i> Sebelum</button>
-                <h4 class="mb-0 fw-bold text-primary">{{ monthNames[selectedMonth-1] }} {{ selectedYear }}</h4>
                 <button class="btn btn-outline-secondary btn-sm" ng-click="nextMonth()">Berikut <i class="bi bi-chevron-right"></i></button>
             </div>
-            <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-outline-primary fw-bold" ng-click="expandAllWeeks()"><i class="bi bi-arrows-expand me-1"></i>Buka Semua</button>
-                <button class="btn btn-sm btn-outline-secondary fw-bold" ng-click="collapseAllWeeks()"><i class="bi bi-arrows-collapse me-1"></i>Tutup Semua</button>
+            <h4 class="mb-0 fw-bold text-primary">{{ monthNames[selectedMonth-1] }} {{ selectedYear }}</h4>
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-sm btn-outline-primary fw-bold" ng-click="toggleAllWeeks(false)">
+                    <i class="bi bi-arrows-expand me-1"></i>Buka Semua
+                </button>
+                <button class="btn btn-sm btn-outline-secondary fw-bold" ng-click="toggleAllWeeks(true)">
+                    <i class="bi bi-arrows-collapse me-1"></i>Tutup Semua
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- ============== TABEL FLAT PER MINGGU (Collapsible Cards) ============== -->
-    <div ng-repeat="week in monthlyWeeks" class="glass-card-static animate-fade-in-up mb-4" style="padding: 1.25rem; background: #fff; border: 1px solid #cbd5e1; border-radius: 12px;">
-        <div class="d-flex justify-content-between align-items-center cursor-pointer user-select-none" style="cursor: pointer; user-select: none;" ng-click="week.collapsed = !week.collapsed">
+    <!-- ============== TABEL FLAT PER MINGGU (1 baris = 1 orang) ============== -->
+    <div ng-repeat="week in monthlyWeeks" class="glass-card-static animate-fade-in-up mb-4" style="padding: 1.25rem; background: #fff; border: 1px solid #cbd5e1; transition: all 0.3s ease;">
+        <!-- Header Card — Clickable to Toggle Open / Close -->
+        <div class="d-flex justify-content-between align-items-center cursor-pointer select-none py-1" 
+             ng-click="week.collapsed = !week.collapsed" 
+             style="border-bottom: 2px solid #ea580c;"
+             title="Klik untuk membuka/menutup tabel minggu ini">
             <h5 class="fw-bold mb-0 d-flex align-items-center gap-2" style="color: #ea580c; font-size: 1.05rem;">
-                <i class="bi" ng-class="{'bi-chevron-right text-secondary': week.collapsed, 'bi-chevron-down text-primary': !week.collapsed}" style="font-size: 1.2rem;"></i>
+                <i class="bi fs-5 text-primary" ng-class="{'bi-chevron-down': !week.collapsed, 'bi-chevron-right': week.collapsed}"></i>
                 <i class="bi bi-calendar-range me-1"></i>{{ week.label }}
             </h5>
             <div class="d-flex align-items-center gap-2">
-                <span style="background: #eab308; color: #000; font-weight: 800; font-size: 0.78rem; padding: 4px 12px; border-radius: 5px;">
+                <span style="background: #eab308; color: #000; font-weight: 800; font-size: 0.75rem; padding: 4px 10px; border-radius: 5px;">
                     {{ week.days.length }} Hari
                 </span>
-                <span class="badge" ng-class="{'bg-primary': week.collapsed, 'bg-dark': !week.collapsed}" style="font-size: 0.75rem; padding: 6px 12px; border-radius: 6px;">
-                    <i class="bi" ng-class="{'bi-eye-fill me-1': week.collapsed, 'bi-eye-slash-fill me-1': !week.collapsed}"></i>{{ week.collapsed ? 'Buka Card' : 'Tutup Card' }}
-                </span>
+                <button type="button" class="btn btn-sm fw-bold border" 
+                        ng-class="{'btn-outline-danger': !week.collapsed, 'btn-primary': week.collapsed}" 
+                        style="font-size: 0.78rem; padding: 3px 10px;">
+                    <i class="bi" ng-class="{'bi-dash-lg me-1': !week.collapsed, 'bi-plus-lg me-1': week.collapsed}"></i>
+                    {{ week.collapsed ? 'Buka Tabel' : 'Tutup Tabel' }}
+                </button>
             </div>
         </div>
         
+        <!-- Table Body — Hidden when week.collapsed is true -->
         <div class="table-responsive mt-3" ng-show="!week.collapsed">
             <table class="table table-bordered mb-0 sched-table">
                 <thead>
