@@ -10,7 +10,7 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
         .when('/dashboard', { templateUrl: 'views/dashboard.html?v=14', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=15', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=14', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=22', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=23', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=14', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/sop', { templateUrl: 'views/sop.html?v=14', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/struktur', { templateUrl: 'views/org-chart.html?v=14', controller: 'OrgChartCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
@@ -524,7 +524,8 @@ function($scope, ApiService, $rootScope) {
                 weeks.push({
                     weekNum: weekNum,
                     label: 'Minggu Ke-' + weekNum + ' (' + startDay + ' - ' + endDay + ' ' + $scope.monthNames[$scope.selectedMonth - 1] + ' ' + $scope.selectedYear + ')',
-                    days: weekDays
+                    days: weekDays,
+                    collapsed: false
                 });
                 weekNum++;
                 weekDays = [];
@@ -532,6 +533,13 @@ function($scope, ApiService, $rootScope) {
         }
         $scope.monthlyWeeks = weeks;
     }
+
+    $scope.expandAllWeeks = function() {
+        ($scope.monthlyWeeks || []).forEach(function(w) { w.collapsed = false; });
+    };
+    $scope.collapseAllWeeks = function() {
+        ($scope.monthlyWeeks || []).forEach(function(w) { w.collapsed = true; });
+    };
 
     $scope.selectDate = function(day) {
         $scope.selectedDateStr = day.dateStr;
