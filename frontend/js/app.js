@@ -10,7 +10,7 @@ app.config(['$routeProvider', '$httpProvider', function($routeProvider, $httpPro
         .when('/dashboard', { templateUrl: 'views/dashboard.html?v=14', controller: 'DashboardCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/buat-laporan', { templateUrl: 'views/report-form.html?v=15', controller: 'ReportFormCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/pelimpahan', { templateUrl: 'views/handover-list.html?v=14', controller: 'HandoverCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
-        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=30', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
+        .when('/jadwal-piket', { templateUrl: 'views/schedule.html?v=31', controller: 'ScheduleCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/siaga-wiken', { templateUrl: 'views/siaga-wiken.html?v=14', controller: 'SiagaWikenCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/sop', { templateUrl: 'views/sop.html?v=14', controller: 'SOPCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
         .when('/struktur', { templateUrl: 'views/org-chart.html?v=14', controller: 'OrgChartCtrl', resolve: { auth: ['$q', '$window', '$location', checkAuth] } })
@@ -403,6 +403,7 @@ function($scope, ApiService, $rootScope) {
         (arr || []).forEach(function(s) {
             var groupKey = '';
             var type = 'regu';
+            var subName = s.subnit_nama || '';
 
             if (s.role === 'kanit' || (s.nama_lengkap && s.nama_lengkap.toLowerCase().indexOf('fiekry') >= 0)) {
                 groupKey = 'Kanit Gakkum';
@@ -413,10 +414,12 @@ function($scope, ApiService, $rootScope) {
             } else if (s.role === 'kasubnit' || (s.nama_lengkap && s.nama_lengkap.toLowerCase().indexOf('sari') >= 0)) {
                 groupKey = 'Kasubnit II';
                 type = 'kasubnit_2';
+            } else if (s.regu_nama && subName) {
+                groupKey = subName + ' - ' + s.regu_nama;
             } else if (s.regu_nama) {
                 groupKey = s.regu_nama;
-            } else if (s.subnit_nama) {
-                groupKey = s.subnit_nama;
+            } else if (subName) {
+                groupKey = subName;
             } else {
                 groupKey = 'Piket';
             }
@@ -425,7 +428,7 @@ function($scope, ApiService, $rootScope) {
                 map[groupKey] = {
                     name: groupKey,
                     type: type,
-                    subnitName: s.subnit_nama || '',
+                    subnitName: subName,
                     list: []
                 };
             }
