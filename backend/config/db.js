@@ -1,6 +1,10 @@
 const { Pool } = require('pg');
 
-const dbUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+let dbUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+// Vercel Neon integration injects channel_binding=require which crashes Node pg client
+if (dbUrl) {
+  dbUrl = dbUrl.replace('?channel_binding=require&', '?').replace('&channel_binding=require', '').replace('?channel_binding=require', '');
+}
 const poolConfig = dbUrl ? {
   connectionString: dbUrl,
   ssl: { rejectUnauthorized: false }
