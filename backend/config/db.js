@@ -1,23 +1,20 @@
 const { Pool } = require('pg');
 
-let dbUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+let dbUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL || 'postgresql://neondb_owner:npg_NlekSq4fm5ao@ep-square-hall-au588gv0-pooler.c-10.us-east-1.aws.neon.tech/neondb?sslmode=require';
 // Vercel Neon integration injects channel_binding=require which crashes Node pg client
 if (dbUrl) {
   dbUrl = dbUrl.replace('?channel_binding=require&', '?').replace('&channel_binding=require', '').replace('?channel_binding=require', '');
 }
-const poolConfig = dbUrl ? {
+const poolConfig = {
   connectionString: dbUrl,
   ssl: { rejectUnauthorized: false }
-} : {
-  host: process.env.DB_HOST || 'localhost',
-  port: process.env.DB_PORT || 5432,
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || '',
-  database: process.env.DB_NAME || 'e_pikpor_db',
-  ssl: process.env.DB_SSL_MODE === 'REQUIRED' ? { rejectUnauthorized: false } : undefined
 };
 
 const pool = new Pool(poolConfig);
+
+pool.on('error', (err) => {
+  console.error('Unexpected error on idle client', err);
+});
 
 const queryWrapper = async (sql, params) => {
   let pgSql = sql;
