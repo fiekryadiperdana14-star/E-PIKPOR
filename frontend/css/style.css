@@ -979,16 +979,6 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
     flex-direction: column;
     align-items: center;
 }
-.org-row-3 {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-}
-.org-col {
-    flex: 1;
-    min-width: 0; /* prevent flex blowout */
-    position: relative;
-}
 
 /* Connecting Lines */
 .org-line-v {
@@ -1013,6 +1003,22 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
     width: 66.666%;
 }
 
+/* Grid Layout for Subnits */
+.org-subnits-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0 2rem;
+    width: 100%;
+}
+.org-subnit-col-contents {
+    display: contents;
+}
+.org-grid-item {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+}
+
 /* Overriding cyan line for subnits */
 .org-subnits-wrapper .org-line-v,
 .org-subnits-wrapper .org-line-h {
@@ -1020,6 +1026,27 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
 }
 .org-subnits-wrapper .org-line-h {
     background: rgba(6,182,212,0.3);
+}
+
+/* Spacer & Continuous Line */
+.org-line-v-continuous {
+    width: 2px;
+    height: 100%;
+    min-height: 40px;
+    background: linear-gradient(to bottom, rgba(6,182,212,0.5), rgba(6,182,212,0.15));
+}
+
+/* Gap for org-row-3 */
+.org-row-3 {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    gap: 2rem;
+}
+.org-col {
+    flex: 1;
+    min-width: 0;
+    position: relative;
 }
 
 /* Cards */
@@ -1539,6 +1566,11 @@ h1, h2, h3, h4, h5, h6 { font-weight: 600; letter-spacing: -0.02em; }
     .org-row-3 { flex-direction: column; gap: 1rem; }
     .org-line-h { display: none; } /* Hide horizontal connecting lines on mobile */
     .org-col { width: 100%; }
+    
+    .org-subnits-grid { display: flex; flex-direction: column; gap: 2rem; }
+    .org-subnit-col-contents { display: flex; flex-direction: column; }
+    .org-grid-item { grid-row: auto !important; grid-column: auto !important; }
+    .org-line-v-continuous { height: 30px; }
     
     .siaga-content { flex-direction: column; text-align: center; }
 }
