@@ -78,30 +78,30 @@
 
 <div class="container-fluid px-0">
     <!-- Header -->
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 animate-fade-in-up">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 animate-fade-in-up" style="position: relative; z-index: 1050;">
         <div>
             <h2 class="page-title mb-1"><i class="bi bi-calendar3 text-primary"></i> Jadwal Piket Unit Gakkum</h2>
             <small style="color: #475569;">Tampilan ringkas per Subnit — Klik badge Subnit untuk melihat nama personel</small>
         </div>
-        <div class="d-flex gap-2 flex-wrap align-items-center" ng-if="user.role === 'admin' || user.role === 'kanit' || user.role === 'kasubnit'">
+        <div class="d-flex gap-2 flex-wrap align-items-center" ng-if="user.role === 'admin' || user.role === 'kanit' || user.role === 'kasubnit'" style="position: relative; z-index: 1050;">
             <button class="btn btn-outline-secondary btn-sm" ng-click="generateSchedule()"><i class="bi bi-magic me-1"></i>Auto Generate</button>
             <button class="btn btn-primary btn-sm" ng-click="openAddSchedule()"><i class="bi bi-plus-lg me-1"></i>Tambah Jadwal</button>
 
             <!-- Dropdown Hapus Jadwal -->
-            <div class="btn-group">
-                <button class="btn btn-outline-danger btn-sm dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <div class="btn-group" style="position: relative; z-index: 1050;">
+                <button class="btn btn-danger btn-sm dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="box-shadow: 0 2px 6px rgba(220,38,38,0.3);">
                     <i class="bi bi-trash3-fill me-1"></i>Hapus Jadwal
                 </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0" style="border-radius: 10px; background: #ffffff;">
+                <ul class="dropdown-menu dropdown-menu-end shadow-lg border" style="border-radius: 10px; background: #ffffff; z-index: 9999 !important; border-color: #cbd5e1 !important; min-width: 290px;">
                     <li>
-                        <a class="dropdown-item text-danger fw-bold py-2 px-3" href="" ng-click="clearMonthSchedule()">
-                            <i class="bi bi-calendar-x me-2"></i>Hapus Jadwal Bulan {{ monthNames[selectedMonth-1] }} {{ selectedYear }}
+                        <a class="dropdown-item text-danger fw-bold py-2.5 px-3" href="" ng-click="clearMonthSchedule()">
+                            <i class="bi bi-calendar-x me-2 fs-6"></i>Hapus Jadwal Bulan {{ monthNames[selectedMonth-1] }} {{ selectedYear }}
                         </a>
                     </li>
                     <li><hr class="dropdown-divider"></li>
                     <li>
-                        <a class="dropdown-item text-danger fw-bold py-2 px-3" href="" ng-click="clearAllSchedules()">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i>Hapus KESELURUHAN Jadwal (Total)
+                        <a class="dropdown-item text-danger fw-bold py-2.5 px-3" href="" ng-click="clearAllSchedules()">
+                            <i class="bi bi-exclamation-triangle-fill me-2 fs-6"></i>Hapus KESELURUHAN Jadwal (Total)
                         </a>
                     </li>
                 </ul>
