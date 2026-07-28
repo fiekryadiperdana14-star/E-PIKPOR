@@ -137,16 +137,22 @@ router.post('/generate', adminAuth, async (req, res) => {
     try {
         const { tanggal_mulai, tanggal_selesai } = req.body;
 
-        // Get all active personnel with subnit_id or leaders
+        // Get all active personnel
         const [personel] = await db.query(`
-            SELECT u.id, u.nama_lengkap, u.pangkat, u.role, u.subnit_id, u.regu_id 
+            SELECT u.id, u.nama_lengkap, u.pangkat, u.role, u.subnit_id, u.regu_id,
+                   r.nama AS regu_nama, s.nama AS subnit_nama
             FROM users u 
+            LEFT JOIN regu r ON u.regu_id = r.id
+            LEFT JOIN subnit s ON u.subnit_id = s.id
             WHERE u.is_active = TRUE AND (u.subnit_id IS NOT NULL OR u.role IN ('kanit', 'kasubnit'))
             ORDER BY u.subnit_id, u.regu_id, u.id
         `);
 
         // Get subnits
         const [subnits] = await db.query('SELECT * FROM subnit ORDER BY id');
+
+        // Get regus
+        const [regus] = await db.query('SELECT * FROM regu ORDER BY subnit_id, id');
 
         // Get holidays in range
         const [holidays] = await db.query(
@@ -161,35 +167,59 @@ router.post('/generate', adminAuth, async (req, res) => {
         const shifts = ['Pagi', 'Sore', 'Malam'];
         let inserted = 0;
 
-        // Group members by subnit
-        // - Subnit Tengah led by Kanit Gakkum
-        // - Subnit Timur & Barat led by Kasubnit
-        const bySubnit = {};
-        subnits.forEach(s => { bySubnit[s.id] = []; });
-
-        const kasubnits = personel.filter(p => p.role === 'kasubnit');
-        let kasubnitIdx = 0;
+        // Separate leaders from regular members
+        const leaders = []; // kanit, kasubnit
+        const regularMembers = []; // regular regu members
 
         personel.forEach(p => {
-            if (p.subnit_id && bySubnit[p.subnit_id]) {
-                bySubnit[p.subnit_id].push(p);
-            } else if (p.role === 'kanit' || (p.nama_lengkap && p.nama_lengkap.toLowerCase().includes('fiekry'))) {
-                // Kanit Gakkum leads Subnit Tengah (subnit id 2)
-                const tengah = subnits.find(s => s.nama.toLowerCase().includes('tengah')) || subnits[1] || subnits[0];
-                if (tengah && bySubnit[tengah.id]) {
-                    p.subnit_id = tengah.id;
-                    bySubnit[tengah.id].unshift(p);
-                }
-            } else if (p.role === 'kasubnit' || (p.nama_lengkap && (p.nama_lengkap.toLowerCase().includes('sucipto') || p.nama_lengkap.toLowerCase().includes('sari')))) {
-                if (p.nama_lengkap.toLowerCase().includes('sucipto') || p.nama_lengkap.toLowerCase().includes('wardani')) {
-                    // Kasubnit 1 -> Subnit Timur (id 1)
-                    const timur = subnits.find(s => s.nama.toLowerCase().includes('timur')) || subnits[0];
-                    if (timur && bySubnit[timur.id]) { p.subnit_id = timur.id; bySubnit[timur.id].unshift(p); }
+            const isKanit = p.role === 'kanit' || (p.nama_lengkap && p.nama_lengkap.toLowerCase().includes('fiekry'));
+            const isKasubnit = p.role === 'kasubnit' || 
+                (p.nama_lengkap && (p.nama_lengkap.toLowerCase().includes('sucipto') || p.nama_lengkap.toLowerCase().includes('sari')));
+
+            if (isKanit || isKasubnit) {
+                // Determine leader's subnit
+                let leaderSubnitId = p.subnit_id;
+                if (isKanit) {
+                    const tengah = subnits.find(s => s.nama.toLowerCase().includes('tengah'));
+                    leaderSubnitId = tengah ? tengah.id : (subnits[1] || subnits[0]).id;
+                } else if (p.nama_lengkap && (p.nama_lengkap.toLowerCase().includes('sucipto') || p.nama_lengkap.toLowerCase().includes('wardani'))) {
+                    const timur = subnits.find(s => s.nama.toLowerCase().includes('timur'));
+                    leaderSubnitId = timur ? timur.id : (subnits[0]).id;
                 } else {
-                    // Kasubnit 2 -> Subnit Barat (id 3)
-                    const barat = subnits.find(s => s.nama.toLowerCase().includes('barat')) || subnits[2] || subnits[0];
-                    if (barat && bySubnit[barat.id]) { p.subnit_id = barat.id; bySubnit[barat.id].unshift(p); }
+                    const barat = subnits.find(s => s.nama.toLowerCase().includes('barat'));
+                    leaderSubnitId = barat ? barat.id : (subnits[2] || subnits[0]).id;
                 }
+                leaders.push({ ...p, subnit_id: leaderSubnitId, isKanit, isKasubnit: !isKanit });
+            } else {
+                regularMembers.push(p);
+            }
+        });
+
+        // Group regular members by regu
+        const byRegu = {};
+        regus.forEach(r => { byRegu[r.id] = { regu: r, members: [] }; });
+
+        regularMembers.forEach(p => {
+            if (p.regu_id && byRegu[p.regu_id]) {
+                byRegu[p.regu_id].members.push(p);
+            }
+        });
+
+        // Group regus by subnit
+        const regusBySubnit = {};
+        subnits.forEach(s => { regusBySubnit[s.id] = []; });
+        regus.forEach(r => {
+            if (r.subnit_id && regusBySubnit[r.subnit_id]) {
+                regusBySubnit[r.subnit_id].push(r);
+            }
+        });
+
+        // Group leaders by subnit
+        const leadersBySubnit = {};
+        subnits.forEach(s => { leadersBySubnit[s.id] = []; });
+        leaders.forEach(l => {
+            if (l.subnit_id && leadersBySubnit[l.subnit_id]) {
+                leadersBySubnit[l.subnit_id].push(l);
             }
         });
 
@@ -197,6 +227,10 @@ router.post('/generate', adminAuth, async (req, res) => {
         let currentDate = new Date(tanggal_mulai);
         const endDate = new Date(tanggal_selesai);
         let dayCounter = 0;
+
+        // Track regu member rotation indices
+        const reguRotation = {};
+        regus.forEach(r => { reguRotation[r.id] = 0; });
 
         while (currentDate <= endDate) {
             const yyyy = currentDate.getFullYear();
@@ -210,30 +244,55 @@ router.post('/generate', adminAuth, async (req, res) => {
             const tipe = (isWeekend || isHoliday) ? (isHoliday ? 'libur_nasional' : 'wiken') : 'reguler';
 
             for (const subnit of subnits) {
-                const members = bySubnit[subnit.id] || [];
-                if (members.length === 0) continue;
+                const subnitRegus = regusBySubnit[subnit.id] || [];
+                const subnitLeaders = leadersBySubnit[subnit.id] || [];
 
-                // For each shift (Pagi, Sore, Malam), assign 2 members
                 for (let shiftIdx = 0; shiftIdx < shifts.length; shiftIdx++) {
                     const shiftName = shifts[shiftIdx];
-                    const offset = (dayCounter * 3 + shiftIdx) * 2;
 
-                    for (let count = 0; count < 2; count++) {
-                        const memberIdx = (offset + count) % members.length;
-                        const member = members[memberIdx];
+                    // 1. Assign leader (Kanit/Kasubnit) for this subnit+shift
+                    if (subnitLeaders.length > 0) {
+                        const leaderIdx = (dayCounter * shifts.length + shiftIdx) % subnitLeaders.length;
+                        const leader = subnitLeaders[leaderIdx];
 
-                        // Avoid duplicate entry for same date, shift, user
                         const [existing] = await db.query(
                             'SELECT id FROM duty_schedules WHERE tanggal = ? AND shift = ? AND user_id = ?',
-                            [dateStr, shiftName, member.id]
+                            [dateStr, shiftName, leader.id]
                         );
                         if (existing.length === 0) {
                             await db.query(
                                 `INSERT INTO duty_schedules (tanggal, shift, user_id, subnit_id, regu_id, tipe, created_by) 
                                  VALUES (?, ?, ?, ?, ?, ?, ?)`,
-                                [dateStr, shiftName, member.id, subnit.id, member.regu_id || null, tipe, req.user.id]
+                                [dateStr, shiftName, leader.id, subnit.id, leader.regu_id || null, tipe, req.user.id]
                             );
                             inserted++;
+                        }
+                    }
+
+                    // 2. For each regu in this subnit, assign 2 members
+                    for (const regu of subnitRegus) {
+                        const reguMembers = byRegu[regu.id] ? byRegu[regu.id].members : [];
+                        if (reguMembers.length === 0) continue;
+
+                        const membersToAssign = Math.min(2, reguMembers.length);
+
+                        for (let count = 0; count < membersToAssign; count++) {
+                            const idx = reguRotation[regu.id] % reguMembers.length;
+                            const member = reguMembers[idx];
+                            reguRotation[regu.id]++;
+
+                            const [existing] = await db.query(
+                                'SELECT id FROM duty_schedules WHERE tanggal = ? AND shift = ? AND user_id = ?',
+                                [dateStr, shiftName, member.id]
+                            );
+                            if (existing.length === 0) {
+                                await db.query(
+                                    `INSERT INTO duty_schedules (tanggal, shift, user_id, subnit_id, regu_id, tipe, created_by) 
+                                     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                                    [dateStr, shiftName, member.id, subnit.id, regu.id, tipe, req.user.id]
+                                );
+                                inserted++;
+                            }
                         }
                     }
                 }
@@ -243,7 +302,7 @@ router.post('/generate', adminAuth, async (req, res) => {
             dayCounter++;
         }
 
-        res.status(201).json({ message: `Jadwal berhasil di-generate: ${inserted} entri baru. (2 orang per shift per Subnit)`, count: inserted });
+        res.status(201).json({ message: `Jadwal berhasil di-generate: ${inserted} entri baru. (2 orang per Regu + Kasubnit/Kanit per shift per Zona)`, count: inserted });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
