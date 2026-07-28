@@ -1,44 +1,48 @@
 <div class="container-fluid px-0">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="page-title mb-0 animate-fade-in-up"><i class="bi bi-arrow-left-right text-primary me-2"></i> Pelimpahan Masuk (Estafet Laporan)</h2>
+    <div class="d-flex justify-content-between align-items-center mb-3 mb-md-4">
+        <h2 class="page-title mb-0 animate-fade-in-up fs-4 fs-md-2">
+            <i class="bi bi-arrow-left-right text-primary me-2"></i> Pelimpahan Masuk (Estafet Laporan)
+        </h2>
     </div>
     
-    <div class="glass-card-static animate-fade-in-up p-4" style="background: #ffffff; border-radius: 16px;">
-        <!-- Header & Filter / Sort Controls Bar -->
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4 pb-3 border-bottom">
+    <div class="glass-card-static animate-fade-in-up p-3 p-md-4" style="background: #ffffff; border-radius: 16px;">
+        <!-- Header & Controls Bar -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-3 mb-md-4 pb-3 border-bottom">
             <div>
-                <div class="section-title fw-extrabold mb-1" style="font-size: 1.1rem; color: #0f172a;">
-                    <i class="bi bi-inbox-fill text-warning me-2 fs-5"></i> Daftar Pelimpahan Masuk (Memerlukan ACC Kasubnit)
+                <div class="section-title fw-extrabold mb-1" style="font-size: 1.05rem; color: #0f172a;">
+                    <i class="bi bi-inbox-fill text-warning me-2 fs-5"></i> Daftar Pelimpahan Masuk (ACC Kasubnit)
                 </div>
-                <small class="text-muted">Kelola estafet penanganan laporan antar-regu / subnit</small>
+                <small class="text-muted d-none d-sm-block">Kelola estafet penanganan laporan antar-regu / subnit</small>
             </div>
             
-            <div class="d-flex flex-wrap gap-2 w-100 w-md-auto">
+            <div class="w-100 w-md-auto d-flex flex-column flex-sm-row gap-2">
                 <!-- Search Box -->
-                <div class="input-group input-group-sm" style="max-width: 220px;">
+                <div class="input-group input-group-sm flex-fill" style="min-width: 140px;">
                     <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
                     <input type="text" class="form-control border-start-0 ps-0" placeholder="Cari pelimpahan..." ng-model="searchQuery">
                 </div>
 
-                <!-- Sort Control -->
-                <select class="form-select form-select-sm fw-semibold text-dark" style="width: auto;" ng-model="sortOption">
-                    <option value="-waktu_pelimpahan">Urutkan: Terbaru</option>
-                    <option value="waktu_pelimpahan">Urutkan: Terlama</option>
-                    <option value="status_terima">Urutkan: Status ACC</option>
-                    <option value="judul">Urutkan: Judul Laporan</option>
-                </select>
+                <div class="d-flex gap-2">
+                    <!-- Sort Control -->
+                    <select class="form-select form-select-sm fw-semibold text-dark flex-fill" ng-model="sortOption">
+                        <option value="-waktu_pelimpahan">Terbaru</option>
+                        <option value="waktu_pelimpahan">Terlama</option>
+                        <option value="status_terima">Status ACC</option>
+                        <option value="judul">Judul</option>
+                    </select>
 
-                <!-- Page Size Control -->
-                <select class="form-select form-select-sm fw-semibold text-dark" style="width: auto;" ng-model="pageSize">
-                    <option ng-value="5">5 per hal</option>
-                    <option ng-value="10">10 per hal</option>
-                    <option ng-value="25">25 per hal</option>
-                </select>
+                    <!-- Page Size Control -->
+                    <select class="form-select form-select-sm fw-semibold text-dark" style="width: 100px;" ng-model="pageSize">
+                        <option ng-value="5">5 / hal</option>
+                        <option ng-value="10">10 / hal</option>
+                        <option ng-value="25">25 / hal</option>
+                    </select>
+                </div>
             </div>
         </div>
         
-        <!-- List / Table View -->
-        <div class="table-responsive">
+        <!-- DESKTOP TABLE VIEW (d-none d-md-block) -->
+        <div class="table-responsive d-none d-md-block">
             <table class="table table-hover align-middle custom-table mb-0">
                 <thead>
                     <tr style="background: #fff7ed; color: #9a3412; border-bottom: 2px solid #fed7aa;">
@@ -113,6 +117,69 @@
             </table>
         </div>
 
+        <!-- MOBILE LIST CARDS VIEW (d-block d-md-none) -->
+        <div class="d-block d-md-none">
+            <div class="d-flex flex-column gap-3">
+                <div class="card border rounded-3 p-3 shadow-sm" style="background: #ffffff; border-color: #fed7aa !important;" ng-repeat="h in getFilteredHandovers() | orderBy:sortOption | startFrom:(currentPage-1)*pageSize | limitTo:pageSize track by h.id">
+                    
+                    <!-- Card Top Header -->
+                    <div class="d-flex justify-content-between align-items-start gap-2 mb-2 pb-2 border-bottom">
+                        <div class="d-flex align-items-center gap-1.5">
+                            <span class="badge bg-secondary text-white rounded-circle" style="width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.72rem;">
+                                {{ (currentPage-1)*pageSize + $index + 1 }}
+                            </span>
+                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-bold px-2 py-1 rounded-pill" style="font-size: 0.7rem;">
+                                <i class="bi bi-tag-fill me-1"></i>{{ h.kategori || 'Estafet Laporan' }}
+                            </span>
+                        </div>
+                        <span class="badge px-2.5 py-1 rounded-pill fw-bold" ng-class="{
+                            'bg-warning-subtle text-warning-emphasis border border-warning-subtle': h.status_terima === 'menunggu',
+                            'bg-success-subtle text-success border border-success-subtle': h.status_terima === 'diterima',
+                            'bg-danger-subtle text-danger border border-danger-subtle': h.status_terima === 'ditolak'
+                        }" style="font-size: 0.7rem;">
+                            <i class="bi" ng-class="{
+                                'bi-hourglass-split me-1': h.status_terima === 'menunggu',
+                                'bi-check-circle-fill me-1': h.status_terima === 'diterima',
+                                'bi-x-circle-fill me-1': h.status_terima === 'ditolak'
+                            }"></i> {{ h.status_terima === 'menunggu' ? 'MENUNGGU ACC' : (h.status_terima | uppercase) }}
+                        </span>
+                    </div>
+
+                    <!-- Title -->
+                    <div class="fw-extrabold text-dark mb-2" style="font-size: 0.95rem; line-height: 1.35;">{{ h.judul }}</div>
+
+                    <!-- Details Box -->
+                    <div class="p-2.5 rounded-2 mb-2" style="background: #fff7ed; border: 1px solid #ffedd5; font-size: 0.82rem;">
+                        <div class="text-dark mb-1"><i class="bi bi-clock-history text-primary me-1"></i><strong>Waktu:</strong> {{ h.waktu_kejadian | date:'dd MMM yyyy, HH:mm' }} WIB</div>
+                        <div class="text-dark mb-1"><i class="bi bi-geo-alt-fill text-danger me-1"></i><strong>Lokasi:</strong> {{ h.lokasi }}</div>
+                        <div class="text-dark border-top pt-1 mt-1"><i class="bi bi-person-circle text-primary me-1"></i><strong>Pengirim:</strong> {{ h.pengirim }}</div>
+                        <div class="text-secondary fst-italic mt-0.5" style="font-size: 0.78rem;">
+                            "<span class="text-dark">{{ h.catatan || 'Tidak ada catatan' }}</span>"
+                        </div>
+                    </div>
+
+                    <!-- Actions Footer -->
+                    <div class="pt-1">
+                        <div class="d-flex gap-2" ng-if="h.status_terima === 'menunggu' && (user.role === 'kasubnit' || user.role === 'kanit' || user.role === 'admin')">
+                            <button class="btn btn-outline-danger btn-sm flex-fill fw-bold py-1.5 rounded-2" ng-click="updateStatus(h, 'ditolak')">
+                                <i class="bi bi-x-circle me-1"></i>Tolak
+                            </button>
+                            <button class="btn btn-primary btn-sm flex-fill fw-bold py-1.5 rounded-2" ng-click="updateStatus(h, 'diterima')">
+                                <i class="bi bi-check-circle-fill me-1"></i>ACC (Terima)
+                            </button>
+                        </div>
+                        <div class="text-center p-1.5 rounded-2 bg-light text-muted small fw-semibold" ng-if="h.status_terima === 'menunggu' && user.role !== 'kasubnit' && user.role !== 'kanit' && user.role !== 'admin'" style="font-size: 0.75rem;">
+                            <i class="bi bi-shield-lock text-warning me-1"></i>Menunggu ACC Kasubnit
+                        </div>
+                        <div class="text-center p-1.5 rounded-2" ng-class="{'bg-success-subtle text-success border border-success-subtle': h.status_terima === 'diterima', 'bg-danger-subtle text-danger border border-danger-subtle': h.status_terima === 'ditolak'}" ng-if="h.status_terima !== 'menunggu'" style="font-size: 0.78rem; font-weight: 600;">
+                            <i class="bi" ng-class="{'bi-check-all me-1': h.status_terima === 'diterima', 'bi-x-octagon me-1': h.status_terima === 'ditolak'}"></i>
+                            Telah {{ h.status_terima === 'diterima' ? 'di-ACC & Diterima' : 'Ditolak' }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Empty State -->
         <div class="empty-state py-5 text-center" ng-if="getFilteredHandovers().length === 0">
             <i class="bi bi-inbox fs-1 text-muted opacity-50 mb-3 d-block"></i>
@@ -121,8 +188,8 @@
         </div>
 
         <!-- Pagination Controls -->
-        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-4 pt-3 border-top gap-3" ng-if="getFilteredHandovers().length > 0">
-            <small class="text-muted fw-medium">
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-3 mt-md-4 pt-3 border-top gap-2" ng-if="getFilteredHandovers().length > 0">
+            <small class="text-muted fw-medium text-center text-sm-start" style="font-size: 0.8rem;">
                 Menampilkan {{ (currentPage-1)*pageSize + 1 }} - {{ (currentPage*pageSize) > getFilteredHandovers().length ? getFilteredHandovers().length : (currentPage*pageSize) }} dari {{ getFilteredHandovers().length }} entri
             </small>
 
